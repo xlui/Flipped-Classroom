@@ -9,4 +9,5 @@ public class PreferenceUtils {
     public static void init(Context context) {
         sContext = context;
     }
+
 }
