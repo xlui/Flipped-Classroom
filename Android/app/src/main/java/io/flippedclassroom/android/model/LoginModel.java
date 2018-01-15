@@ -1,5 +1,4 @@
 package io.flippedclassroom.android.model;
 
-public class SplashModel {
-
+public class LoginModel {
 }
