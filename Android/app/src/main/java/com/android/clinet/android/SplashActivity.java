@@ -1,4 +1,4 @@
-package com.android.clinet.android_client;
+package com.android.clinet.android;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

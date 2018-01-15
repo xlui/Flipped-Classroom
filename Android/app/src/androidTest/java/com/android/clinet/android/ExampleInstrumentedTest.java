@@ -1,4 +1,4 @@
-package com.android.clinet.android_client;
+package com.android.clinet.android;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
