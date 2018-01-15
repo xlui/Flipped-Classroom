@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.view;
 
 import android.content.Context;
+import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
