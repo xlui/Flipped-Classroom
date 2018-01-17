@@ -4,7 +4,12 @@ package io.flippedclassroom.android.base;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
+
+import butterknife.ButterKnife;
 
 public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
     protected T mPresenter;
@@ -14,6 +19,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
+        ButterKnife.bind(this);
         initPresenter();
         initViews();
     }
@@ -28,11 +34,30 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     protected abstract void initViews();
 
-    protected abstract Context getContext();
+    public abstract Context getContext();
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         isLife = false;
+    }
+
+    //设置actionbar
+    //imageId传入0就是显示返回箭头，-1就是什么都不现实
+    protected void setActionBar(Toolbar toolbar, int imageId, String title) {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(title);
+        if (imageId != -1) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            if (imageId != 0) {
+                actionBar.setHomeAsUpIndicator(imageId);
+            }
+        }
+    }
+
+    protected void hideStateBar() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }
