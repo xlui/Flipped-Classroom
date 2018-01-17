@@ -1,7 +1,6 @@
 package io.flippedclassroom.android.app;
 
 import android.app.Application;
-import android.preference.Preference;
 
 import io.flippedclassroom.android.util.PreferenceUtils;
 
