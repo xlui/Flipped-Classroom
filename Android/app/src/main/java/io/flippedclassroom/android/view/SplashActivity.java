@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import io.flippedclassroom.android.R;
@@ -14,6 +17,8 @@ import io.flippedclassroom.android.presenter.SplashPresenter;
 public class SplashActivity extends BaseActivity<SplashPresenter> {
     @BindView(R.id.tv_app_name)
     public TextView tvAppName;
+    @BindView(R.id.iv_splash)
+    public ImageView ivSplash;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
     @Override
     protected void initViews() {
         hideStateBar();
+        Glide.with(this).load(R.mipmap.splash).into(ivSplash);
     }
 
     @Override
