@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Token 校验的 Filter，用于 ShiroConfiguration 的 ShiroFilterFactoryBean，
@@ -17,11 +19,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 	@Override
-	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
+	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
 		Logger logger = LogUtil.getLogger();
 		logger.info("进入 Token 验证的 Filter");
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		String authorization = httpServletRequest.getHeader("Authorization");
 		if (authorization != null) {
 			logger.info("成功在 HTTP 头部发现 Authorization，进入 Token 验证...");
@@ -32,10 +35,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 				getSubject(request, response).login(tokenToken);
 				return true;
 			} catch (AuthenticationException e) {
-				throw new AuthenticationException("Token 认证失败！");
-//				todo: Shiro 的异常并不算在 ControllerAdvice 中，所以如果 token 认证失败，这里会抛出异常。给用户的显示就是 500 异常
+				httpServletResponse.sendError(403, "需要通过 Token 验证！");
+				return false;
 			}
 		} else {
+			httpServletResponse.sendError(403, "需要通过 Token 验证！");
 			return false;
 		}
 	}

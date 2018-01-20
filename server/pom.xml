@@ -6,7 +6,7 @@
 	<groupId>io.flipped-classroom</groupId>
 	<artifactId>server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <packaging>war</packaging>
 
 	<name>server</name>
 	<description>Flipped classroom, create a new experience in your class!</description>
