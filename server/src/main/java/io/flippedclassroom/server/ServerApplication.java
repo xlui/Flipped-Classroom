@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 @SpringBootApplication
 @RestController
@@ -18,6 +19,7 @@ public class ServerApplication {
 	/**
 	 * 负责数据库的初始化
 	 */
+	@ApiIgnore
 	@RequestMapping("/init")
 	public String init() {
 		User defaultUser = new User("1", "dev");

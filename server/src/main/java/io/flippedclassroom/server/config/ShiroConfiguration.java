@@ -107,9 +107,8 @@ public class ShiroConfiguration {
 		shiroFilterFactoryBean.setFilters(filterMap);
 
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-		filterChainDefinitionMap.put("/init", "anon");  // 用于数据库的初始化
 		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
-		filterChainDefinitionMap.put("/**", "authc");
+		filterChainDefinitionMap.put("/**", "anon");
 
 		shiroFilterFactoryBean.setLoginUrl("/login");
 
