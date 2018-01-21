@@ -1,11 +1,16 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.List;
 
+@ApiModel(value = "角色实体类")
 @Entity
 public class Role implements Serializable {
 	@Id

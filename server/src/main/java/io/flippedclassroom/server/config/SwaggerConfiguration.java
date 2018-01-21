@@ -19,6 +19,7 @@ public class SwaggerConfiguration {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
+				.useDefaultResponseMessages(false)
 				.apiInfo(apiInfo())
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("io.flippedclassroom.server"))
@@ -29,7 +30,9 @@ public class SwaggerConfiguration {
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
 				.title("后端 API")
-				.description("基于 Swagger2，可直接在此页面进行测试")
+				.description("基于 Swagger2，可直接在此页面进行测试。\n\n" +
+						"所有的数据传送格式（post，get等）都是 JSON，即 POST 附带的 request body 和 GET 返回的数据都是 JSON 格式，便于解析。" +
+						"\n\n由于 Swagger 本身的原因，不能设置 Example Value，测试的时候请手动输入 JSON 数据，会在测试旁标明。")
 				.version("0.0.1")
 				.build();
 	}

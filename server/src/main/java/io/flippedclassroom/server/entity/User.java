@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
+@ApiModel(value = "用户实体类")
 @Entity
 public class User implements Serializable {
 	@Id

@@ -1,11 +1,14 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 随堂测试题
  */
+@ApiModel(value = "随堂测试", description = "与课后作业不同")
 @Entity
 public class Quiz implements Serializable {
 	@Id

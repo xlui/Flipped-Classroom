@@ -1,11 +1,14 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 课前预习资料
  */
+@ApiModel(value = "课前预习的资料", description = "与电子资料存放在不同位置")
 @Entity
 public class Preview implements Serializable {
 	@Id

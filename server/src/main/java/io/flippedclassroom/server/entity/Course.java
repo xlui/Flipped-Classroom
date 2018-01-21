@@ -1,5 +1,7 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 /**
  * 课程信息
  */
+@ApiModel(value = "课程实体类")
 @Entity
 public class Course implements Serializable {
 	@Id

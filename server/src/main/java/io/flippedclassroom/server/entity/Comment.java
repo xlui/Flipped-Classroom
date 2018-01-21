@@ -1,11 +1,14 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 课程评论
  */
+@ApiModel(value = "课程评论实体类")
 @Entity
 public class Comment implements Serializable {
 	@Id

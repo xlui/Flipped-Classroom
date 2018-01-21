@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "用户管理")
+@Api(tags = "用户管理", description = "目前包括：用户登录")
 @RestController
 public class UserController {
 	@Autowired
@@ -25,14 +25,14 @@ public class UserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户名密码登录", httpMethod = "POST")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "string", paramType = "body", example = "1", defaultValue = "1"),
-			@ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string", paramType = "body", example = "dev", defaultValue = "dev")
+			@ApiImplicitParam(name = "user", value = "用户实体类，测试的时候手动输入 json 字符串：{\"username\":\"1\", \"password\":\"dev\"}", required = true, dataType = "string", paramType = "body")
 	})
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "为用户生成的 Token"),
-			@ApiResponse(code = 401, message = "认证失败！")
+			@ApiResponse(code = 401, message = "权限认证失败！"),
+			@ApiResponse(code = 403, message = "身份认证失败！"),
 	})
-	public String postLogin(@ApiIgnore @RequestBody User user) {
+	public String postLogin(@RequestBody User user) {
 		AssertUtil.assertUsernamePasswordNotNull(user);
 
 		// 用户登录

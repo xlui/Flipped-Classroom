@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 版本信息
  */
-@Api(tags = "版本")
+@Api(tags = "版本", description = "用于应用内确认版本更新，检查应用内版本信息，与本 API 返回的比对，进行相应的响应")
 @RestController
 public class VersionController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
