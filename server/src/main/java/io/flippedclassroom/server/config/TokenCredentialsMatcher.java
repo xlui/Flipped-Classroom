@@ -1,6 +1,7 @@
 package io.flippedclassroom.server.config;
 
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.utils.JWTUtil;
 import io.flippedclassroom.server.utils.LogUtil;
@@ -16,16 +17,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RedisService redisService;
 
 	@Override
 	public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
 		Logger logger = LogUtil.getLogger();
 
 		logger.info("进入自定义 Token 校验！");
-		TokenToken tokenToken = (TokenToken) token;
-		logger.info("Token 中的信息：\n" + tokenToken.getPrincipal() + ", " + tokenToken.getCredentials());
-		User user = userService.findUserByUsername((String) tokenToken.getPrincipal());
+		String principal = (String) token.getPrincipal();
+		String credentials = (String) token.getCredentials();
 
-		return JWTUtil.verify((String) tokenToken.getCredentials(), user.getUsername(), user.getPassword());
+		// Redis Check First
+		if (!redisService.get(principal).equals(credentials)) {
+			return false;
+		}
+
+		logger.info("Token 中的信息：\n" + principal + ", " + credentials);
+		User user = userService.findUserByUsername(principal);
+
+		return JWTUtil.verify(credentials, user.getUsername(), user.getPassword());
 	}
 }

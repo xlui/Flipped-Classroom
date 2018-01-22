@@ -4,6 +4,7 @@ import io.flippedclassroom.server.config.Constant;
 import io.flippedclassroom.server.config.PasswordToken;
 import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.utils.AssertUtil;
 import io.flippedclassroom.server.utils.EncryptUtil;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RedisService redisService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@Transactional
@@ -32,7 +35,7 @@ public class UserController {
 			@ApiImplicitParam(name = "user", value = "用户实体类，测试的时候手动输入 json 字符串：{\"username\":\"新用户的用户名\", \"password\":\"新用户的密码\"}"),
 	})
 	@ApiResponses({
-			@ApiResponse(code = 200, message = "success"),
+			@ApiResponse(code = 200, message = "成功注册"),
 	})
 	public JsonResponse register(@RequestBody User user) {
 		User user1 = new User(user.getUsername(), user.getPassword());
@@ -69,6 +72,7 @@ public class UserController {
 			token = JWTUtil.sign(loginUser.getUsername(), loginUser.getPassword());
 			LogUtil.getLogger().info("Generate Token!\n" + token);
 		}
+		redisService.save(loginUser.getUsername(), token);
 		return token;
 	}
 }

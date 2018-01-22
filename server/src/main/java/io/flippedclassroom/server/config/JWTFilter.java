@@ -38,16 +38,17 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 				getSubject(request, response).login(tokenToken);
 				return true;
 			} catch (AuthenticationException e) {
-				httpServletResponse.setCharacterEncoding("utf-8");
-				JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
-				httpServletResponse.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
-				return false;
+				return tokenAuthFailed(httpServletResponse);
 			}
 		} else {
-			httpServletResponse.setCharacterEncoding("utf-8");
-			JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
-			httpServletResponse.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
-			return false;
+			return tokenAuthFailed(httpServletResponse);
 		}
+	}
+
+	private boolean tokenAuthFailed(HttpServletResponse response) throws IOException {
+		response.setCharacterEncoding("utf-8");
+		JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
+		response.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
+		return false;
 	}
 }

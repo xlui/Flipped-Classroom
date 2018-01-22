@@ -61,6 +61,7 @@ public class JWTUtil {
 			Algorithm algorithm = Algorithm.HMAC256(password.getBytes());
 			return JWT.create()
 					.withClaim("username", username)
+					.withClaim("date", new Date())
 					.withExpiresAt(new Date(Constant.expire))
 					.sign(algorithm);
 		} catch (Exception e) {
