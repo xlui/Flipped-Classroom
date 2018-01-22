@@ -37,9 +37,8 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                 mView.showOrHidePassword(isSelected);
                 break;
             case R.id.btn_login_button_login:
-                final String id = mView.getAccountText();
-                final String password = mView.getPasswordText();
-                boolean isEmpty = checkEmpty(id, password);
+                final String[] texts = mView.getAllText();
+                boolean isEmpty = checkEmpty(texts[0], texts[1]);
                 if (!isEmpty) {
                     HttpUtils.sendLoginRequest(UrlBuilder.getLoginTokenUrl(), new Callback() {
                         @Override
@@ -55,11 +54,14 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                                 ToastUtils.createToast("登陆失败,账号密码错误");
                             } catch (JSONException e) {
                                 mModel.saveToken(json);
-                                mModel.saveId(id);
+                                mModel.saveId(texts[0]);
                             }
                         }
-                    }, id, password);
+                    }, texts[0], texts[1]);
                 }
+                break;
+            case R.id.tv_login_forget_password:
+                mView.startRegisteredActivity();
         }
     }
 

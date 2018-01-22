@@ -21,6 +21,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startLoginActivity();
     }
 
     @Override

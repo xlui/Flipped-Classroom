@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         setActionBar(tbLoginToolbar, -1, "登录");
         btnLoginButtonLogin.setOnClickListener(mPresenter);
         ivLoginShowHidePassword.setOnClickListener(mPresenter);
+        tvLoginForgetPassword.setOnClickListener(mPresenter);
     }
 
     @Override
@@ -57,16 +59,14 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         return this;
     }
 
-    public String getAccountText() {
-        Editable editable = tilLoginAccountText.getEditText().getText();
-        if (editable == null) {
-            return null;
-        }
-        return editable.toString();
+    public String[] getAllText() {
+        Editable id = tilLoginAccountText.getEditText().getText();
+        Editable password = tilLoginPasswordText.getEditText().getText();
+        String[] texts = new String[]{getEditText(id), getEditText(password)};
+        return texts;
     }
 
-    public String getPasswordText() {
-        Editable editable = tilLoginPasswordText.getEditText().getText();
+    private String getEditText(Editable editable) {
         if (editable == null) {
             return null;
         }
@@ -92,5 +92,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
             tilLoginPasswordText.getEditText().setTransformationMethod(PasswordTransformationMethod.getInstance());
             editText.setSelection(editText.getText().toString().length());
         }
+    }
+
+    public void startRegisteredActivity() {
+        startActivity(new Intent(this, RegisteredActivity.class));
     }
 }
