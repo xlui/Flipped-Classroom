@@ -47,7 +47,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
 	private boolean tokenAuthFailed(HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("utf-8");
-		JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
+		JsonResponse jsonResponse = new JsonResponse(Constant.FAILED, "need token auth");
 		response.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
 		return false;
 	}

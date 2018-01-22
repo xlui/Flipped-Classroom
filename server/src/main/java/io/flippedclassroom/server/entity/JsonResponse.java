@@ -1,29 +1,27 @@
 package io.flippedclassroom.server.entity;
 
-import io.flippedclassroom.server.config.Constant;
-
 import java.io.Serializable;
 
 public class JsonResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Constant.status status;
+	private String status;
 	private String message;
 
 	public JsonResponse() {
 		super();
 	}
 
-	public JsonResponse(Constant.status status, String message) {
+	public JsonResponse(String status, String message) {
 		this.status = status;
 		this.message = message;
 	}
 
-	public Constant.status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Constant.status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
