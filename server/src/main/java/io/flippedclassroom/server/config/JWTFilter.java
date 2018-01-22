@@ -28,6 +28,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		String authorization = httpServletRequest.getHeader("Authorization");
+
 		if (authorization != null) {
 			logger.info("成功在 HTTP 头部发现 Authorization，进入 Token 验证...");
 			logger.info("记录 Authorization: " + authorization);
@@ -38,13 +39,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 				return true;
 			} catch (AuthenticationException e) {
 				httpServletResponse.setCharacterEncoding("utf-8");
-				JsonResponse jsonResponse = new JsonResponse(403, "need token auth");
+				JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
 				httpServletResponse.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
 				return false;
 			}
 		} else {
 			httpServletResponse.setCharacterEncoding("utf-8");
-			JsonResponse jsonResponse = new JsonResponse(403, "need token auth");
+			JsonResponse jsonResponse = new JsonResponse(Constant.status.FAILED, "need token auth");
 			httpServletResponse.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
 			return false;
 		}

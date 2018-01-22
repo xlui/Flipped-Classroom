@@ -1,5 +1,7 @@
 package io.flippedclassroom.server.web;
 
+import io.flippedclassroom.server.annotation.CurrentUser;
+import io.flippedclassroom.server.entity.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -8,7 +10,11 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 public class TestPageController {
 	@RequestMapping("/hello")
-	public String hello() {
+	public String hello(@CurrentUser User user) {
+		String username = user.getUsername();
+		if (username != null) {
+			return "Hello " + username;
+		}
 		return "Hello World!";
 	}
 

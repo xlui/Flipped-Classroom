@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import io.flippedclassroom.server.config.Constant;
 
-import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -26,7 +26,6 @@ public class JWTUtil {
 			JWTVerifier verifier = JWT.require(algorithm)
 					.withClaim("username", username)
 					.build();
-//			DecodedJWT decodedJWT = verifier.verify(token);
 			verifier.verify(token);
 			return true;
 		} catch (Exception e) {
@@ -51,6 +50,7 @@ public class JWTUtil {
 
 	/**
 	 * 生成签名
+	 * 签名默认有效期为一天
 	 *
 	 * @param username 用户名
 	 * @param password 用户密码
@@ -61,7 +61,7 @@ public class JWTUtil {
 			Algorithm algorithm = Algorithm.HMAC256(password.getBytes());
 			return JWT.create()
 					.withClaim("username", username)
-					.withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofMinutes(5).toMillis()))
+					.withExpiresAt(new Date(Constant.expire))
 					.sign(algorithm);
 		} catch (Exception e) {
 			return null;
