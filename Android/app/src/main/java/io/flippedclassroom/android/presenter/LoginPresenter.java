@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
+import io.flippedclassroom.android.model.LoginModel;
 import io.flippedclassroom.android.util.HttpUtils;
 import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
@@ -21,9 +22,11 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class LoginPresenter extends BasePresenter<LoginActivity> implements View.OnClickListener {
+    private LoginModel mModel;
 
     public LoginPresenter(LoginActivity view) {
         super(view);
+        mModel = new LoginModel();
     }
 
     @Override
@@ -34,9 +37,9 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                 mView.showOrHidePassword(isSelected);
                 break;
             case R.id.btn_login_button_login:
-                final String account = mView.getAccountText();
+                final String id = mView.getAccountText();
                 final String password = mView.getPasswordText();
-                boolean isEmpty = checkEmpty(account, password);
+                boolean isEmpty = checkEmpty(id, password);
                 if (!isEmpty) {
                     HttpUtils.sendLoginRequest(UrlBuilder.getLoginTokenUrl(), new Callback() {
                         @Override
@@ -49,19 +52,19 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 jsonObject.getString("status");
-                                ToastUtils.createToast("登陆失败");
+                                ToastUtils.createToast("登陆失败,账号密码错误");
                             } catch (JSONException e) {
-                                //获取了正确的token
-                                ToastUtils.createToast("获取了token" + json);
+                                mModel.saveToken(json);
+                                mModel.saveId(id);
                             }
                         }
-                    }, account, password);
+                    }, id, password);
                 }
         }
     }
 
-    private boolean checkEmpty(String account, String password) {
-        if (TextUtils.isEmpty(account)) {
+    private boolean checkEmpty(String id, String password) {
+        if (TextUtils.isEmpty(id)) {
             Toast.makeText(mView.getContext(), "账号不能为空", Toast.LENGTH_SHORT).show();
             return true;
         }
