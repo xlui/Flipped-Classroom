@@ -42,8 +42,4 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
         }
         return true;
     }
-
-    private void saveToken(String id, String password) {
-
-    }
 }
