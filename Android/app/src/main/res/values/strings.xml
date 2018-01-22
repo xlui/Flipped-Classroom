@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">FlippedClassroom</string>
+    <string name="user_id">账号</string>
+    <string name="password">密码</string>
+    <string name="password_again">再次输入</string>
+    <string name="login">登录</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="new_user">新用户？去注册</string>
+    <string name="i_am_student">我是学生</string>
+    <string name="i_am_teacher">我是老师</string>
+    <string name="registered">注册</string>
 </resources>

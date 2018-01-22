@@ -16,17 +16,4 @@ public class SplashPresenter extends BasePresenter<SplashActivity> {
         super(view);
     }
 
-    public void startAnimation() {
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mView.tvAppName, "alpha", 0, 1);
-        objectAnimator.setDuration(2000);
-        objectAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mView.startLoginActivity();
-                mView.finish();
-            }
-        });
-        objectAnimator.start();
-    }
-
 }

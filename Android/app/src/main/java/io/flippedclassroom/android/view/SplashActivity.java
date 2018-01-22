@@ -15,15 +15,12 @@ import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> {
-    @BindView(R.id.tv_app_name)
-    public TextView tvAppName;
     @BindView(R.id.iv_splash)
     public ImageView ivSplash;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter.startAnimation();
     }
 
     @Override
