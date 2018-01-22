@@ -4,9 +4,21 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
+import io.flippedclassroom.android.util.HttpUtils;
+import io.flippedclassroom.android.util.LogUtils;
+import io.flippedclassroom.android.util.ToastUtils;
+import io.flippedclassroom.android.util.UrlBuilder;
 import io.flippedclassroom.android.view.LoginActivity;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class LoginPresenter extends BasePresenter<LoginActivity> implements View.OnClickListener {
 
@@ -26,7 +38,24 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                 final String password = mView.getPasswordText();
                 boolean isEmpty = checkEmpty(account, password);
                 if (!isEmpty) {
+                    HttpUtils.sendLoginRequest(UrlBuilder.getLoginTokenUrl(), new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                        }
 
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String json = response.body().string();
+                            try {
+                                JSONObject jsonObject = new JSONObject(json);
+                                jsonObject.getString("status");
+                                ToastUtils.createToast("登陆失败");
+                            } catch (JSONException e) {
+                                //获取了正确的token
+                                ToastUtils.createToast("获取了token" + json);
+                            }
+                        }
+                    }, account, password);
                 }
         }
     }
@@ -38,8 +67,8 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
         }
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(mView.getContext(), "密码不能为空", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
