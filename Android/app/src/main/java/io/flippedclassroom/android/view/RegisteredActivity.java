@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -45,7 +46,7 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
 
     @Override
     protected void initViews() {
-        setActionBar(tbToolbar, -1, "注册");
+        setActionBar(tbToolbar, 0, "注册");
         btnRegistered.setOnClickListener(mPresenter);
         rgRadioGroup.setOnCheckedChangeListener(mPresenter);
     }
@@ -70,5 +71,12 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
         return editable.toString();
     }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+        return true;
+    }
 }

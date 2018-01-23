@@ -8,7 +8,7 @@ public class LoginModel {
         PreferenceUtils.saveToken(token);
     }
 
-    public void saveId(String id) {
-        AppCache.saveId(id);
+    public void saveRole(String role) {
+        PreferenceUtils.saveRole(role);
     }
 }

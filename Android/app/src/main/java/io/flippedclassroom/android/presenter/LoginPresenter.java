@@ -53,19 +53,28 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                             LogUtils.show(json);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
-                                jsonObject.getString("status");
-                                ToastUtils.createToast("登陆失败,账号密码错误");
+                                String status = jsonObject.optString("status");
+                                if (status.equals("SUCCESS")) {
+                                    ToastUtils.createToast("登录成功！");
+                                    //保存token和role
+                                    String token = jsonObject.optString("token");
+                                    String role = jsonObject.optString("role");
+
+                                    mModel.saveToken(token);
+                                    mModel.saveRole(role);
+                                } else {
+                                    ToastUtils.createToast("账号密码错误");
+                                }
                             } catch (JSONException e) {
-                                mModel.saveToken(json);
-                                mModel.saveId(texts[0]);
+                                e.printStackTrace();
                             }
+
                         }
                     }, texts[0], texts[1]);
                 }
                 break;
             case R.id.tv_login_registered:
                 mView.getContext().startActivity(new Intent(mView.getContext(), RegisteredActivity.class));
-                mView.finish();
         }
     }
 
@@ -80,4 +89,6 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
         }
         return false;
     }
+
+
 }

@@ -60,11 +60,14 @@ public class RegisteredPresenter extends BasePresenter<RegisteredActivity>
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 String status = jsonObject.optString("status");
-                                String message = jsonObject.optString("message");
-                                if (status.equals("FAILED")) {
-                                    ToastUtils.createToast(message);
+                                if (status.equals("SUCCESS")) {
+                                    ToastUtils.createToast("注册成功！");
+                                    if (mView.isLife()) {
+                                        mView.finish();
+                                    }
                                 } else {
-
+                                    String message = jsonObject.optString("message");
+                                    ToastUtils.createToast(message);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -100,4 +103,6 @@ public class RegisteredPresenter extends BasePresenter<RegisteredActivity>
             mModel.setRole(mView.getContext().getResources().getString(R.string.teacher));
         }
     }
+
+
 }
