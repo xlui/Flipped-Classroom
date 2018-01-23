@@ -50,7 +50,12 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
         finish();
     }
 
-    public void startMainActivity() {
+    public void startStudentMainActivity() {
+        //startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    public void startTeacherMainActivity() {
         //startActivity(new Intent(this, MainActivity.class));
         finish();
     }

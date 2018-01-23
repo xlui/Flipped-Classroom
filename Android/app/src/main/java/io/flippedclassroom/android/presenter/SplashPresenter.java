@@ -12,6 +12,9 @@ import io.flippedclassroom.android.view.SplashActivity;
 
 public class SplashPresenter extends BasePresenter<SplashActivity> {
 
+    public static final String TYPE_STUDENT = "student";
+    public static final String TYPE_TEACHER = "teacher";
+
     public SplashPresenter(SplashActivity view) {
         super(view);
     }
@@ -29,7 +32,10 @@ public class SplashPresenter extends BasePresenter<SplashActivity> {
                 if(TextUtils.isEmpty(token)){
                     mView.startLoginActivity();
                 }else{
-                    mView.startMainActivity();
+                    if(PreferenceUtils.getRole().equals(TYPE_STUDENT))
+                        mView.startStudentMainActivity();
+                    else
+                        mView.startTeacherMainActivity();
                 }
             }
         };
