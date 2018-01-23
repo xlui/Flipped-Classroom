@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.dd.processbutton.iml.ActionProcessButton;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
@@ -32,7 +34,7 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
     @BindView(R.id.rg_radioGroup)
     RadioGroup rgRadioGroup;
     @BindView(R.id.btn_registered)
-    Button btnRegistered;
+    ActionProcessButton btnRegistered;
 
     @Override
     protected int getLayout() {
@@ -60,7 +62,7 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
         Editable id = tilUserId.getEditText().getText();
         Editable password = tilUserPassword.getEditText().getText();
         Editable passwordAgain = tilPasswordAgain.getEditText().getText();
-        String[] texts = new String[]{getEditText(id), getEditText(password),getEditText(passwordAgain)};
+        String[] texts = new String[]{getEditText(id), getEditText(password), getEditText(passwordAgain)};
         return texts;
     }
 
@@ -69,6 +71,28 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
             return null;
         }
         return editable.toString();
+    }
+
+    public void loading(final int progress) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnRegistered.setProgress(progress);
+            }
+        });
+    }
+
+    public void setEnabled(final boolean canCheck) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnRegistered.setEnabled(canCheck);
+                tilUserPassword.setEnabled(canCheck);
+                tilUserId.setEnabled(canCheck);
+                tilPasswordAgain.setEnabled(canCheck);
+                rgRadioGroup.setEnabled(canCheck);
+            }
+        });
     }
 
     @Override

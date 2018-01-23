@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tb_login_toolbar"
@@ -57,7 +58,7 @@
             android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>
 
-    <Button
+    <com.dd.processbutton.iml.ActionProcessButton
         android:id="@+id/btn_login_button_login"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -66,6 +67,13 @@
         android:layout_marginTop="32dp"
         android:background="@color/colorPrimary"
         android:text="@string/login"
+        custom:pb_colorComplete="@color/green_complete"
+        custom:pb_colorNormal="@color/blue_normal"
+        custom:pb_colorPressed="@color/blue_pressed"
+        custom:pb_colorProgress="@color/purple_progress"
+        custom:pb_textComplete="登录成功"
+        custom:pb_textProgress="登录中"
+        custom:pb_textError="登陆失败"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_login_password_text" />

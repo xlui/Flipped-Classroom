@@ -28,6 +28,7 @@ public class SplashPresenter extends BasePresenter<SplashActivity> {
         String role = mModel.getRole();
         if (TextUtils.isEmpty(token)) {
             mView.getContext().startActivity(new Intent(mView.getContext(), LoginActivity.class));
+            mView.finish();
         } else {
             //用token发起网路请求
             //......

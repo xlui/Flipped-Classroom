@@ -39,6 +39,9 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                 mView.showOrHidePassword(isSelected);
                 break;
             case R.id.btn_login_button_login:
+                mView.loading(20);
+                mView.setEnabled(false);
+
                 final String[] texts = mView.getAllText();
                 boolean isEmpty = checkEmpty(texts[0], texts[1]);
                 if (!isEmpty) {
@@ -55,15 +58,20 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                                 JSONObject jsonObject = new JSONObject(json);
                                 String status = jsonObject.optString("status");
                                 if (status.equals("SUCCESS")) {
-                                    ToastUtils.createToast("登录成功！");
                                     //保存token和role
                                     String token = jsonObject.optString("token");
                                     String role = jsonObject.optString("role");
 
                                     mModel.saveToken(token);
                                     mModel.saveRole(role);
+
+                                    mView.loading(100);
+                                    mView.setEnabled(true);
                                 } else {
                                     ToastUtils.createToast("账号密码错误");
+
+                                    mView.loading(-1);
+                                    mView.setEnabled(true);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -71,6 +79,9 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
 
                         }
                     }, texts[0], texts[1]);
+                } else {
+                    mView.loading(-1);
+                    mView.setEnabled(true);
                 }
                 break;
             case R.id.tv_login_registered:

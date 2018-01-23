@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dd.processbutton.iml.ActionProcessButton;
+
 import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
@@ -24,7 +26,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
     @BindView(R.id.tb_login_toolbar)
     Toolbar tbLoginToolbar;
     @BindView(R.id.btn_login_button_login)
-    Button btnLoginButtonLogin;
+    ActionProcessButton btnLoginButtonLogin;
     @BindView(R.id.til_login_account_text)
     TextInputLayout tilLoginAccountText;
     @BindView(R.id.til_login_password_text)
@@ -95,4 +97,25 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
             editText.setSelection(editText.getText().toString().length());
         }
     }
+
+    public void loading(final int progress) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnLoginButtonLogin.setProgress(progress);
+            }
+        });
+    }
+
+    public void setEnabled(final boolean canCheck) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnLoginButtonLogin.setEnabled(canCheck);
+                tilLoginAccountText.setEnabled(canCheck);
+                tilLoginPasswordText.setEnabled(canCheck);
+            }
+        });
+    }
+
 }

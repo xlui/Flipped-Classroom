@@ -36,15 +36,26 @@ public class RegisteredPresenter extends BasePresenter<RegisteredActivity>
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_registered:
+                mView.loading(20);
+                mView.setEnabled(false);
+
                 String[] texts = mView.getAllText();
                 boolean isEmpty = checkEmpty(texts[0], texts[1], texts[2]);
                 if (!isEmpty) {
                     if (!texts[1].equals(texts[2])) {
                         ToastUtils.createToast("两次密码不一致");
+
+                        mView.loading(-1);
+                        mView.setEnabled(true);
+
                         return;
                     }
                     if (mModel.getRole() == null) {
                         ToastUtils.createToast("请选择身份");
+
+                        mView.loading(-1);
+                        mView.setEnabled(true);
+
                         return;
                     }
                     HttpUtils.sendRegisteredRequest(UrlBuilder.getRegisteredUrl(), new Callback() {
@@ -61,19 +72,28 @@ public class RegisteredPresenter extends BasePresenter<RegisteredActivity>
                                 JSONObject jsonObject = new JSONObject(json);
                                 String status = jsonObject.optString("status");
                                 if (status.equals("SUCCESS")) {
-                                    ToastUtils.createToast("注册成功！");
+
                                     if (mView.isLife()) {
+                                        mView.loading(100);
+                                        mView.setEnabled(true);
                                         mView.finish();
                                     }
+
                                 } else {
                                     String message = jsonObject.optString("message");
                                     ToastUtils.createToast(message);
+
+                                    mView.loading(-1);
+                                    mView.setEnabled(true);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
                     }, texts[0], texts[1], mModel.getRole());
+                }else{
+                    mView.loading(-1);
+                    mView.setEnabled(true);
                 }
                 break;
         }
