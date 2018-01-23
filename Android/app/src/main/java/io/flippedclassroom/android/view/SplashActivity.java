@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -21,7 +20,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startLoginActivity();
+        mPresenter.goActivity();
+        //startLoginActivity();
     }
 
     @Override
@@ -47,7 +47,11 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
 
     public void startLoginActivity() {
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
-
+    public void startMainActivity() {
+        //startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
 }
