@@ -108,6 +108,8 @@ public class ShiroConfiguration {
 
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
+		filterChainDefinitionMap.put("/profile", "jwt");
+		filterChainDefinitionMap.put("/course/**", "jwt");
 		filterChainDefinitionMap.put("/**", "anon");
 
 		shiroFilterFactoryBean.setLoginUrl("/login");

@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.web;
 
+import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Constant;
 import io.flippedclassroom.server.config.PasswordToken;
 import io.flippedclassroom.server.entity.JsonResponse;
@@ -21,11 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录")
+@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、查看用户资料、更新用户资料")
 @RestController
 public class UserController {
 	@Autowired
@@ -39,8 +41,8 @@ public class UserController {
 	@Transactional
 	@ApiOperation(value = "用户注册", httpMethod = "POST")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "user", value = "用户实体类，测试的时候手动输入 json 字符串：" +
-					"\n{\n\t\"username\": \"新用户的用户名\",\n\t\"password\": \"新用户的密码\",\n\t\"role\": {\n\t\t\"role\": \"teacher/student\"\n}\n}"),
+			@ApiImplicitParam(name = "user", value = "\\{\n\"username\": \"新用户的用户名\",\n\"password\": \"新用户的密码\"," +
+					"\n\"role\": {\"role\": \"teacher或者student\"}\n}"),
 	})
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "成功注册"),
@@ -54,6 +56,9 @@ public class UserController {
 			EncryptUtil.encrypt(newUser);
 
 			Role role = roleService.findRoleByRoleName(user.getRole().getRole());
+			if (role == null) {
+				return new JsonResponse(Constant.FAILED, "非法角色类型");
+			}
 			newUser.setRole(role);
 			userService.save(newUser);
 			return new JsonResponse(Constant.SUCCESS, "成功注册");
@@ -63,7 +68,7 @@ public class UserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户名密码登录", httpMethod = "POST")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "user", value = "用户实体类，测试的时候手动输入 json 字符串：{\"username\":\"1\", \"password\":\"dev\"}", required = true, dataType = "string", paramType = "body")
+			@ApiImplicitParam(name = "user", value = "{\n\"username\":\"1\",\n \"password\":\"dev\" \n}", required = true, dataType = "string", paramType = "body")
 	})
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "为用户生成的 Token"),
@@ -89,5 +94,34 @@ public class UserController {
 		map.put("token", token);
 		map.put("role", loginUser.getRole().getRole());
 		return map;
+	}
+
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+	@ApiOperation(value = "用户个人资料", notes = "需要 Token 验证")
+	@ApiResponse(code = 200, message = "json 化的用户类")
+	public Map getProfile(@ApiIgnore @CurrentUser User user) {
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put("nick_name", user.getNick_name());
+		map.put("gender", user.getGender());
+		map.put("signature", user.getSignature());
+		return map;
+	}
+
+	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "需要 Token 验证")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
+	})
+	@ApiResponses({
+			@ApiResponse(code = 200, message = "成功修改资料！"),
+			@ApiResponse(code = 401, message = "权限认证失败！"),
+			@ApiResponse(code = 403, message = "身份认证失败！"),
+	})
+	public JsonResponse postProfile(@RequestBody User user, @ApiIgnore @CurrentUser User currentUser) {
+		currentUser.setNick_name(user.getNick_name());
+		currentUser.setGender(user.getGender());
+		currentUser.setSignature(user.getSignature());
+		userService.save(currentUser);
+		return new JsonResponse(Constant.SUCCESS, "成功修改资料");
 	}
 }

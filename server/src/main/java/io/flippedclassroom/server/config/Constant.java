@@ -15,6 +15,6 @@ public class Constant {
 	public static final String FAILED = "FAILED";
 	public static final String ROLE = "ROLE";
 
-	// token 有效期
+	// token 有效期，当前设置为一天
 	public static final long expire = System.currentTimeMillis() + Duration.ofDays(1).toMillis();
 }

@@ -8,4 +8,6 @@ public interface RoleService {
 	Role findRoleByRoleName(String role);
 
 	Role save(Role role);
+
+	void delete(Role role);
 }

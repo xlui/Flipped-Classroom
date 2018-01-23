@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class Comment implements Serializable {
 	// 课程评论与课程的多对一关系
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "course_id")
+	@JsonIgnore
 	private Course course;
 
 	public Comment() {

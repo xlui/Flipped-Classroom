@@ -3,10 +3,7 @@ package io.flippedclassroom.server.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +16,7 @@ public class Role implements Serializable {
 	private String role;    // 角色名
 
 	// 角色与用户的一对多关系
-	@OneToMany(mappedBy = "role")
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<User> userList;
 
