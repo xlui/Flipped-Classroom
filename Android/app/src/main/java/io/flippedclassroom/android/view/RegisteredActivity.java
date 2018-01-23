@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,12 +40,14 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
 
     @Override
     protected void initPresenter() {
-
+        mPresenter = new RegisteredPresenter(this);
     }
 
     @Override
     protected void initViews() {
         setActionBar(tbToolbar, -1, "注册");
+        btnRegistered.setOnClickListener(mPresenter);
+        rgRadioGroup.setOnCheckedChangeListener(mPresenter);
     }
 
     @Override
@@ -52,5 +55,20 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
         return this;
     }
 
-    // TODO: 获取所有textinput的text，loginActivity中有类似的代码
+    public String[] getAllText() {
+        Editable id = tilUserId.getEditText().getText();
+        Editable password = tilUserPassword.getEditText().getText();
+        Editable passwordAgain = tilPasswordAgain.getEditText().getText();
+        String[] texts = new String[]{getEditText(id), getEditText(password),getEditText(passwordAgain)};
+        return texts;
+    }
+
+    private String getEditText(Editable editable) {
+        if (editable == null) {
+            return null;
+        }
+        return editable.toString();
+    }
+
+
 }

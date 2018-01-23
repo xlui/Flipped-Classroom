@@ -16,13 +16,32 @@ public class HttpUtils {
         JSONObject jsonObject = new JSONObject();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         try {
-            jsonObject.put("username",id);
-            jsonObject.put("password",password);
+            jsonObject.put("username", id);
+            jsonObject.put("password", password);
             RequestBody body = RequestBody.create(JSON, jsonObject.toString());
             Request request = new Request.Builder().url(url).post(body).build();
             client.newCall(request).enqueue(callback);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sendRegisteredRequest(String url, Callback callback, String id, String password, String role) {
+        OkHttpClient client = new OkHttpClient();
+        JSONObject json = new JSONObject();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        try {
+            json.put("username", id);
+            json.put("password", password);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("role", role);
+            json.putOpt("role", jsonObject);
+            RequestBody body = RequestBody.create(JSON, json.toString());
+            Request request = new Request.Builder().url(url).post(body).build();
+            client.newCall(request).enqueue(callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 public class PreferenceUtils {
     private static Context sContext;
     private static final String TOKEN = "Token";
+    private static final String ROLE = "Role";
 
     public static void init(Context context) {
         sContext = context;
@@ -23,5 +24,13 @@ public class PreferenceUtils {
 
     public static void saveToken(String token) {
         getInstance().edit().putString(TOKEN, token).apply();
+    }
+
+    public static void saveRole(String role) {
+        getInstance().edit().putString(ROLE, role).apply();
+    }
+
+    public static String getRole() {
+        return getInstance().getString(ROLE, null);
     }
 }

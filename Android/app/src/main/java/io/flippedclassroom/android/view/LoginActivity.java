@@ -95,7 +95,4 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         }
     }
 
-    public void startRegisteredActivity() {
-        startActivity(new Intent(this, RegisteredActivity.class));
-    }
 }

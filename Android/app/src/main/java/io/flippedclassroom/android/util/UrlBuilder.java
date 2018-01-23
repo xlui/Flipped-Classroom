@@ -10,4 +10,8 @@ public class UrlBuilder {
     public static String getBaseUrl() {
         return BASE_URL;
     }
+
+    public static String getRegisteredUrl() {
+        return BASE_URL+"register";
+    }
 }

@@ -1,5 +1,6 @@
 package io.flippedclassroom.android.presenter;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;
 import io.flippedclassroom.android.view.LoginActivity;
+import io.flippedclassroom.android.view.RegisteredActivity;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -48,6 +50,7 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             String json = response.body().string();
+                            LogUtils.show(json);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 jsonObject.getString("status");
@@ -61,7 +64,8 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                 }
                 break;
             case R.id.tv_login_registered:
-                mView.startRegisteredActivity();
+                mView.getContext().startActivity(new Intent(mView.getContext(), RegisteredActivity.class));
+                mView.finish();
         }
     }
 
