@@ -21,19 +21,19 @@ import io.flippedclassroom.android.presenter.LoginPresenter;
 
 public class LoginActivity extends BaseActivity<LoginPresenter> {
     @BindView(R.id.tb_login_toolbar)
-    public Toolbar tbLoginToolbar;
+    Toolbar tbLoginToolbar;
     @BindView(R.id.btn_login_button_login)
-    public Button btnLoginButtonLogin;
+    Button btnLoginButtonLogin;
     @BindView(R.id.til_login_account_text)
-    public TextInputLayout tilLoginAccountText;
+    TextInputLayout tilLoginAccountText;
     @BindView(R.id.til_login_password_text)
-    public TextInputLayout tilLoginPasswordText;
+    TextInputLayout tilLoginPasswordText;
     @BindView(R.id.tv_login_forget_password)
-    public TextView tvLoginForgetPassword;
+    TextView tvLoginForgetPassword;
     @BindView(R.id.tv_login_registered)
-    public TextView tvLoginRegistered;
+    TextView tvLoginRegistered;
     @BindView(R.id.iv_login_show_hide_password)
-    public ImageView ivLoginShowHidePassword;
+    ImageView ivLoginShowHidePassword;
 
 
     @Override
@@ -52,6 +52,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         btnLoginButtonLogin.setOnClickListener(mPresenter);
         ivLoginShowHidePassword.setOnClickListener(mPresenter);
         tvLoginForgetPassword.setOnClickListener(mPresenter);
+        tvLoginRegistered.setOnClickListener(mPresenter);
     }
 
     @Override

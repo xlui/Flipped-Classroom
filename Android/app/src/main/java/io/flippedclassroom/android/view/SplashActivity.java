@@ -16,7 +16,7 @@ import io.flippedclassroom.android.presenter.SplashPresenter;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> {
     @BindView(R.id.iv_splash)
-    public ImageView ivSplash;
+    ImageView ivSplash;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

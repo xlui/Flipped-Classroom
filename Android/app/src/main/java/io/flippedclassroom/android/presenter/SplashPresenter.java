@@ -16,4 +16,5 @@ public class SplashPresenter extends BasePresenter<SplashActivity> {
         super(view);
     }
 
+    // TODO: 获取token和是学生还是老师
 }

@@ -74,7 +74,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="28dp"
-        android:layout_height="36dp"
+        android:layout_height="28dp"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/til_login_account_text"
         app:layout_constraintStart_toStartOf="parent"

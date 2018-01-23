@@ -60,7 +60,7 @@ public class LoginPresenter extends BasePresenter<LoginActivity> implements View
                     }, texts[0], texts[1]);
                 }
                 break;
-            case R.id.tv_login_forget_password:
+            case R.id.tv_login_registered:
                 mView.startRegisteredActivity();
         }
     }
