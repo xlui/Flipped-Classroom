@@ -1,11 +1,15 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 课前预习资料
  */
+@ApiModel(value = "课前预习的资料", description = "与电子资料存放在不同位置")
 @Entity
 public class Preview implements Serializable {
 	@Id
@@ -16,6 +20,7 @@ public class Preview implements Serializable {
 	// 课前预习资料与课程的多对一关系
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "course_id")
+	@JsonIgnore
 	private Course course;
 
 	public Preview() {

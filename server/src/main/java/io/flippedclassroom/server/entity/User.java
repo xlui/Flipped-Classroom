@@ -1,5 +1,7 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -7,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
+@ApiModel(value = "用户实体类")
 @Entity
 public class User implements Serializable {
 	@Id
@@ -41,6 +44,7 @@ public class User implements Serializable {
 	private List<Course> courseList;
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	private List<Comment> commentList;
 
 	public User() {
@@ -50,6 +54,12 @@ public class User implements Serializable {
 	public User(String username, String password) {
 		this.username = username;
 		this.password = password;
+	}
+
+	public User(String nick_name, String gender, String signature) {
+		this.nick_name = nick_name;
+		this.gender = gender;
+		this.signature = signature;
 	}
 
 	public Long getId() {
