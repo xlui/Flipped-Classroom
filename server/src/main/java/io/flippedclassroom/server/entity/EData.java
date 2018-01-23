@@ -1,15 +1,11 @@
 package io.flippedclassroom.server.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 电子学习资料，考虑上传后保存资料的位置
  */
-@ApiModel(value = "电子资料", description = "与课前预习资料存放在不同位置")
 @Entity
 public class EData implements Serializable {
 	@Id
@@ -20,7 +16,6 @@ public class EData implements Serializable {
 	// 电子资料与课程的多对一关系
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "course_id")
-	@JsonIgnore
 	private Course course;
 
 	public EData() {

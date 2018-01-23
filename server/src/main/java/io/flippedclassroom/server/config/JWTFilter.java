@@ -1,8 +1,6 @@
 package io.flippedclassroom.server.config;
 
-import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.utils.JWTUtil;
-import io.flippedclassroom.server.utils.JsonUtil;
 import io.flippedclassroom.server.utils.LogUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
@@ -11,8 +9,6 @@ import org.slf4j.Logger;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Token 校验的 Filter，用于 ShiroConfiguration 的 ShiroFilterFactoryBean，
@@ -21,14 +17,12 @@ import java.io.IOException;
  */
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 	@Override
-	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
+	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) {
 		Logger logger = LogUtil.getLogger();
 		logger.info("进入 Token 验证的 Filter");
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		String authorization = httpServletRequest.getHeader("Authorization");
-
 		if (authorization != null) {
 			logger.info("成功在 HTTP 头部发现 Authorization，进入 Token 验证...");
 			logger.info("记录 Authorization: " + authorization);
@@ -38,17 +32,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 				getSubject(request, response).login(tokenToken);
 				return true;
 			} catch (AuthenticationException e) {
-				return tokenAuthFailed(httpServletResponse);
+				throw new AuthenticationException("Token 认证失败！");
+//				todo: Shiro 的异常并不算在 ControllerAdvice 中，所以如果 token 认证失败，这里会抛出异常。给用户的显示就是 500 异常
 			}
 		} else {
-			return tokenAuthFailed(httpServletResponse);
+			return false;
 		}
-	}
-
-	private boolean tokenAuthFailed(HttpServletResponse response) throws IOException {
-		response.setCharacterEncoding("utf-8");
-		JsonResponse jsonResponse = new JsonResponse(Constant.FAILED, "need token auth");
-		response.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
-		return false;
 	}
 }
