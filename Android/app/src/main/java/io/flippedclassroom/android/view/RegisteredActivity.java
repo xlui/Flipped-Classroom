@@ -52,4 +52,5 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
         return this;
     }
 
+    // TODO: 获取所有textinput的text，loginActivity中有类似的代码
 }

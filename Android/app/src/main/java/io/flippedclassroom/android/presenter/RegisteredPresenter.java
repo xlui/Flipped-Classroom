@@ -8,4 +8,6 @@ public class RegisteredPresenter extends BasePresenter<RegisteredActivity>{
     public RegisteredPresenter(RegisteredActivity view) {
         super(view);
     }
+
+
 }
