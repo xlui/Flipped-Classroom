@@ -21,7 +21,6 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPresenter.goActivity();
-        //startLoginActivity();
     }
 
     @Override
@@ -45,18 +44,4 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
         return this;
     }
 
-    public void startLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
-    }
-
-    public void startStudentMainActivity() {
-        //startActivity(new Intent(this, MainActivity.class));
-        finish();
-    }
-
-    public void startTeacherMainActivity() {
-        //startActivity(new Intent(this, MainActivity.class));
-        finish();
-    }
 }

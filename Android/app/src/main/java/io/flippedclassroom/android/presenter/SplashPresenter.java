@@ -1,45 +1,38 @@
 package io.flippedclassroom.android.presenter;
 
 
+import android.content.Intent;
 import android.text.TextUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.util.PreferenceUtils;
+import io.flippedclassroom.android.view.LoginActivity;
 import io.flippedclassroom.android.view.SplashActivity;
 
 public class SplashPresenter extends BasePresenter<SplashActivity> {
-
-    public static final String TYPE_STUDENT = "student";
-    public static final String TYPE_TEACHER = "teacher";
 
     public SplashPresenter(SplashActivity view) {
         super(view);
     }
 
-    // TODO: 获取token和是学生还是老师
-    public void goActivity(){
-        final String token = PreferenceUtils.getToken();
-        //创建Timer对象
-        Timer timer = new Timer();
-        //创建TimerTask对象
+    public void goActivity() {
+        String token = PreferenceUtils.getToken();
+        String role = PreferenceUtils.getRole();
+        if (TextUtils.isEmpty(token)) {
+            mView.getContext().startActivity(new Intent(mView.getContext(), LoginActivity.class));
+        } else {
+            //用token发起网路请求
+            //......
+            String student = mView.getContext().getString(R.string.student);
+            if (role.equals(student)) {
 
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if(TextUtils.isEmpty(token)){
-                    mView.startLoginActivity();
-                }else{
-                    if(PreferenceUtils.getRole().equals(TYPE_STUDENT))
-                        mView.startStudentMainActivity();
-                    else
-                        mView.startTeacherMainActivity();
-                }
+            } else {
+
             }
-        };
-        //使用timer.schedule（）方法调用timerTask，定时3秒后执行run
-        timer.schedule(timerTask, 3000);
+        }
     }
 }
