@@ -1,5 +1,8 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -7,6 +10,7 @@ import java.util.List;
 /**
  * 课程信息
  */
+@ApiModel(value = "课程实体类")
 @Entity
 public class Course implements Serializable {
 	@Id
@@ -14,12 +18,13 @@ public class Course implements Serializable {
 	private Long id;
 	private String name;        // 课程名
 	private String major;       // 课程所属专业
-	private Long count;         // 参与课程人数
+	private Long count = 0L;    // 参与课程人数
 	private String code;        // 课程唯一代码
 
 	// 课程与用户的多对多关系
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "user_id")})
+	@JsonIgnore
 	private List<User> userList;
 
 	// 课程与随堂测试一对多
@@ -43,6 +48,11 @@ public class Course implements Serializable {
 
 	public Course() {
 		super();
+	}
+
+	public Course(String name, String major) {
+		this.name = name;
+		this.major = major;
 	}
 
 	public Long getId() {
@@ -78,7 +88,7 @@ public class Course implements Serializable {
 	}
 
 	public String getCode() {
-		return code;
+		return "xust" + this.id;
 	}
 
 	public void setCode(String code) {
