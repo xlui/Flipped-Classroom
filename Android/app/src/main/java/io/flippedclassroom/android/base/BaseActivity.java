@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import butterknife.ButterKnife;
 
+//Activity的基类，利用泛型来组合Presenter
 public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
     protected T mPresenter;
     private boolean isLife = true;
@@ -24,8 +25,11 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         initViews();
     }
 
+    //考虑到子类可能直接super OnCreate这个方法，所以用这个方法来完成对ContenetView的设置
     protected abstract int getLayout();
 
+    //判断Activity的生命周期是否存活。
+    //在网络加载中可能用到，如果一个Activity在发起网络请求的途中结束，那么网络请求回来的数据就不会处理
     public boolean isLife() {
         return isLife;
     }
@@ -56,6 +60,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
+    //隐藏状态栏
     protected void hideStateBar() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);

@@ -13,6 +13,7 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 
+//进入应用的海报图的Activity，显示Splash界面和Splash界面的生命周期
 public class SplashActivity extends BaseActivity<SplashPresenter> {
     @BindView(R.id.iv_splash)
     ImageView ivSplash;

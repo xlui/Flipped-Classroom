@@ -1,5 +1,6 @@
 package io.flippedclassroom.android.util;
 
+//Url的构造工具类
 public class UrlBuilder {
     private final static String BASE_URL = "https://fc.xd.style/";
 

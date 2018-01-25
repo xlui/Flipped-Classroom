@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+//Preference存储工具类，方便利用Preference类存储数据到本地
 public class PreferenceUtils {
     private static Context sContext;
     private static final String TOKEN = "Token";
