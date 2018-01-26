@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+//Preference存储工具类，方便利用Preference类存储数据到本地
 public class PreferenceUtils {
     private static Context sContext;
     private static final String TOKEN = "Token";
+    private static final String ROLE = "Role";
 
     public static void init(Context context) {
         sContext = context;
@@ -23,5 +25,13 @@ public class PreferenceUtils {
 
     public static void saveToken(String token) {
         getInstance().edit().putString(TOKEN, token).apply();
+    }
+
+    public static void saveRole(String role) {
+        getInstance().edit().putString(ROLE, role).apply();
+    }
+
+    public static String getRole() {
+        return getInstance().getString(ROLE, null);
     }
 }
