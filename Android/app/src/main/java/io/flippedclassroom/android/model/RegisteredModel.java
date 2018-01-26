@@ -1,15 +1,9 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.util.PreferenceUtils;
+public interface RegisteredModel {
+    //从内存中读取角色信息
+    String getRole();
 
-public class RegisteredModel {
-    private String role;
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    //设置角色信息
+    void setRole(String role);
 }

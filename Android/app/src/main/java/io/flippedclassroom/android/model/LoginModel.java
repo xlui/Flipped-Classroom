@@ -1,14 +1,11 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.util.PreferenceUtils;
 
-public class LoginModel {
-    public void saveToken(String token) {
-        PreferenceUtils.saveToken(token);
-    }
+public interface LoginModel {
+    //保存token到本地
+    void saveToken(String token) ;
 
-    public void saveRole(String role) {
-        PreferenceUtils.saveRole(role);
-    }
+    //保存角色信息到本地
+    void saveRole(String role);
 }

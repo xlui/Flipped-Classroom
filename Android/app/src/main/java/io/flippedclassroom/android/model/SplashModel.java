@@ -1,14 +1,9 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.util.PreferenceUtils;
+public interface SplashModel {
+    //从本地读取token
+    String getToken();
 
-public class SplashModel {
-
-    public String getToken() {
-        return PreferenceUtils.getToken();
-    }
-
-    public String getRole() {
-        return PreferenceUtils.getRole();
-    }
+    //从本地读取role
+    String getRole();
 }

@@ -1,16 +1,13 @@
-package io.flippedclassroom.android.view;
+package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,9 +18,12 @@ import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.LoginPresenter;
+import io.flippedclassroom.android.presenter.LoginPresenterImpl;
+import io.flippedclassroom.android.view.LoginView;
 
-//登录的Activity，显示登录界面和登录界面的生命周期
-public class LoginActivity extends BaseActivity<LoginPresenter> {
+public class LoginActivity extends BaseActivity implements LoginView, View.OnClickListener {
+    private LoginPresenter mPresenter;
+
     @BindView(R.id.tb_login_toolbar)
     Toolbar tbLoginToolbar;
     @BindView(R.id.btn_login_button_login)
@@ -47,16 +47,16 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new LoginPresenter(this);
+        mPresenter = new LoginPresenterImpl(this,getContext());
     }
 
     @Override
     protected void initViews() {
         setActionBar(tbLoginToolbar, -1, "登录");
-        btnLoginButtonLogin.setOnClickListener(mPresenter);
-        ivLoginShowHidePassword.setOnClickListener(mPresenter);
-        tvLoginForgetPassword.setOnClickListener(mPresenter);
-        tvLoginRegistered.setOnClickListener(mPresenter);
+        btnLoginButtonLogin.setOnClickListener(this);
+        ivLoginShowHidePassword.setOnClickListener(this);
+        tvLoginForgetPassword.setOnClickListener(this);
+        tvLoginRegistered.setOnClickListener(this);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         return this;
     }
 
-    //获取所有的Text
-    public String[] getAllText() {
+    @Override
+    public String[] getAllTexts() {
         Editable id = tilLoginAccountText.getEditText().getText();
         Editable password = tilLoginPasswordText.getEditText().getText();
         String[] texts = new String[]{getEditText(id), getEditText(password)};
@@ -82,9 +82,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         return editable.toString();
     }
 
-    //按照点击的情况选择显示还是隐藏密码的icon
-    //设置为setSelected(false)，icon为闭着眼睛
-    //设置为setSelected(true)，icon为张开眼睛
+    @Override
     public boolean changePasswordType() {
         if (ivLoginShowHidePassword.isSelected()) {
             ivLoginShowHidePassword.setSelected(false);
@@ -95,7 +93,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         }
     }
 
-    //依据传入的boolean参数决定是不是显示密码为可见
+    @Override
     public void showOrHidePassword(boolean needShow) {
         EditText editText = tilLoginPasswordText.getEditText();
         if (needShow) {
@@ -109,11 +107,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         }
     }
 
-    //依据progress的数值来决定按钮显示的状态
-    //为100显示加载成功
-    //1-99显示加载中
-    //-1表示加载失败
-    public void loading(final int progress) {
+    @Override
+    public void changeProgressStyle(final int progress) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -122,8 +117,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         });
     }
 
-    //设置各个View的是否可以触摸
-    public void setEnabled(final boolean canCheck) {
+    @Override
+    public void setViewsEnabled(final boolean canCheck) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -134,4 +129,13 @@ public class LoginActivity extends BaseActivity<LoginPresenter> {
         });
     }
 
+    @Override
+    public void startRegisteredActivity() {
+        startActivity(new Intent(this, RegisteredActivity.class));
+    }
+
+    @Override
+    public void onClick(View v) {
+        mPresenter.onClick(v.getId());
+    }
 }

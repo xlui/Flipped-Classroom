@@ -11,9 +11,8 @@ import android.view.WindowManager;
 
 import butterknife.ButterKnife;
 
-//Activity的基类，利用泛型来组合Presenter
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
-    protected T mPresenter;
+//Activity的基类
+public abstract class BaseActivity extends AppCompatActivity {
     private boolean isLife = true;
 
     @Override

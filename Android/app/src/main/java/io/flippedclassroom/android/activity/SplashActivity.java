@@ -1,4 +1,4 @@
-package io.flippedclassroom.android.view;
+package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,16 +12,19 @@ import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.SplashPresenter;
+import io.flippedclassroom.android.presenter.SplashPresenterImpl;
+import io.flippedclassroom.android.view.SplashView;
 
-//进入应用的海报图的Activity，显示Splash界面和Splash界面的生命周期
-public class SplashActivity extends BaseActivity<SplashPresenter> {
+public class SplashActivity extends BaseActivity implements SplashView {
+    private SplashPresenter mPresenter;
+
     @BindView(R.id.iv_splash)
     ImageView ivSplash;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter.goActivity();
+        mPresenter.checkTokenAndRole();
     }
 
     @Override
@@ -31,7 +34,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new SplashPresenter(this);
+        mPresenter = new SplashPresenterImpl(this, getContext());
     }
 
     @Override
@@ -45,4 +48,15 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
         return this;
     }
 
+    @Override
+    public void startLoginActivity() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    @Override
+    public void startCourseActivity() {
+        //startActivity
+        finish();
+    }
 }
