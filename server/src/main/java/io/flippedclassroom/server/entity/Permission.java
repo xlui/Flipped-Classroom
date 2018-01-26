@@ -25,6 +25,10 @@ public class Permission implements Serializable {
 		super();
 	}
 
+	public Permission(String permission) {
+		this.permission = permission;
+	}
+
 	public Long getId() {
 		return id;
 	}

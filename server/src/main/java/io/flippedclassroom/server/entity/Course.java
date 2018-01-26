@@ -80,7 +80,7 @@ public class Course implements Serializable {
 	}
 
 	public Long getCount() {
-		return count;
+		return (long) userList.size();
 	}
 
 	public void setCount(Long count) {
