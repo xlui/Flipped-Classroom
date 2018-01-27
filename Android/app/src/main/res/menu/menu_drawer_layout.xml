@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_profile"
+        android:icon="@mipmap/account"
+        android:title="@string/my_profile" />
+
+    <item
+        android:id="@+id/menu_account_safe"
+        android:icon="@mipmap/account_safe"
+        android:title="@string/account_safe" />
+
+    <item
+        android:id="@+id/menu_setting"
+        android:icon="@mipmap/set"
+        android:title="@string/setting" />
+</menu>

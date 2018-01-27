@@ -12,10 +12,10 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/tb_toolbar"
-            android:elevation="4dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
+            android:elevation="4dp"
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,5 +28,7 @@
     <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        app:menu="@menu/menu_drawer_layout"
+        app:headerLayout="@layout/head_layout" />
 </android.support.v4.widget.DrawerLayout>
