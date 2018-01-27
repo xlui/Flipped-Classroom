@@ -47,45 +47,47 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
             //结束SplashActivity，跳转到LoginActivity
             mView.startLoginActivity();
         } else {
+            LogUtils.show(token);
             //用token发起网路请求
-//            HttpUtils.sendLoginRequest(UrlBuilder.getCheckTokenUrl(), token, new Callback() {
-//                @Override
-//                public void onFailure(Call call, IOException e) {
-//                    LogUtils.show(e.getMessage());
-//                }
-//
-//                @Override
-//                public void onResponse(Call call, Response response) throws IOException {
-//                    String json = response.body().string();
-//                    LogUtils.show(json);
-//                    try {
-//                        //解析json
-//                        JSONObject jsonObject = new JSONObject(json);
-//                        String status = jsonObject.optString("status");
-//
-//                        //判断验证是否成功
-//                        if (status.equals("SUCCESS")) {
-//                            //验证成功
-//                            String student = mContext.getString(R.string.student);
-//                            //判断身份，决定去往那个Activity
-//                            if (role.equals(student)) {
-//                                mView.startCourseActivity();
-//                            } else {
-//                                ToastUtils.createToast("教师登录");
-//                            }
-//                        } else {
-//                            //验证失败
-//
-//                            //擦除本地的token和role
-//
-//                            //前往login界面
-//                        }
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-            mView.startCourseActivity();
+            HttpUtils.sendLoginRequest(UrlBuilder.getCheckTokenUrl(), token, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    LogUtils.show(e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String json = response.body().string();
+                    LogUtils.show(json);
+                    try {
+                        //解析json
+                        JSONObject jsonObject = new JSONObject(json);
+                        String status = jsonObject.optString("status");
+
+                        //判断验证是否成功
+                        if (status.equals("SUCCESS")) {
+                            //验证成功
+                            String student = mContext.getString(R.string.student);
+                            //判断身份，决定去往那个Activity
+                            if (role.equals(student)) {
+                                mView.startCourseActivity();
+                            } else {
+                                ToastUtils.createToast("教师登录");
+                            }
+                        } else {
+                            //验证失败
+
+                            //擦除本地的token和role
+                            mModel.deleteToken();
+                            mModel.deleteRole();
+                            //前往login界面
+                            mView.startLoginActivity();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
 }
