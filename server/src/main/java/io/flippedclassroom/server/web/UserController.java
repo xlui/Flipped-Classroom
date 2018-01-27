@@ -28,7 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、查看用户资料、更新用户资料")
+@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
 public class UserController {
 	@Autowired
@@ -93,6 +93,13 @@ public class UserController {
 		map.put("token", token);
 		map.put("role", loginUser.getRole().getRole());
 		return map;
+	}
+
+	@RequestMapping(value = "/check", method = RequestMethod.GET)
+	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET")
+	@ApiResponse(code = 200, message = "Token 有效")
+	public JsonResponse check() {
+		return new JsonResponse(Constant.SUCCESS, "Token is valid");
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
