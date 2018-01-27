@@ -38,6 +38,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 	public String init() {
 		Logger logger = LogUtil.getLogger();
 
+		logger.info("从数据库中查询需要初始化的实体");
 		User userStudent = userService.findUserByUsername("1");
 		User userTeacher = userService.findUserByUsername("2");
 		// 角色默认有三种：学生、教师、管理员
@@ -65,6 +66,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 			userService.delete(userStudent);
 		if (userTeacher != null)
 			userService.delete(userTeacher);
+		if (roleAdmin == null)
+			roleAdmin = new Role("admin");
 		if (courseMath != null)
 			courseService.delete(courseMath);
 		if (courseDataStructure != null)
@@ -83,6 +86,10 @@ public class ServerApplication extends SpringBootServletInitializer {
 			permissionService.delete(permissionViewComment);
 		if (permissionAddComment != null)
 			permissionService.delete(permissionAddComment);
+		if (commentFirst != null)
+			commentService.delete(commentFirst);
+		if (commentSecond != null)
+			commentService.delete(commentSecond);
 
 		// 重新初始化
 		logger.info("重新初始化...");
