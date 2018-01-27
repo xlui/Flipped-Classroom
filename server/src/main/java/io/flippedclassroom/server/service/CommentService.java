@@ -15,5 +15,7 @@ public interface CommentService {
 
 	Comment save(Comment comment);
 
+	List<Comment> save(Iterable<Comment> iterable);
+
 	void delete(Comment comment);
 }

@@ -18,7 +18,9 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private String username;    // 用户名
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;    // 密码加盐 hash
+	@JsonIgnore
 	private String salt;        // 每个用户唯一的盐
 
 	// 以下均可选
@@ -36,14 +38,16 @@ public class User implements Serializable {
 	// 用户与角色的多对一关系
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
+	@JsonIgnore
 	private Role role;
 
 	// 用户与课程的多对多关系，通过表 `t_user_course` 维持
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "course_id")})
+	@JsonIgnore
 	private List<Course> courseList;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	@JsonIgnore
 	private List<Comment> commentList;
 

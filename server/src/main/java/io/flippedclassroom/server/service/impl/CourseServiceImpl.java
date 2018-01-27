@@ -6,6 +6,8 @@ import io.flippedclassroom.server.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CourseServiceImpl implements CourseService {
 	@Autowired
@@ -24,6 +26,11 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public Course save(Course course) {
 		return courseRepository.save(course);
+	}
+
+	@Override
+	public List<Course> save(Iterable<Course> iterable) {
+		return courseRepository.save(iterable);
 	}
 
 	@Override

@@ -65,18 +65,28 @@ public class CourseController {
 	@RequiresPermissions("course:delete")
 	@ApiOperation(value = "删除课程", notes = "对于学生，是课程中少了一个学生；对于教师，是整个课程没了", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "课程删除成功！")
-	public String deleteCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user, @ApiIgnore @CurrentRole String role) {
-//		Course course = courseService.findCourseById(courseID);
-//
-//		if (role.equals("student")) {
-//			if (course != null) {
-//				course.getUserList().remove(user);
-//			}
-//		} else {
-//			courseService.delete(course);
-//		}
-//		todo: 根据角色不同，删除的动作也会不同
-		return "当前用户的 Role: " + role;
+	public JsonResponse deleteCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user, @ApiIgnore @CurrentRole String role) {
+		Course course = courseService.findCourseById(courseID);
+
+		try {
+			if (role.equals("student")) {
+				if (course != null) {
+					user.getCourseList().remove(course);
+					userService.save(user);
+					return new JsonResponse(Constant.SUCCESS, "Successfully delete course!");
+				} else {
+					return new JsonResponse(Constant.FAILED, "Course id is invalid!");
+				}
+			} else {
+				user.getCourseList().remove(course);
+				userService.save(user);
+				courseService.delete(course);
+				return new JsonResponse(Constant.SUCCESS, "Successfully delete course!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResponse(Constant.FAILED, "Unknown exception happened during delete the course, please try again!");
+		}
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -87,8 +97,6 @@ public class CourseController {
 	public JsonResponse createCourse(@RequestBody Course course, @ApiIgnore @CurrentUser User user) {
 		Course newCourse = new Course(course.getName(), course.getMajor());
 		user.getCourseList().add(newCourse);
-//		courseService.save(newCourse);
-//		todo: 多对多关系的保存，SQL语句过多
 		userService.save(user);
 		return new JsonResponse(Constant.SUCCESS, "Successfully create a new course");
 	}
@@ -99,9 +107,13 @@ public class CourseController {
 	@ApiResponse(code = 200, message = "成功加入课程")
 	public JsonResponse joinCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
 		Course course = courseService.findCourseById(courseID);
-		user.getCourseList().add(course);
-		userService.save(user);
-		return new JsonResponse(Constant.SUCCESS, "Successfully add course!");
+		if (course != null) {
+			user.getCourseList().add(course);
+			userService.save(user);
+			return new JsonResponse(Constant.SUCCESS, "Successfully add course!");
+		} else {
+			return new JsonResponse(Constant.FAILED, "Course id is invalid!");
+		}
 	}
 
 	@RequestMapping(value = "/comment/{courseID}", method = RequestMethod.GET)
@@ -120,7 +132,7 @@ public class CourseController {
 	@RequestMapping(value = "/comment/{courseID}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@RequiresPermissions("course:comment:add")
 	@ApiOperation(value = "评论课程", httpMethod = "POST")
-	@ApiImplicitParam(name = "comment", value = "留下一个评论：\n{\n\"content\":\"评论内容\"\n}")
+	@ApiImplicitParam(name = "comment", value = "留下一个评论：\n{\n\"content\":\"评论内容\"\n, \"reply\":\"回复评论，不设置默认 -1\"\n}")
 	@ApiResponse(code = 200, message = "成功评论课程")
 	public JsonResponse commentCourse(@PathVariable Long courseID, @RequestBody Comment comment, @ApiIgnore @CurrentUser User user) {
 		Course course = courseService.findCourseById(courseID);
@@ -128,6 +140,7 @@ public class CourseController {
 			Comment newComment = new Comment(comment.getContent());
 			newComment.setUser(user);
 			newComment.setCourse(course);
+			newComment.setReply(comment.getReply());
 			commentService.save(newComment);
 			return new JsonResponse(Constant.SUCCESS, "Successfully add a comment!");
 		} else {

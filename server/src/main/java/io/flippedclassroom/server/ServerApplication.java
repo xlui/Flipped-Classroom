@@ -1,13 +1,7 @@
 package io.flippedclassroom.server;
 
-import io.flippedclassroom.server.entity.Course;
-import io.flippedclassroom.server.entity.Permission;
-import io.flippedclassroom.server.entity.Role;
-import io.flippedclassroom.server.entity.User;
-import io.flippedclassroom.server.service.CourseService;
-import io.flippedclassroom.server.service.PermissionService;
-import io.flippedclassroom.server.service.RoleService;
-import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.entity.*;
+import io.flippedclassroom.server.service.*;
 import io.flippedclassroom.server.utils.EncryptUtil;
 import io.flippedclassroom.server.utils.LogUtil;
 import org.slf4j.Logger;
@@ -33,6 +27,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 	private CourseService courseService;
 	@Autowired
 	private PermissionService permissionService;
+	@Autowired
+	private CommentService commentService;
 
 	/**
 	 * 负责数据库的初始化
@@ -59,6 +55,9 @@ public class ServerApplication extends SpringBootServletInitializer {
 		Permission permissionJoin = permissionService.findPermissionByPermissionName("course:join");
 		Permission permissionViewComment = permissionService.findPermissionByPermissionName("course:comment:view");
 		Permission permissionAddComment = permissionService.findPermissionByPermissionName("course:comment:add");
+		// 评论初始化
+		Comment commentFirst = commentService.findCommentById(1L);
+		Comment commentSecond = commentService.findCommentById(2L);
 
 		// 如果数据库中存在这些实体，删除并重新初始化
 		logger.info("如果数据库中存在初始化信息，删除");
@@ -66,12 +65,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 			userService.delete(userStudent);
 		if (userTeacher != null)
 			userService.delete(userTeacher);
-		if (roleStudent != null)
-			roleService.delete(roleStudent);
-		if (roleTeacher != null)
-			roleService.delete(roleTeacher);
-		if (roleAdmin != null)
-			roleService.delete(roleAdmin);
 		if (courseMath != null)
 			courseService.delete(courseMath);
 		if (courseDataStructure != null)
@@ -95,9 +88,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 		logger.info("重新初始化...");
 		userStudent = new User("1", "dev");
 		userTeacher = new User("2", "std");
-		roleStudent = new Role("student");
-		roleTeacher = new Role("teacher");
-		roleAdmin = new Role("admin");
 		courseMath = new Course("数学", "数学专业");
 		courseDataStructure = new Course("数据结构", "计算机专业");
 		courseDatabase = new Course("数据库", "计算机专业");
@@ -107,6 +97,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 		permissionJoin = new Permission("course:join");
 		permissionViewComment = new Permission("course:comment:view");
 		permissionAddComment = new Permission("course:comment:add");
+		commentFirst = new Comment("Hello World!");
+		commentSecond = new Comment("这是第二条评论");
 
 		// 密码加密存储
 		EncryptUtil.encrypt(userStudent);
@@ -127,22 +119,20 @@ public class ServerApplication extends SpringBootServletInitializer {
 		permissionViewComment.setRoleList(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
 		permissionAddComment.setRoleList(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
 
+		commentFirst.setUser(userStudent);
+		commentFirst.setCourse(courseMath);
+		commentSecond.setUser(userTeacher);
+		commentSecond.setCourse(courseMath);
+
 		// 保存
 		logger.info("保存到数据库");
-		courseService.save(courseMath);
-		courseService.save(courseDatabase);
-		courseService.save(courseDataStructure);
-		userService.save(userStudent);
-		userService.save(userTeacher);
-		roleService.save(roleStudent);
-		roleService.save(roleTeacher);
-		roleService.save(roleAdmin);
-		permissionService.save(permissionUpdate);
-		permissionService.save(permissionDelete);
-		permissionService.save(permissionCreate);
-		permissionService.save(permissionJoin);
-		permissionService.save(permissionViewComment);
-		permissionService.save(permissionAddComment);
+		courseService.save(Arrays.asList(courseMath, courseDatabase, courseDataStructure));
+		userService.save(Arrays.asList(userStudent, userTeacher));
+		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
+		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin, permissionViewComment, permissionAddComment));
+		commentService.save(commentFirst);
+		commentSecond.setReply(commentFirst.getId());
+		commentService.save(commentSecond);
 
 		return "init success";
 	}

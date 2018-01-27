@@ -6,6 +6,8 @@ import io.flippedclassroom.server.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PermissionServiceImpl implements PermissionService {
 	@Autowired
@@ -24,6 +26,11 @@ public class PermissionServiceImpl implements PermissionService {
 	@Override
 	public Permission save(Permission permission) {
 		return permissionRepository.save(permission);
+	}
+
+	@Override
+	public List<Permission> save(Iterable<Permission> iterable) {
+		return permissionRepository.save(iterable);
 	}
 
 	@Override

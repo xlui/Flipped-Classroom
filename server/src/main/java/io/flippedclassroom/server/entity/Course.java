@@ -22,7 +22,7 @@ public class Course implements Serializable {
 	private String code;        // 课程唯一代码
 
 	// 课程与用户的多对多关系
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.MERGE)
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "user_id")})
 	@JsonIgnore
 	private List<User> userList;

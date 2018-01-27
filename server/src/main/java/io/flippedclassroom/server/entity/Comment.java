@@ -70,4 +70,20 @@ public class Comment implements Serializable {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public Long getReply() {
+		return reply;
+	}
+
+	public void setReply(Long reply) {
+		this.reply = reply;
+	}
 }
