@@ -47,7 +47,7 @@ public class LoginActivity extends BaseActivity implements LoginView, View.OnCli
 
     @Override
     protected void initPresenter() {
-        mPresenter = new LoginPresenterImpl(this,getContext());
+        mPresenter = new LoginPresenterImpl(this, getContext());
     }
 
     @Override
@@ -132,6 +132,12 @@ public class LoginActivity extends BaseActivity implements LoginView, View.OnCli
     @Override
     public void startRegisteredActivity() {
         startActivity(new Intent(this, RegisteredActivity.class));
+    }
+
+    @Override
+    public void startCourseActivity() {
+        startActivity(new Intent(this, CourseActivity.class));
+        finish();
     }
 
     @Override

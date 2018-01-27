@@ -79,6 +79,13 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
                                     mView.changeProgressStyle(100);
                                     //所有view变得可以触摸
                                     mView.setViewsEnabled(true);
+
+                                    if (role.equals(mContext.getString(R.string.student))) {
+                                        //前往学生界面
+                                        mView.startCourseActivity();
+                                    } else {
+
+                                    }
                                 } else {
                                     //登陆失败
                                     ToastUtils.createToast("账号密码错误");

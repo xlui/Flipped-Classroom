@@ -47,6 +47,12 @@ public class HttpUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
+    //token登录的http请求
+    public static void sendLoginRequest(String url, String token, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).addHeader("Authorization:", token).build();
+        client.newCall(request).enqueue(callback);
     }
 }

@@ -13,6 +13,10 @@ public class UrlBuilder {
     }
 
     public static String getRegisteredUrl() {
-        return BASE_URL+"register";
+        return BASE_URL + "register";
+    }
+
+    public static String getCheckTokenUrl() {
+        return BASE_URL+"check";
     }
 }

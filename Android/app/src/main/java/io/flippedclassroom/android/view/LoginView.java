@@ -24,4 +24,7 @@ public interface LoginView {
 
     //前往注册界面
     void startRegisteredActivity();
+
+    //前往课程界面
+    void startCourseActivity();
 }

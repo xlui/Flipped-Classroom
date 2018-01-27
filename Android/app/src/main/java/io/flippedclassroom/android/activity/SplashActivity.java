@@ -56,7 +56,7 @@ public class SplashActivity extends BaseActivity implements SplashView {
 
     @Override
     public void startCourseActivity() {
-        //startActivity
+        startActivity(new Intent(this, CourseActivity.class));
         finish();
     }
 }
