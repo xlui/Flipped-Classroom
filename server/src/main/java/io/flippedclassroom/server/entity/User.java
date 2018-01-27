@@ -28,18 +28,18 @@ public class User implements Serializable {
 	private String signature;   // 个性签名
 
 	// 用户与认证情况的一对一关系
-	@OneToOne(cascade = CascadeType.ALL)    // 用户是关系的维护端
+	@OneToOne                                // 用户是关系的维护端
 	@JoinColumn(name = "auth_id")           // 指定外键名称
 	@Fetch(FetchMode.JOIN)                  // 会使用 left join 查询，只产生一条 sql 语句
 	private Authentication authentication;
 
 	// 用户与角色的多对一关系
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
 	private Role role;
 
 	// 用户与课程的多对多关系，通过表 `t_user_course` 维持
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "course_id")})
 	private List<Course> courseList;
 

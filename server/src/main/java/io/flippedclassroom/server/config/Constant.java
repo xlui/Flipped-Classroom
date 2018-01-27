@@ -13,8 +13,13 @@ public class Constant {
 	// 返回数据的 Status
 	public static final String SUCCESS = "SUCCESS";
 	public static final String FAILED = "FAILED";
-	public static final String ROLE = "ROLE";
 
 	// token 有效期，当前设置为一天
 	public static final long expire = System.currentTimeMillis() + Duration.ofDays(1).toMillis();
+
+	// 上传文件大小
+	public static final int size1M = 1024 * 1024;    // 1M
+
+	// 上传文件位置
+	public static final String avatarPosition = "/home/liuqi/uploads/avatar/";
 }

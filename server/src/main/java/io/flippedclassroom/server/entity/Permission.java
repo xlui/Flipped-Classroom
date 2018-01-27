@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 权限控制，分为学生账户、教师账户、管理员账户
@@ -16,10 +17,10 @@ public class Permission implements Serializable {
 	private Long id;
 	private String permission;      // 权限名
 
-	// 权限与角色的多对一关系
-	@ManyToOne
-	@JoinColumn(name = "role_id")
-	private Role role;
+	// 权限与角色的多对多关系
+	@ManyToMany
+	@JoinTable(name = "t_role_permission", joinColumns = {@JoinColumn(name = "permission_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+	private List<Role> roleList;
 
 	public Permission() {
 		super();
@@ -45,11 +46,15 @@ public class Permission implements Serializable {
 		this.permission = permission;
 	}
 
-	public Role getRole() {
-		return role;
+	public List<Role> getRoleList() {
+		return roleList;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
+	public void setRoleList(List<Role> roleList) {
+		this.roleList = roleList;
+	}
+
+	public void addRole(Role role) {
+		this.roleList.add(role);
 	}
 }

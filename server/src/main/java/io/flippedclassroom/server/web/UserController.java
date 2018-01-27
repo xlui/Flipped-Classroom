@@ -6,6 +6,7 @@ import io.flippedclassroom.server.config.PasswordToken;
 import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.entity.Role;
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.exception.InputException;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.RoleService;
 import io.flippedclassroom.server.service.UserService;
@@ -47,7 +48,7 @@ public class UserController {
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "成功注册"),
 	})
-	public JsonResponse register(@RequestBody User user) {
+	public JsonResponse register(@RequestBody User user) throws InputException {
 		User newUser = new User(user.getUsername(), user.getPassword());
 		if (userService.findUserByUsername(newUser.getUsername()) != null) {
 			return new JsonResponse(Constant.FAILED, "账号已存在");
@@ -75,7 +76,7 @@ public class UserController {
 			@ApiResponse(code = 401, message = "权限认证失败！"),
 			@ApiResponse(code = 403, message = "身份认证失败！"),
 	})
-	public Map postLogin(@RequestBody User user) {
+	public Map postLogin(@RequestBody User user) throws InputException {
 		AssertUtil.assertUsernamePasswordNotNull(user);
 
 		// 用户登录
@@ -83,12 +84,10 @@ public class UserController {
 		SecurityUtils.getSubject().login(passwordToken);
 
 		User loginUser = userService.findUserByUsername(user.getUsername());
-		String token = null;
-		if (loginUser.getUsername().equals(user.getUsername())) {
-			token = JWTUtil.sign(loginUser.getUsername(), loginUser.getPassword());
-			LogUtil.getLogger().info("Generate Token!\n" + token);
-		}
+		String token = JWTUtil.sign(loginUser.getUsername(), loginUser.getPassword());
+		LogUtil.getLogger().info("生成 Token！\n" + token);
 		redisService.save(loginUser.getUsername(), token);
+
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		map.put("status", Constant.SUCCESS);
 		map.put("token", token);
@@ -98,7 +97,7 @@ public class UserController {
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	@ApiOperation(value = "用户个人资料", notes = "需要 Token 验证")
-	@ApiResponse(code = 200, message = "json 化的用户类")
+	@ApiResponse(code = 200, message = "json 化的用户信息")
 	public Map getProfile(@ApiIgnore @CurrentUser User user) {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("nick_name", user.getNick_name());
@@ -109,9 +108,7 @@ public class UserController {
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "需要 Token 验证")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
-	})
+	@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "成功修改资料！"),
 			@ApiResponse(code = 401, message = "权限认证失败！"),

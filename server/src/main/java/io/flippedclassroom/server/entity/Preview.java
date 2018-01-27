@@ -18,7 +18,7 @@ public class Preview implements Serializable {
 	private String position;    // 资料上传位置
 
 	// 课前预习资料与课程的多对一关系
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "course_id")
 	@JsonIgnore
 	private Course course;

@@ -16,12 +16,13 @@ public class Role implements Serializable {
 	private String role;    // 角色名
 
 	// 角色与用户的一对多关系
-	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "role")
 	@JsonIgnore
 	private List<User> userList;
 
-	// 角色与权限的一对多关系
-	@OneToMany(mappedBy = "role")
+	// 角色与权限的多对多关系
+	@ManyToMany
+	@JoinTable(name = "t_role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
 	private List<Permission> permissionList;
 
 	public Role() {

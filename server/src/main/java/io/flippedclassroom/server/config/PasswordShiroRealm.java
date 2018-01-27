@@ -71,7 +71,7 @@ public class PasswordShiroRealm extends AuthorizingRealm {
 		User user = userService.findUserByUsername(username);
 
 		if (user == null) {
-			return null;
+			throw new AuthenticationException();
 		}
 
 		return new SimpleAuthenticationInfo(

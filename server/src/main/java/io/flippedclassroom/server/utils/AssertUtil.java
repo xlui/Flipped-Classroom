@@ -1,7 +1,7 @@
 package io.flippedclassroom.server.utils;
 
 import io.flippedclassroom.server.entity.User;
-import org.apache.shiro.authc.AuthenticationException;
+import io.flippedclassroom.server.exception.InputException;
 
 /**
  * 通用断言
@@ -12,9 +12,9 @@ public class AssertUtil {
 	 *
 	 * @param user 用户类
 	 */
-	public static void assertUsernamePasswordNotNull(User user) {
+	public static void assertUsernamePasswordNotNull(User user) throws InputException {
 		if (user.getUsername() == null || user.getPassword() == null) {
-			throw new AuthenticationException("username or password invalid!");
+			throw new InputException("username or password invalid!");
 		}
 	}
 }

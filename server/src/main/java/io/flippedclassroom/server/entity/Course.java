@@ -22,28 +22,33 @@ public class Course implements Serializable {
 	private String code;        // 课程唯一代码
 
 	// 课程与用户的多对多关系
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "user_id")})
 	@JsonIgnore
 	private List<User> userList;
 
 	// 课程与随堂测试一对多
 	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private List<Quiz> quizList;
 
 	// 课程与课后测试一对多
 	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private List<Homework> homeworkList;
 
 	// 课程与电子资料一对多
 	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private List<EData> eDataList;
 
 	// 课程与课前预习资料一对多
 	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private List<Preview> previewList;
 
 	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private List<Comment> commentList;
 
 	public Course() {

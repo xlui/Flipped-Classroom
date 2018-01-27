@@ -18,7 +18,7 @@ public class EData implements Serializable {
 	private String position;    // 资料保存位置
 
 	// 电子资料与课程的多对一关系
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "course_id")
 	@JsonIgnore
 	private Course course;
