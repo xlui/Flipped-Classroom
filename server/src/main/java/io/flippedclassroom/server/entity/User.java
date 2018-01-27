@@ -1,6 +1,7 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -18,7 +19,7 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private String username;    // 用户名
 	@Column(nullable = false)
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;    // 密码加盐 hash
 	@JsonIgnore
 	private String salt;        // 每个用户唯一的盐

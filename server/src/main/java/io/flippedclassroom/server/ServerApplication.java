@@ -133,7 +133,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 
 		// 保存
 		logger.info("保存到数据库");
-		courseService.save(Arrays.asList(courseMath, courseDatabase, courseDataStructure));
 		userService.save(Arrays.asList(userStudent, userTeacher));
 		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
 		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin, permissionViewComment, permissionAddComment));
