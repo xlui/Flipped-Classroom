@@ -17,7 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/course")
@@ -33,8 +35,11 @@ public class CourseController {
 	@RequestMapping
 	@ApiOperation(value = "课程列表", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "课程列表，JSON形式")
-	public List<Course> getCourses(@ApiIgnore @CurrentUser User user) {
-		return user.getCourseList();
+	public Map getCourses(@ApiIgnore @CurrentUser User user) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", Constant.SUCCESS);
+		map.put("courses", user.getCourseList());
+		return map;
 	}
 
 	@RequestMapping(value = "/{courseID}", method = RequestMethod.GET)
