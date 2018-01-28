@@ -13,6 +13,8 @@
     <string name="default_user_description">我什么都没有写</string>
     <string name="my_profile">我的主页</string>
     <string name="setting">设置</string>
+    <string name="manager">管理</string>
+    <string name="add_new_course">添加新的课程</string>
     <string name="account_safe">账号安全</string>
     <string name="student">student</string>
     <string name="teacher">teacher</string>
