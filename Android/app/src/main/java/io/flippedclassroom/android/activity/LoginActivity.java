@@ -18,7 +18,7 @@ import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.LoginPresenter;
-import io.flippedclassroom.android.presenter.LoginPresenterImpl;
+import io.flippedclassroom.android.presenterImpl.LoginPresenterImpl;
 import io.flippedclassroom.android.view.LoginView;
 
 public class LoginActivity extends BaseActivity implements LoginView, View.OnClickListener {

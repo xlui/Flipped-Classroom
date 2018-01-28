@@ -14,5 +14,6 @@ public interface CoursePresenter {
     //处理搜索事件
     void onQuery(String queryText);
 
-    CourseAdapter createAdapter();
+    //当用户点击返回按键，处理返回事件
+    void onBack();
 }

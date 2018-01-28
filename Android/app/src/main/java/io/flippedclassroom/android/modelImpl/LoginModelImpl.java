@@ -1,8 +1,9 @@
-package io.flippedclassroom.android.model;
+package io.flippedclassroom.android.modelImpl;
 
+import io.flippedclassroom.android.model.LoginModel;
 import io.flippedclassroom.android.util.PreferenceUtils;
 
-public class LoginModelImpl implements LoginModel{
+public class LoginModelImpl implements LoginModel {
     public void saveToken(String token) {
         PreferenceUtils.saveToken(token);
     }

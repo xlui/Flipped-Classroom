@@ -5,14 +5,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
 import java.util.zip.Inflater;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.bean.Course;
 
 //课程列表的Adapter
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
     private static final int ITEM_TYPE_NORMAL = 1;
     private static final int ITEM_TYPE_END = 0;
+    private List<Course> mCourseList;
+
+    public CourseAdapter(List<Course> mCourseList) {
+        this.mCourseList = mCourseList;
+    }
 
     //根据位置判断显示哪种item的样式
     //除了最后一个,其余的样式都是正常课程的样子
@@ -50,7 +57,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return 2;
+        return mCourseList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

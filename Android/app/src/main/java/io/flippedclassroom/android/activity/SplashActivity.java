@@ -12,7 +12,7 @@ import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.SplashPresenter;
-import io.flippedclassroom.android.presenter.SplashPresenterImpl;
+import io.flippedclassroom.android.presenterImpl.SplashPresenterImpl;
 import io.flippedclassroom.android.view.SplashView;
 
 public class SplashActivity extends BaseActivity implements SplashView {

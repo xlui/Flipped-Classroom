@@ -15,7 +15,7 @@ import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.RegisteredPresenter;
-import io.flippedclassroom.android.presenter.RegisteredPresenterImpl;
+import io.flippedclassroom.android.presenterImpl.RegisteredPresenterImpl;
 import io.flippedclassroom.android.view.RegisteredView;
 
 public class RegisteredActivity extends BaseActivity implements RegisteredView,

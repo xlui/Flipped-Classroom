@@ -1,8 +1,9 @@
-package io.flippedclassroom.android.model;
+package io.flippedclassroom.android.modelImpl;
 
+import io.flippedclassroom.android.model.RegisteredModel;
 import io.flippedclassroom.android.util.PreferenceUtils;
 
-public class RegisteredModelImpl implements RegisteredModel{
+public class RegisteredModelImpl implements RegisteredModel {
     private String role;
 
     @Override

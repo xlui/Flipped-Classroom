@@ -1,5 +1,6 @@
-package io.flippedclassroom.android.model;
+package io.flippedclassroom.android.modelImpl;
 
+import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.util.PreferenceUtils;
 
 public class SplashModelImpl implements SplashModel {

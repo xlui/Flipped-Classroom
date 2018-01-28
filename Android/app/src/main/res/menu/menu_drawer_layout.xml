@@ -14,4 +14,9 @@
         android:id="@+id/menu_setting"
         android:icon="@mipmap/set"
         android:title="@string/setting" />
+
+    <item
+        android:id="@+id/menu_login_out"
+        android:icon="@mipmap/back"
+        android:title="@string/login_out" />
 </menu>

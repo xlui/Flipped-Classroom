@@ -1,4 +1,4 @@
-package io.flippedclassroom.android.presenter;
+package io.flippedclassroom.android.presenterImpl;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -12,8 +12,10 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.LoginModel;
-import io.flippedclassroom.android.model.LoginModelImpl;
+import io.flippedclassroom.android.modelImpl.LoginModelImpl;
+import io.flippedclassroom.android.presenter.LoginPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
+import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;
 import io.flippedclassroom.android.view.LoginView;

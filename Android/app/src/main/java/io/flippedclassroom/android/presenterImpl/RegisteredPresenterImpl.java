@@ -1,11 +1,7 @@
-package io.flippedclassroom.android.presenter;
+package io.flippedclassroom.android.presenterImpl;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,10 +9,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import io.flippedclassroom.android.R;
-import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.RegisteredModel;
-import io.flippedclassroom.android.model.RegisteredModelImpl;
+import io.flippedclassroom.android.modelImpl.RegisteredModelImpl;
+import io.flippedclassroom.android.presenter.RegisteredPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;

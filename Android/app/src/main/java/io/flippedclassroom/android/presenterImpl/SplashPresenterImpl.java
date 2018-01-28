@@ -1,8 +1,7 @@
-package io.flippedclassroom.android.presenter;
+package io.flippedclassroom.android.presenterImpl;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -13,11 +12,11 @@ import java.io.IOException;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
-import io.flippedclassroom.android.model.SplashModelImpl;
+import io.flippedclassroom.android.modelImpl.SplashModelImpl;
+import io.flippedclassroom.android.presenter.SplashPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
 import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
-import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.activity.SplashActivity;
 import io.flippedclassroom.android.util.UrlBuilder;
 import io.flippedclassroom.android.view.SplashView;

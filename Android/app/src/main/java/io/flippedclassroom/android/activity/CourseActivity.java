@@ -1,14 +1,18 @@
 package io.flippedclassroom.android.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,15 +20,18 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.CoursePresenter;
-import io.flippedclassroom.android.presenter.CoursePresenterImpl;
+import io.flippedclassroom.android.presenterImpl.CoursePresenterImpl;
 import io.flippedclassroom.android.view.CourseView;
 
 public class CourseActivity extends BaseActivity implements
         SearchView.OnQueryTextListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         CourseView {
 
+    @BindView(R.id.dl_drawer)
+    DrawerLayout dlDrawer;
     private CoursePresenter mPresenter;
     SearchView svSearchView;
     @BindView(R.id.tb_toolbar)
@@ -35,6 +42,12 @@ public class CourseActivity extends BaseActivity implements
     SwipeRefreshLayout srlRefresh;
     @BindView(R.id.nv_navigation_view)
     NavigationView nvNavigationView;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        onRefresh();
+    }
 
     @Override
     protected int getLayout() {
@@ -50,6 +63,7 @@ public class CourseActivity extends BaseActivity implements
     protected void initViews() {
         setActionBar(tbToolbar, R.mipmap.menu, "我的课程");
         initCourseList();
+        srlRefresh.setOnRefreshListener(this);
     }
 
     //初始化RecycleView
@@ -57,7 +71,6 @@ public class CourseActivity extends BaseActivity implements
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         rvCoursesList.setLayoutManager(manager);
-        rvCoursesList.setAdapter(mPresenter.createAdapter());
     }
 
     @Override
@@ -97,24 +110,29 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
-
+        mPresenter.onClick(v.getId());
     }
 
     @Override
     public void onRefresh() {
         srlRefresh.setRefreshing(true);
+        mPresenter.onRefresh();
 
-        srlRefresh.setRefreshing(false);
     }
 
     @Override
     public void openDrawer() {
-
+        dlDrawer.openDrawer(Gravity.START);
     }
 
     @Override
     public void closeDrawer() {
+        dlDrawer.closeDrawers();
+    }
 
+    @Override
+    public void onRefreshFinish() {
+        srlRefresh.setRefreshing(false);
     }
 
     @Override
@@ -137,4 +155,33 @@ public class CourseActivity extends BaseActivity implements
 
     }
 
+    @Override
+    public void returnLoginActivity() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    @Override
+    public void updateCourseList(CourseAdapter adapter) {
+        rvCoursesList.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                openDrawer();
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (dlDrawer.isDrawerOpen(Gravity.START)) {
+            closeDrawer();
+        } else {
+            mPresenter.onBack();
+        }
+    }
 }

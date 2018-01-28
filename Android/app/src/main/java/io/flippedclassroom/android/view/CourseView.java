@@ -1,12 +1,17 @@
 package io.flippedclassroom.android.view;
 
 
+import io.flippedclassroom.android.adapter.CourseAdapter;
+
 public interface CourseView {
     //展开测栏
     void openDrawer();
 
     //关闭测栏
     void closeDrawer();
+
+    //加载结束时回调
+    void onRefreshFinish();
 
     //前往主页界面
     void startProfileActivity();
@@ -19,4 +24,10 @@ public interface CourseView {
 
     //前往添加课程界面
     void startNewCourseActivity();
+
+    //返回登录界面
+    void returnLoginActivity();
+
+    //更新列表
+    void updateCourseList(CourseAdapter adapter);
 }
