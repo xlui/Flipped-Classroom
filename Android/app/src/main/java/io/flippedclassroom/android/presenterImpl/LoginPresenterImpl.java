@@ -12,10 +12,8 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.LoginModel;
-import io.flippedclassroom.android.modelImpl.LoginModelImpl;
 import io.flippedclassroom.android.presenter.LoginPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
-import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;
 import io.flippedclassroom.android.view.LoginView;
@@ -31,7 +29,7 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
     public LoginPresenterImpl(LoginActivity activity, Context context) {
         super(context);
         mView = activity;
-        mModel = new LoginModelImpl();
+        mModel = new LoginModel(mContext);
     }
 
     //在Login界面中各个View的点击逻辑
@@ -77,6 +75,7 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
                                     //保存token和role
                                     mModel.saveToken(token);
                                     mModel.saveRole(role);
+                                    mModel.saveId(texts[0]);
                                     //登录按钮停止加载
                                     mView.changeProgressStyle(100);
                                     //所有view变得可以触摸

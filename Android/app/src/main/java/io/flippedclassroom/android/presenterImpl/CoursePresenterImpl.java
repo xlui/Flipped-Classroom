@@ -3,13 +3,7 @@ package io.flippedclassroom.android.presenterImpl;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
-import android.widget.LinearLayout;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.util.List;
 
 import io.flippedclassroom.android.activity.CourseActivity;
@@ -18,10 +12,8 @@ import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.Course;
 import io.flippedclassroom.android.json.CourseJson;
 import io.flippedclassroom.android.model.CourseModel;
-import io.flippedclassroom.android.modelImpl.CourseModelImpl;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.util.LogUtils;
-import io.flippedclassroom.android.util.PreferenceUtils;
 import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;
@@ -31,11 +23,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import retrofit2.Retrofit;
 
 public class CoursePresenterImpl extends BasePresenter implements CoursePresenter {
@@ -47,7 +34,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
     public CoursePresenterImpl(CourseActivity activity, Context mContext) {
         super(mContext);
         mView = activity;
-        mModel = new CourseModelImpl();
+        mModel = new CourseModel(mContext);
     }
 
     @Override
@@ -78,6 +65,8 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
                     @Override
                     public void onNext(List<Course> courseList) {
+                        LogUtils.show(courseList.get(0).getName());
+                        ToastUtils.createToast("加载成功");
                         //存入model
                         mModel.saveCourseList(courseList);
 

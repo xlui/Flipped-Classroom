@@ -11,7 +11,6 @@ import java.io.IOException;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.RegisteredModel;
-import io.flippedclassroom.android.modelImpl.RegisteredModelImpl;
 import io.flippedclassroom.android.presenter.RegisteredPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
 import io.flippedclassroom.android.util.ToastUtils;
@@ -29,7 +28,7 @@ public class RegisteredPresenterImpl extends BasePresenter implements Registered
     public RegisteredPresenterImpl(RegisteredActivity activity, Context context) {
         super(context);
         mView = activity;
-        mModel = new RegisteredModelImpl();
+        mModel = new RegisteredModel(mContext);
     }
 
     //在Registered界面中各个View的点击逻辑
@@ -156,9 +155,9 @@ public class RegisteredPresenterImpl extends BasePresenter implements Registered
     @Override
     public void onCheckedChanged(int checkedId) {
         if (checkedId == R.id.rb_student) {
-            mModel.setRole(mContext.getResources().getString(R.string.student));
+            mModel.saveRole(mContext.getResources().getString(R.string.student));
         } else {
-            mModel.setRole(mContext.getResources().getString(R.string.teacher));
+            mModel.saveRole(mContext.getResources().getString(R.string.teacher));
         }
     }
 }

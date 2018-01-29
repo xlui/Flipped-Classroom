@@ -12,7 +12,6 @@ import java.io.IOException;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
-import io.flippedclassroom.android.modelImpl.SplashModelImpl;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
 import io.flippedclassroom.android.util.LogUtils;
@@ -31,7 +30,7 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
     public SplashPresenterImpl(SplashActivity activity, Context context) {
         super(context);
         mView = activity;
-        mModel = new SplashModelImpl();
+        mModel = new SplashModel(mContext);
     }
 
     @Override
@@ -76,9 +75,10 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
                         } else {
                             //验证失败
 
-                            //擦除本地的token和role
+                            //擦除本地的token,role,id
                             mModel.deleteToken();
                             mModel.deleteRole();
+                            mModel.deleteId();
                             //前往login界面
                             mView.startLoginActivity();
                         }
