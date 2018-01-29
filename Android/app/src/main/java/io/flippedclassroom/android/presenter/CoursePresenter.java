@@ -1,6 +1,8 @@
 package io.flippedclassroom.android.presenter;
 
 
+import android.content.Context;
+
 import io.flippedclassroom.android.adapter.CourseAdapter;
 
 public interface CoursePresenter {
@@ -19,4 +21,6 @@ public interface CoursePresenter {
 
     //当用户点击返回按键，处理返回事件
     void onBack();
+
+    Context getContext();
 }

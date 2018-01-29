@@ -121,4 +121,9 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             }, 2000);
         }
     }
+
+    @Override
+    public Context getContext() {
+        return mContext;
+    }
 }

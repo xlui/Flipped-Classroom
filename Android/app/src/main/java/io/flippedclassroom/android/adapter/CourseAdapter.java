@@ -2,9 +2,11 @@ package io.flippedclassroom.android.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.List;
@@ -60,9 +62,31 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (getItemViewType(position) == ITEM_TYPE_NORMAL) {
-            holder.tvStudentNumber.setText("班级人数"+mCourseList.get(position).getCount());
+            //正常的课程显示
+            //把拉取的数据显示出来
+            holder.tvStudentNumber.setText("班级人数" + mCourseList.get(position).getCount());
             holder.tvCourseName.setText(mCourseList.get(position).getName());
             holder.tvClass.setText(mCourseList.get(position).getMajor());
+            final PopupMenu popupMenu = new PopupMenu(mPresenter.getContext(), holder.ivManager);
+            popupMenu.inflate(R.menu.menu_pop);
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    mPresenter.onClick(item.getItemId());
+                    return true;
+                }
+            });
+            View.OnClickListener listener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (v.getId() == R.id.iv_manager) {
+                        popupMenu.show();
+                    }
+                    mPresenter.onClick(v.getId());
+                }
+            };
+            holder.ivManager.setOnClickListener(listener);
+            holder.ivCardBg.setOnClickListener(listener);
         } else {
 
         }
@@ -88,6 +112,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
             tvClass = itemView.findViewById(R.id.tv_class);
             tvCourseName = itemView.findViewById(R.id.tv_course_name);
             ivManager = itemView.findViewById(R.id.iv_manager);
+
 
         }
     }
