@@ -1,6 +1,6 @@
 # 服务器端部署指南
 
-以下是服务器端代码部署指南，详细介绍了代码部署到服务器并运行的方法，如果有不理解的地方，欢迎邮件联系：[i@xlui.me](mailto:i@xlui.me)
+以下是服务器端代码部署指南，详细介绍了代码部署到服务器并运行的方法，如果有不理解的地方，欢迎邮件：[i@xlui.me](mailto:i@xlui.me) 或者 Issues。
 
 > 注：安装指南不会讲如何登录服务器以及如何使用 ssh，这种基本操作需要自己百度。
 
@@ -78,6 +78,10 @@ yum install docker
 systemctl start docker
 systemctl enable docker
 ```
+
+配置使用 USTC 镜像（加速）：
+
+[https://lug.ustc.edu.cn/wiki/mirrors/help/docker](https://lug.ustc.edu.cn/wiki/mirrors/help/docker)
 
 安装 Redis：
 
@@ -187,4 +191,4 @@ location / {
 
 ## 7. 结束
 
-以上，就可以成功使用 server 端提供的 API 进行操作。如果有问题，欢迎邮件联系：[i@xlui.me](mailto:i@xlui.me)
+以上，就可以成功使用 server 端提供的 API 进行操作。如果有问题，欢迎邮件：[i@xlui.me](mailto:i@xlui.me) 或者 Issues。

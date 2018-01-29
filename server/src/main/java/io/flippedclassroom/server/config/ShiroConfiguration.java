@@ -119,8 +119,11 @@ public class ShiroConfiguration {
 
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
+
 		filterChainDefinitionMap.put("/check", "jwt");  // 检查 Token 的有效性
 		filterChainDefinitionMap.put("/profile", "jwt");
+		filterChainDefinitionMap.put("/avatar", "jwt");
+
 		filterChainDefinitionMap.put("/course/**", "jwt");
 		filterChainDefinitionMap.put("/**", "anon");
 

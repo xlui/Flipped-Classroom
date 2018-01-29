@@ -1,14 +1,16 @@
 package io.flippedclassroom.server.entity;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 
 /*
- * 实名认证信息，默认认证状态为 false
- * todo: 使用图片识别进行实名认证
+ * 认证信息，默认认证状态为 false
  */
+@ApiModel(value = "认证实体类")
 @Entity
 public class Authentication implements Serializable {
 	@Id
