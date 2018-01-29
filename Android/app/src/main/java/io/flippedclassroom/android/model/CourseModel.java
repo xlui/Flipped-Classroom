@@ -16,9 +16,6 @@ public class CourseModel extends BaseModel{
 
     public void saveCourseList(List<Course> courseList) {
         mCourseList = courseList;
-
-        //保存到数据库
-        //保存到数据库是为了便于搜索，还有就是每次先从本地数据库读取，不必要每次都加载
     }
 
     public List<Course> getCourseList() {

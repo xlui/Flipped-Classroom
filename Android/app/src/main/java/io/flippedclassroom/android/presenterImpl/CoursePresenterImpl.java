@@ -71,7 +71,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
                         mModel.saveCourseList(courseList);
 
                         //updateList
-                        CourseAdapter adapter = new CourseAdapter(courseList);
+                        CourseAdapter adapter = new CourseAdapter(courseList, CoursePresenterImpl.this);
                         mView.updateCourseList(adapter);
                         //结束刷新
                         mView.onRefreshFinish();
@@ -92,6 +92,13 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
     @Override
     public void onQuery(String queryText) {
 
+    }
+
+    @Override
+    public void onSearchClose() {
+        //如果关闭了搜索，恢复之前的样子
+        CourseAdapter adapter = new CourseAdapter(mModel.getCourseList(), this);
+        mView.updateCourseList(adapter);
     }
 
     @Override

@@ -24,10 +24,12 @@ import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.CoursePresenterImpl;
+import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.CourseView;
 
 public class CourseActivity extends BaseActivity implements
         SearchView.OnQueryTextListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+        SearchView.OnCloseListener,
         CourseView {
 
     @BindView(R.id.dl_drawer)
@@ -95,6 +97,7 @@ public class CourseActivity extends BaseActivity implements
         svSearchView.setQueryHint("搜索已选课程");
         svSearchView.setSubmitButtonEnabled(true);
         svSearchView.setOnQueryTextListener(this);
+        svSearchView.setOnCloseListener(this);
     }
 
     //当确定搜索之后回调
@@ -183,5 +186,11 @@ public class CourseActivity extends BaseActivity implements
         } else {
             mPresenter.onBack();
         }
+    }
+
+    @Override
+    public boolean onClose() {
+        mPresenter.onSearchClose();
+        return false;
     }
 }
