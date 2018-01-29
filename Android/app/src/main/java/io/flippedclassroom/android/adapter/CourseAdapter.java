@@ -67,6 +67,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
             holder.tvStudentNumber.setText("班级人数" + mCourseList.get(position).getCount());
             holder.tvCourseName.setText(mCourseList.get(position).getName());
             holder.tvClass.setText(mCourseList.get(position).getMajor());
+
+            //创建PopMenu
             final PopupMenu popupMenu = new PopupMenu(mPresenter.getContext(), holder.ivManager);
             popupMenu.inflate(R.menu.menu_pop);
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -76,6 +78,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
                     return true;
                 }
             });
+
+            //把点击事件迁移到Presenter
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

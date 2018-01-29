@@ -103,6 +103,7 @@ public class CourseActivity extends BaseActivity implements
     //当确定搜索之后回调
     @Override
     public boolean onQueryTextSubmit(String query) {
+        mPresenter.onQuery(query);
         return true;
     }
 

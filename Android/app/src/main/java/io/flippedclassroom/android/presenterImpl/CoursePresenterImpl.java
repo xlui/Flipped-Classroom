@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.CourseActivity;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BasePresenter;
@@ -38,8 +40,13 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
     }
 
     @Override
-    public void onClick(int ViewId) {
+    public void onClick(int viewId) {
+        switch (viewId){
+            case R.id.pop_menu_look:
 
+                break;
+
+        }
     }
 
     @Override
@@ -91,7 +98,17 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void onQuery(String queryText) {
-
+        List<Course> list = mModel.getCourseList();
+        List<Course> newList = new ArrayList<>();
+        for (Course course : list) {
+            //匹配课程名字
+            if (queryText.equals(course.getName())) {
+                newList.add(course);
+            }
+        }
+        //刷新课程列表
+        CourseAdapter adapter = new CourseAdapter(newList,this);
+        mView.updateCourseList(adapter);
     }
 
     @Override
