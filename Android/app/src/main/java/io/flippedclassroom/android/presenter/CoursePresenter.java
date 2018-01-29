@@ -8,7 +8,7 @@ import io.flippedclassroom.android.adapter.CourseAdapter;
 public interface CoursePresenter {
 
     //处理点击事件
-    void onClick(int ViewId);
+    void onClick(int viewId);
 
     //处理刷新事件
     void onRefresh();
@@ -21,6 +21,9 @@ public interface CoursePresenter {
 
     //当用户点击返回按键，处理返回事件
     void onBack();
+
+    //Adapter的点击事件
+    void onClick(int viewId, int position);
 
     Context getContext();
 }

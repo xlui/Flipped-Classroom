@@ -1,5 +1,7 @@
 package io.flippedclassroom.android.json;
 
+import android.os.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 

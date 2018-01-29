@@ -10,9 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.WindowManager;
 
 import butterknife.ButterKnife;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 //Activity的基类
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends SwipeBackActivity {
     private boolean isLife = true;
 
     @Override
@@ -20,6 +21,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
         ButterKnife.bind(this);
+        //默认不能滑动退出
+        getSwipeBackLayout().setEnableGesture(false);
         initPresenter();
         initViews();
     }

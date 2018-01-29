@@ -113,16 +113,6 @@ public class RegisteredActivity extends BaseActivity implements RegisteredView,
         finish();
     }
 
-    //当点击右上角的返回按钮的时候回调该方法
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                startLoginActivity();
-        }
-        return true;
-    }
-
     @Override
     public void onClick(View v) {
         mPresenter.onClick(v.getId());

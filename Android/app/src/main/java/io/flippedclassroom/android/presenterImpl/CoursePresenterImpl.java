@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.presenterImpl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.CourseActivity;
+import io.flippedclassroom.android.activity.CourseInfoActivity;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.Course;
@@ -41,12 +43,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void onClick(int viewId) {
-        switch (viewId){
-            case R.id.pop_menu_look:
 
-                break;
-
-        }
     }
 
     @Override
@@ -107,7 +104,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             }
         }
         //刷新课程列表
-        CourseAdapter adapter = new CourseAdapter(newList,this);
+        CourseAdapter adapter = new CourseAdapter(newList, this);
         mView.updateCourseList(adapter);
     }
 
@@ -138,6 +135,26 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             }, 2000);
         }
     }
+
+    @Override
+    public void onClick(int viewId, int position) {
+        switch (viewId) {
+            case R.id.pop_menu_look:
+                startCourseInfoActivity(position);
+                break;
+
+        }
+    }
+
+    //前往课程信息界面
+    private void startCourseInfoActivity(int position) {
+        Intent intent = new Intent(mContext, CourseInfoActivity.class);
+        //把课程序列化进去
+        //在创建Activity的时候重新读取数据
+        intent.putExtra("Course", mModel.getCourseList().get(position));
+        mContext.startActivity(intent);
+    }
+
 
     @Override
     public Context getContext() {

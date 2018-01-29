@@ -60,7 +60,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     //当item进入前台被显示的时候回调
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         if (getItemViewType(position) == ITEM_TYPE_NORMAL) {
             //正常的课程显示
             //把拉取的数据显示出来
@@ -74,7 +74,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    mPresenter.onClick(item.getItemId());
+                    mPresenter.onClick(item.getItemId(), position);
                     return true;
                 }
             });
@@ -86,7 +86,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
                     if (v.getId() == R.id.iv_manager) {
                         popupMenu.show();
                     }
-                    mPresenter.onClick(v.getId());
+                    mPresenter.onClick(v.getId(), position);
                 }
             };
             holder.ivManager.setOnClickListener(listener);
