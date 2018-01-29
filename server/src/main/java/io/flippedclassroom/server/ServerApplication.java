@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -35,6 +36,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 	 */
 	@ApiIgnore
 	@RequestMapping("/init")
+	@Transactional
 	public String init() {
 		Logger logger = LogUtil.getLogger();
 
@@ -68,6 +70,10 @@ public class ServerApplication extends SpringBootServletInitializer {
 			userService.delete(userTeacher);
 		if (roleAdmin == null)
 			roleAdmin = new Role("admin");
+		if (roleStudent == null)
+			roleStudent = new Role("student");
+		if (roleTeacher == null)
+			roleTeacher = new Role("teacher");
 		if (courseMath != null)
 			courseService.delete(courseMath);
 		if (courseDataStructure != null)
