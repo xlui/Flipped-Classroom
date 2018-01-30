@@ -2,6 +2,7 @@ package io.flippedclassroom.android.app;
 
 import android.app.Application;
 
+import io.flippedclassroom.android.util.NetUtils;
 import io.flippedclassroom.android.util.PreferenceUtils;
 import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
@@ -12,6 +13,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         RetrofitManager.init();
+        NetUtils.init(this);
         PreferenceUtils.init(this);
         ToastUtils.init(this);
     }
