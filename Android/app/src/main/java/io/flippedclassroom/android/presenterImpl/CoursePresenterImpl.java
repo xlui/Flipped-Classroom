@@ -13,6 +13,7 @@ import java.util.List;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.CourseActivity;
 import io.flippedclassroom.android.activity.CourseInfoActivity;
+import io.flippedclassroom.android.activity.ProfileActivity;
 import io.flippedclassroom.android.activity.SettingActivity;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BasePresenter;
@@ -57,8 +58,13 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
         switch (viewId) {
             case R.id.menu_login_out:
                 loginOut();
+                break;
             case R.id.menu_setting:
                 mContext.startActivity(new Intent(mContext, SettingActivity.class));
+                break;
+            case R.id.menu_profile:
+                mContext.startActivity(new Intent(mContext, ProfileActivity.class));
+                break;
         }
     }
 

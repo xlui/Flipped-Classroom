@@ -25,18 +25,19 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.RegisteredActivity"
-
             android:parentActivityName=".activity.LoginActivity" />
-        <activity android:name=".activity.CourseActivity"
-            android:launchMode="singleTask"
-            />
+        <activity
+            android:name=".activity.CourseActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.CourseInfoActivity"
-
             android:parentActivityName=".activity.CourseActivity" />
         <activity
             android:name=".activity.SettingActivity"
             android:parentActivityName=".activity.CourseActivity" />
+        <activity android:name=".activity.ProfileActivity"
+            android:parentActivityName=".activity.CourseActivity"
+            />
     </application>
 
 </manifest>

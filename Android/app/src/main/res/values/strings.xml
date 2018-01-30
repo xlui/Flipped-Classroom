@@ -18,6 +18,7 @@
     <string name="add_new_course">添加新的课程</string>
     <string name="login_out">切换账号</string>
     <string name="account_safe">账号安全</string>
+    <string name="commit_post">确定提交</string>
     <string name="student">student</string>
     <string name="teacher">teacher</string>
 </resources>

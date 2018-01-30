@@ -25,5 +25,6 @@ public interface CoursePresenter {
     //Adapter的点击事件
     void onClick(int viewId, int position);
 
+
     Context getContext();
 }
