@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,13 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.CoursePresenterImpl;
-import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.CourseView;
 
 public class CourseActivity extends BaseActivity implements
@@ -34,6 +33,8 @@ public class CourseActivity extends BaseActivity implements
 
     @BindView(R.id.dl_drawer)
     DrawerLayout dlDrawer;
+    @BindView(R.id.fab_add_course)
+    FloatingActionButton fabAddCourse;
     private CoursePresenter mPresenter;
     SearchView svSearchView;
     @BindView(R.id.tb_toolbar)
@@ -166,9 +167,15 @@ public class CourseActivity extends BaseActivity implements
     }
 
     @Override
-    public void updateCourseList(CourseAdapter adapter) {
-        rvCoursesList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+    public void updateCourseList(final CourseAdapter adapter) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                rvCoursesList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     @Override

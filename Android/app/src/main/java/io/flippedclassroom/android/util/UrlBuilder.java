@@ -2,8 +2,11 @@ package io.flippedclassroom.android.util;
 
 import io.flippedclassroom.android.json.CourseJson;
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Path;
 
 //Url的构造工具类
 public class UrlBuilder {
@@ -11,10 +14,6 @@ public class UrlBuilder {
 
     public static String getLoginTokenUrl() {
         return BASE_URL + "login";
-    }
-
-    public static String getBaseUrl() {
-        return BASE_URL;
     }
 
     public static String getRegisteredUrl() {
@@ -25,8 +24,12 @@ public class UrlBuilder {
         return BASE_URL + "check";
     }
 
-    public static interface CourseService {
+
+    public interface CourseService {
         @GET("course")
         Observable<CourseJson> getCourseList(@Header("Authorization") String token);
+
+        @GET("course/delete/{courseId}")
+        Call<ResponseBody> deleteCourse(@Header("Authorization") String token, @Path("courseId") int courseId);
     }
 }

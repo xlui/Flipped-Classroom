@@ -17,7 +17,6 @@ import io.flippedclassroom.android.bean.Course;
 import io.flippedclassroom.android.json.CourseJson;
 import io.flippedclassroom.android.model.CourseModel;
 import io.flippedclassroom.android.presenter.CoursePresenter;
-import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.UrlBuilder;
@@ -27,6 +26,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
 public class CoursePresenterImpl extends BasePresenter implements CoursePresenter {
@@ -69,7 +69,6 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
                     @Override
                     public void onNext(List<Course> courseList) {
-                        LogUtils.show(courseList.get(0).getName());
                         ToastUtils.createToast("加载成功");
                         //存入model
                         mModel.saveCourseList(courseList);
@@ -83,7 +82,6 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
                     @Override
                     public void onError(Throwable e) {
-
                     }
 
                     @Override
@@ -142,8 +140,32 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             case R.id.pop_menu_look:
                 startCourseInfoActivity(position);
                 break;
-
+            case R.id.pop_menu_delete:
+                deleteCourse(position);
         }
+    }
+
+    //删除课程的方法
+    private void deleteCourse(final int position) {
+        //获得选择课程额Id
+        int courseId = mModel.getCourseList().get(position).getId();
+        //Retrofit发起请求
+        Retrofit retrofit = RetrofitUtils.getRetrofit();
+        UrlBuilder.CourseService courseService = retrofit.create(UrlBuilder.CourseService.class);
+        courseService.deleteCourse(mModel.getToken(), courseId).enqueue(new retrofit2.Callback<ResponseBody>() {
+            @Override
+            public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                mModel.getCourseList().remove(position);
+                CourseAdapter adapter = new CourseAdapter(mModel.getCourseList(), CoursePresenterImpl.this);
+                mView.updateCourseList(adapter);
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
     //前往课程信息界面

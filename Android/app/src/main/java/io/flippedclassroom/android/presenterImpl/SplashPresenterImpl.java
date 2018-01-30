@@ -14,7 +14,6 @@ import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 import io.flippedclassroom.android.util.HttpUtils;
-import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.SplashActivity;
 import io.flippedclassroom.android.util.UrlBuilder;
@@ -45,18 +44,15 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
             //结束SplashActivity，跳转到LoginActivity
             mView.startLoginActivity();
         } else {
-            LogUtils.show(token);
             //用token发起网路请求
-            HttpUtils.sendLoginRequest(UrlBuilder.getCheckTokenUrl(), token, new Callback() {
+            HttpUtils.sendRequest(UrlBuilder.getCheckTokenUrl(), token, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    LogUtils.show(e.getMessage());
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
-                    LogUtils.show(json);
                     try {
                         //解析json
                         JSONObject jsonObject = new JSONObject(json);
