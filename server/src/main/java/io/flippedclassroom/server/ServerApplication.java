@@ -10,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -36,7 +35,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 	 */
 	@ApiIgnore
 	@RequestMapping("/init")
-	@Transactional
 	public String init() {
 		Logger logger = LogUtil.getLogger();
 
@@ -58,6 +56,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 		Permission permissionJoin = permissionService.findPermissionByPermissionName("course:join");
 		Permission permissionViewComment = permissionService.findPermissionByPermissionName("course:comment:view");
 		Permission permissionAddComment = permissionService.findPermissionByPermissionName("course:comment:add");
+		Permission permissionUploadData = permissionService.findPermissionByPermissionName("course:data:upload");
 		// 评论初始化
 		Comment commentFirst = commentService.findCommentById(1L);
 		Comment commentSecond = commentService.findCommentById(2L);
@@ -92,6 +91,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 			permissionService.delete(permissionViewComment);
 		if (permissionAddComment != null)
 			permissionService.delete(permissionAddComment);
+		if (permissionUploadData != null)
+			permissionService.delete(permissionUploadData);
 		if (commentFirst != null)
 			commentService.delete(commentFirst);
 		if (commentSecond != null)
@@ -110,6 +111,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 		permissionJoin = new Permission("course:join");
 		permissionViewComment = new Permission("course:comment:view");
 		permissionAddComment = new Permission("course:comment:add");
+		permissionUploadData = new Permission("course:data:upload");
 		commentFirst = new Comment("Hello World!");
 		commentSecond = new Comment("这是第二条评论");
 
@@ -131,6 +133,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 		permissionJoin.setRoleList(Arrays.asList(roleStudent, roleAdmin));
 		permissionViewComment.setRoleList(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
 		permissionAddComment.setRoleList(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
+		permissionUploadData.setRoleList(Arrays.asList(roleTeacher, roleAdmin));
 
 		commentFirst.setUser(userStudent);
 		commentFirst.setCourse(courseMath);
@@ -141,7 +144,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 		logger.info("保存到数据库");
 		userService.save(Arrays.asList(userStudent, userTeacher));
 		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
-		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin, permissionViewComment, permissionAddComment));
+		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin,
+				permissionViewComment, permissionAddComment, permissionUploadData));
 		commentService.save(commentFirst);
 		commentSecond.setReply(commentFirst.getId());
 		commentService.save(commentSecond);

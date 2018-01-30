@@ -56,13 +56,17 @@ public class UserController {
 			AssertUtil.assertUsernamePasswordNotNull(newUser);
 			EncryptUtil.encrypt(newUser);
 
-			Role role = roleService.findRoleByRoleName(user.getRole().getRole());
-			if (role == null) {
+			try {
+				Role role = roleService.findRoleByRoleName(user.getRole().getRole());
+				if (role == null) {
+					return new JsonResponse(Constant.FAILED, "非法角色类型");
+				}
+				newUser.setRole(role);
+				userService.save(newUser);
+				return new JsonResponse(Constant.SUCCESS, "成功注册");
+			} catch (NullPointerException e) {
 				return new JsonResponse(Constant.FAILED, "非法角色类型");
 			}
-			newUser.setRole(role);
-			userService.save(newUser);
-			return new JsonResponse(Constant.SUCCESS, "成功注册");
 		}
 	}
 

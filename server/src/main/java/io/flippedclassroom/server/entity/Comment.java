@@ -21,12 +21,12 @@ public class Comment implements Serializable {
 	private Long reply = -1L;
 
 	// 课程评论与用户的多对一关系
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	// 课程评论与课程的多对一关系
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "course_id")
 	@JsonIgnore
 	private Course course;

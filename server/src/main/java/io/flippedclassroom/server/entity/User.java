@@ -39,7 +39,7 @@ public class User implements Serializable {
 	// 用户与角色的多对一关系
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Role role;
 
 	// 用户与课程的多对多关系，通过表 `t_user_course` 维持
@@ -48,7 +48,7 @@ public class User implements Serializable {
 	@JsonIgnore
 	private List<Course> courseList;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
 	@JsonIgnore
 	private List<Comment> commentList;
 

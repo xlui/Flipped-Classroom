@@ -27,6 +27,10 @@ public class EData implements Serializable {
 		super();
 	}
 
+	public EData(String position) {
+		this.position = position;
+	}
+
 	public Long getId() {
 		return id;
 	}
