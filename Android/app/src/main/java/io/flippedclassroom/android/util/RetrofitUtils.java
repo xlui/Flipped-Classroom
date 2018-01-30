@@ -3,6 +3,7 @@ package io.flippedclassroom.android.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.flippedclassroom.android.bean.User;
 import io.flippedclassroom.android.json.CourseJson;
 import io.reactivex.Observable;
 import okhttp3.MediaType;
@@ -29,6 +30,9 @@ public class RetrofitUtils {
 
         @GET("check")
         Call<ResponseBody> check(@Header("Authorization") String token);
+
+        @GET("profile")
+        Observable<User> getProfile(@Header("Authorization") String token);
     }
 
     public static RequestBody getLoginBody(String id, String password) {

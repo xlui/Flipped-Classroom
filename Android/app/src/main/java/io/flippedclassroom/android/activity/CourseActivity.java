@@ -3,6 +3,7 @@ package io.flippedclassroom.android.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,13 +18,17 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import butterknife.BindView;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.CoursePresenterImpl;
+import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.CourseView;
 
 public class CourseActivity extends BaseActivity implements
@@ -65,8 +70,36 @@ public class CourseActivity extends BaseActivity implements
     @Override
     protected void initViews() {
         setActionBar(tbToolbar, R.mipmap.menu, "我的课程");
+
         initCourseList();
+        initNavigationView();
+
         srlRefresh.setOnRefreshListener(this);
+    }
+
+    //测栏的顶部组件
+    CircleImageView ivUserAvatar;
+    TextView tvNickName;
+    TextView tvSignature;
+
+    //初始化测栏
+    private void initNavigationView() {
+        //获取顶部的View
+        View headLayout = nvNavigationView.getHeaderView(0);
+
+        //找到组件
+        ivUserAvatar = headLayout.findViewById(R.id.iv_user_avatar);
+        tvNickName = headLayout.findViewById(R.id.tv_nick_name);
+        tvSignature = headLayout.findViewById(R.id.tv_signature);
+
+        nvNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                closeDrawer();
+                mPresenter.onClick(item.getItemId());
+                return true;
+            }
+        });
     }
 
     //初始化RecycleView
@@ -122,7 +155,6 @@ public class CourseActivity extends BaseActivity implements
     public void onRefresh() {
         srlRefresh.setRefreshing(true);
         mPresenter.onRefresh();
-
     }
 
     @Override
@@ -176,6 +208,12 @@ public class CourseActivity extends BaseActivity implements
             }
         });
 
+    }
+
+    @Override
+    public void updateHeaderLayout(String nickName, String signature) {
+        tvNickName.setText(nickName);
+        tvSignature.setText(signature);
     }
 
     @Override

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,11 @@ import io.flippedclassroom.android.activity.CourseInfoActivity;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.Course;
+import io.flippedclassroom.android.bean.User;
 import io.flippedclassroom.android.json.CourseJson;
 import io.flippedclassroom.android.model.CourseModel;
 import io.flippedclassroom.android.presenter.CoursePresenter;
+import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.util.RetrofitUtils;
@@ -24,8 +28,14 @@ import io.flippedclassroom.android.view.CourseView;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
@@ -43,11 +53,78 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void onClick(int viewId) {
+        switch (viewId) {
+            case R.id.menu_login_out:
+                loginOut();
+        }
+    }
 
+    private void loginOut() {
+        mModel.deleteId();
+        mModel.deleteRole();
+        mModel.deleteToken();
+        mView.returnLoginActivity();
     }
 
     @Override
     public void onRefresh() {
+        getCourseList();
+        getAvatar();
+        getUserInfo();
+    }
+
+    private void getAvatar() {
+//        OkHttpClient client = new OkHttpClient();
+//        Request request = new Request.Builder().url("https://fc.xd.style/avatar").addHeader("Authorization", mModel.getToken()).build();
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//
+//            }
+//        });
+    }
+
+    //从服务器拉取用户信息
+    private void getUserInfo() {
+        //发起网络请求,拉取用户信息
+        Retrofit retrofit = RetrofitManager.getRetrofit();
+        RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
+        accountService.getProfile(mModel.getToken())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<User>() {
+                    @Override
+                    public void accept(User user) throws Exception {
+                        //处理返回结果
+                        parseUserInfo(user);
+                    }
+                });
+    }
+
+    //对用户信息拉取结果的处理
+    private void parseUserInfo(User user) {
+        String nickName = user.getNickName();
+        if (TextUtils.isEmpty(user.getNickName())) {
+            nickName = mContext.getString(R.string.default_user_name);
+        }
+
+        String signature = user.getSignature();
+        if (TextUtils.isEmpty(user.getSignature())) {
+            signature = mContext.getString(R.string.default_user_description);
+        }
+
+        //更新顶部的信息
+        mView.updateHeaderLayout(nickName, signature);
+    }
+
+
+    //从服务器拉取课程
+    private void getCourseList() {
         //发起网络请求,拉取课程列表
         Retrofit retrofit = RetrofitManager.getRetrofit();
         RetrofitUtils.CourseService courseService = retrofit.create(RetrofitUtils.CourseService.class);
@@ -61,34 +138,25 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
                 })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Course>>() {
+                .subscribe(new Consumer<List<Course>>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<Course> courseList) {
-                        ToastUtils.createToast("加载成功");
-                        //存入model
-                        mModel.saveCourseList(courseList);
-
-                        //updateList
-                        CourseAdapter adapter = new CourseAdapter(courseList, CoursePresenterImpl.this);
-                        mView.updateCourseList(adapter);
-                        //结束刷新
-                        mView.onRefreshFinish();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onComplete() {
-
+                    public void accept(List<Course> courseList) throws Exception {
+                        //处理返回的课程列表
+                        parseCourseList(courseList);
                     }
                 });
+    }
+
+    private void parseCourseList(List<Course> courseList) {
+        ToastUtils.createToast("加载成功");
+        //存入model
+        mModel.saveCourseList(courseList);
+
+        //updateList
+        CourseAdapter adapter = new CourseAdapter(courseList, CoursePresenterImpl.this);
+        mView.updateCourseList(adapter);
+        //结束刷新
+        mView.onRefreshFinish();
     }
 
     @Override

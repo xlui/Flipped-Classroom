@@ -30,4 +30,7 @@ public interface CourseView {
 
     //更新列表
     void updateCourseList(CourseAdapter adapter);
+
+    //更新测栏的顶部
+    void updateHeaderLayout(String nickName,String signature);
 }

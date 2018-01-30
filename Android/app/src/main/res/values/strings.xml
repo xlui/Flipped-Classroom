@@ -10,6 +10,7 @@
     <string name="i_am_teacher">我是老师</string>
     <string name="registered">注册</string>
     <string name="default_user_name">用户</string>
+    <string name="default_gender">不明</string>
     <string name="default_user_description">我什么都没有写</string>
     <string name="my_profile">我的主页</string>
     <string name="setting">设置</string>
