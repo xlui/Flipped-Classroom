@@ -13,14 +13,13 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
-import io.flippedclassroom.android.util.HttpUtils;
+import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.SplashActivity;
-import io.flippedclassroom.android.util.UrlBuilder;
+import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.view.SplashView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 
 public class SplashPresenterImpl extends BasePresenter implements SplashPresenter {
     private SplashModel mModel;
@@ -45,44 +44,66 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
             mView.startLoginActivity();
         } else {
             //用token发起网路请求
-            HttpUtils.sendRequest(UrlBuilder.getCheckTokenUrl(), token, new Callback() {
+            Retrofit retrofit = RetrofitManager.getRetrofit();
+            RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
+            accountService.check(token).enqueue(new retrofit2.Callback<ResponseBody>() {
                 @Override
-                public void onFailure(Call call, IOException e) {
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String json = response.body().string();
+                public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                     try {
-                        //解析json
-                        JSONObject jsonObject = new JSONObject(json);
-                        String status = jsonObject.optString("status");
-
-                        //判断验证是否成功
-                        if (status.equals("SUCCESS")) {
-                            //验证成功
-                            String student = mContext.getString(R.string.student);
-                            //判断身份，决定去往那个Activity
-                            if (role.equals(student)) {
-                                mView.startCourseActivity();
-                            } else {
-                                ToastUtils.createToast("教师登录");
-                            }
-                        } else {
-                            //验证失败
-
-                            //擦除本地的token,role,id
-                            mModel.deleteToken();
-                            mModel.deleteRole();
-                            mModel.deleteId();
-                            //前往login界面
-                            mView.startLoginActivity();
-                        }
-                    } catch (JSONException e) {
+                        String json = response.body().string();
+                        parse(json, role);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+
+                @Override
+                public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+
+                }
             });
+//            HttpUtils.sendRequest(RetrofitUtils.getCheckTokenUrl(), token, new Callback() {
+//                @Override
+//                public void onFailure(Call call, IOException e) {
+//                }
+//
+//                @Override
+//                public void onResponse(Call call, Response response) throws IOException {
+//                    String json = response.body().string();
+//                    parse(json, role);
+//                }
+//            });
+        }
+    }
+
+    private void parse(String json, String role) {
+        try {
+            //解析json
+            JSONObject jsonObject = new JSONObject(json);
+            String status = jsonObject.optString("status");
+
+            //判断验证是否成功
+            if (status.equals("SUCCESS")) {
+                //验证成功
+                String student = mContext.getString(R.string.student);
+                //判断身份，决定去往那个Activity
+                if (role.equals(student)) {
+                    mView.startCourseActivity();
+                } else {
+                    ToastUtils.createToast("教师登录");
+                }
+            } else {
+                //验证失败
+
+                //擦除本地的token,role,id
+                mModel.deleteToken();
+                mModel.deleteRole();
+                mModel.deleteId();
+                //前往login界面
+                mView.startLoginActivity();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }

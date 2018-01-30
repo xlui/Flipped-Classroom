@@ -13,13 +13,12 @@ import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.LoginModel;
 import io.flippedclassroom.android.presenter.LoginPresenter;
-import io.flippedclassroom.android.util.HttpUtils;
+import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
-import io.flippedclassroom.android.util.UrlBuilder;
+import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.view.LoginView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 
 //Login的Presenter
 public class LoginPresenterImpl extends BasePresenter implements LoginPresenter {
@@ -43,77 +42,97 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
                 break;
             //如果点击了登录的按钮
             case R.id.btn_login_button_login:
-                //登录按钮开始加载
-                mView.changeProgressStyle(20);
-                //所有View变得不可触摸
-                mView.setViewsEnabled(false);
-                //获取界面所有的text，包括账号密码
-                //texts[0]是账号，texts[1]是密码
-                final String[] texts = mView.getAllTexts();
-                //判断有没有哪个需要输入的为空
-                boolean isEmpty = checkEmpty(texts[0], texts[1]);
-                if (!isEmpty) {
-                    //如果账号密码都不为空
-
-                    //发起登录的网络请求
-                    HttpUtils.sendLoginRequest(UrlBuilder.getLoginTokenUrl(), new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String json = response.body().string();
-                            try {
-                                JSONObject jsonObject = new JSONObject(json);
-                                String status = jsonObject.optString("status");
-                                if (status.equals("SUCCESS")) {
-                                    //登陆成功
-                                    //解析JSON
-                                    String token = jsonObject.optString("token");
-                                    String role = jsonObject.optString("role");
-                                    //保存token和role
-                                    mModel.saveToken(token);
-                                    mModel.saveRole(role);
-                                    mModel.saveId(texts[0]);
-                                    //登录按钮停止加载
-                                    mView.changeProgressStyle(100);
-                                    //所有view变得可以触摸
-                                    mView.setViewsEnabled(true);
-
-                                    if (role.equals(mContext.getString(R.string.student))) {
-                                        //前往学生界面
-                                        mView.startCourseActivity();
-                                    } else {
-
-                                    }
-                                } else {
-                                    //登陆失败
-                                    ToastUtils.createToast("账号密码错误");
-
-                                    //登录按钮显示登陆失败
-                                    mView.changeProgressStyle(-1);
-                                    //所有View变得可触摸
-                                    mView.setViewsEnabled(true);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }, texts[0], texts[1]);
-                } else {
-                    //该填写的信息有为空的
-
-                    //登录按钮显示登陆失败
-                    mView.changeProgressStyle(-1);
-                    //所有View变得可触摸
-                    mView.setViewsEnabled(true);
-                }
+                login();
                 break;
             //如果点击了注册按钮
             case R.id.tv_login_registered:
                 mView.startRegisteredActivity();
+        }
+    }
+
+    //登录逻辑
+    private void login() {
+        //登录按钮开始加载
+        mView.changeProgressStyle(20);
+        //所有View变得不可触摸
+        mView.setViewsEnabled(false);
+        //获取界面所有的text，包括账号密码
+        //texts[0]是账号，texts[1]是密码
+        final String[] texts = mView.getAllTexts();
+        //判断有没有哪个需要输入的为空
+        boolean isEmpty = checkEmpty(texts[0], texts[1]);
+        if (!isEmpty) {
+            //如果账号密码都不为空
+            Retrofit retrofit = RetrofitManager.getRetrofit();
+            RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
+            accountService.login(RetrofitUtils.getLoginBody(texts[0], texts[1]))
+                    .enqueue(new retrofit2.Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<ResponseBody> call,
+                                               retrofit2.Response<ResponseBody> response) {
+                            {
+                                try {
+                                    String json = response.body().string();
+                                    parse(texts[0], texts[1], json);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+        } else {
+            //该填写的信息有为空的
+
+            //登录按钮显示登陆失败
+            mView.changeProgressStyle(-1);
+            //所有View变得可触摸
+            mView.setViewsEnabled(true);
+        }
+    }
+
+    //解析并且处理返回的数据
+    private void parse(String id, String password, String json) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String status = jsonObject.optString("status");
+        if (status.equals("SUCCESS")) {
+            //登陆成功
+            //解析JSON
+            String token = jsonObject.optString("token");
+            String role = jsonObject.optString("role");
+            //保存token和role
+            mModel.saveToken(token);
+            mModel.saveRole(role);
+            mModel.saveId(id);
+            //登录按钮停止加载
+            mView.changeProgressStyle(100);
+            //所有view变得可以触摸
+            mView.setViewsEnabled(true);
+
+            if (role.equals(mContext.getString(R.string.student))) {
+                //前往学生界面
+                mView.startCourseActivity();
+            } else {
+
+            }
+        } else {
+            //登陆失败
+            ToastUtils.createToast("账号密码错误");
+
+            //登录按钮显示登陆失败
+            mView.changeProgressStyle(-1);
+            //所有View变得可触摸
+            mView.setViewsEnabled(true);
         }
     }
 

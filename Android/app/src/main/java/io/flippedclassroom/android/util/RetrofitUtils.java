@@ -1,25 +1,69 @@
 package io.flippedclassroom.android.util;
 
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-//Retrofit工具类
+import io.flippedclassroom.android.json.CourseJson;
+import io.reactivex.Observable;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
+
+//Url的构造工具类
 public class RetrofitUtils {
-    private static Retrofit sRetrofit;
     private final static String BASE_URL = "https://fc.xd.style/";
 
-    //单例模式，避免反复重新创造
-    public static void init() {
-        if (sRetrofit == null) {
-            sRetrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-        }
+    public interface AccountService {
+        @POST("login")
+        Call<ResponseBody> login(@Body RequestBody body);
+
+        @POST("register")
+        Call<ResponseBody> register(@Body RequestBody body);
+
+        @GET("check")
+        Call<ResponseBody> check(@Header("Authorization") String token);
     }
 
-    public static Retrofit getRetrofit() {
-        return sRetrofit;
+    public static RequestBody getLoginBody(String id, String password) {
+        JSONObject jsonObject = new JSONObject();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        try {
+            jsonObject.put("username", id);
+            jsonObject.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return RequestBody.create(JSON, jsonObject.toString());
+    }
+
+    public static RequestBody getRegisteredBody(String id, String password, String role) {
+        JSONObject json = new JSONObject();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        try {
+            //生成post需要的json
+            json.put("username", id);
+            json.put("password", password);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("role", role);
+            json.putOpt("role", jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return RequestBody.create(JSON, json.toString());
+    }
+
+    public interface CourseService {
+        @GET("course")
+        Observable<CourseJson> getCourseList(@Header("Authorization") String token);
+
+        @GET("course/delete/{courseId}")
+        Call<ResponseBody> deleteCourse(@Header("Authorization") String token, @Path("courseId") int courseId);
     }
 }

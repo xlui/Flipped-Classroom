@@ -12,14 +12,13 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.RegisteredModel;
 import io.flippedclassroom.android.presenter.RegisteredPresenter;
-import io.flippedclassroom.android.util.HttpUtils;
+import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
-import io.flippedclassroom.android.util.UrlBuilder;
+import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.activity.RegisteredActivity;
 import io.flippedclassroom.android.view.RegisteredView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 
 public class RegisteredPresenterImpl extends BasePresenter implements RegisteredPresenter {
     private RegisteredModel mModel;
@@ -37,97 +36,126 @@ public class RegisteredPresenterImpl extends BasePresenter implements Registered
         switch (viewId) {
             //如果注册按钮被点击了
             case R.id.btn_registered:
-                //注册按钮开始加载
-                mView.changeProgressStyle(20);
+                register();
+                break;
+        }
+    }
+
+    private void register() {
+        //注册按钮开始加载
+        mView.changeProgressStyle(20);
+        //所有View变得不可触摸
+        mView.setViewsEnabled(false);
+
+        //获取界面所有的text，包括账号密码
+        //texts[0]是账号，texts[1]是密码，texts[2]是密码的重复
+        String[] texts = mView.getAllTexts();
+        //判断有没有哪个需要输入的为空
+        boolean isEmpty = checkEmpty(texts[0], texts[1], texts[2]);
+        if (!isEmpty) {
+            //账号密码和再次输入密码都不为空
+
+            //判断两次输入的密码是否一致
+            if (!texts[1].equals(texts[2])) {
+                //输入不一致
+                ToastUtils.createToast("两次密码不一致");
+
+                //注册按钮显示注册失败
+                mView.changeProgressStyle(-1);
                 //所有View变得不可触摸
-                mView.setViewsEnabled(false);
+                mView.setViewsEnabled(true);
 
-                //获取界面所有的text，包括账号密码
-                //texts[0]是账号，texts[1]是密码，texts[2]是密码的重复
-                String[] texts = mView.getAllTexts();
-                //判断有没有哪个需要输入的为空
-                boolean isEmpty = checkEmpty(texts[0], texts[1], texts[2]);
-                if (!isEmpty) {
-                    //账号密码和再次输入密码都不为空
+                return;
+            }
 
-                    //判断两次输入的密码是否一致
-                    if (!texts[1].equals(texts[2])) {
-                        //输入不一致
-                        ToastUtils.createToast("两次密码不一致");
+            //判断有没有选角色
+            if (mModel.getRole() == null) {
+                ToastUtils.createToast("请选择身份");
 
-                        //注册按钮显示注册失败
-                        mView.changeProgressStyle(-1);
-                        //所有View变得不可触摸
-                        mView.setViewsEnabled(true);
+                //注册按钮显示注册失败
+                mView.changeProgressStyle(-1);
+                //所有View变得可触摸
+                mView.setViewsEnabled(true);
 
-                        return;
-                    }
+                return;
+            }
 
-                    //判断有没有选角色
-                    if (mModel.getRole() == null) {
-                        ToastUtils.createToast("请选择身份");
-
-                        //注册按钮显示注册失败
-                        mView.changeProgressStyle(-1);
-                        //所有View变得可触摸
-                        mView.setViewsEnabled(true);
-
-                        return;
-                    }
-
-                    //发起注册的网络请求
-                    HttpUtils.sendRegisteredRequest(UrlBuilder.getRegisteredUrl(), new Callback() {
+            //发起注册的网络请求
+            Retrofit retrofit = RetrofitManager.getRetrofit();
+            RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
+            accountService.register(RetrofitUtils.getRegisteredBody(texts[0], texts[1], mModel.getRole()))
+                    .enqueue(new retrofit2.Callback<ResponseBody>() {
                         @Override
-                        public void onFailure(Call call, IOException e) {
-
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String json = response.body().string();
+                        public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                             try {
-                                //解析Json
-                                JSONObject jsonObject = new JSONObject(json);
-                                String status = jsonObject.optString("status");
-                                //判断注册是是否成功
-                                if (status.equals("SUCCESS")) {
-                                    //注册成功
-
-                                    //注册按钮停止加载
-                                    mView.changeProgressStyle(100);
-                                    //所有view变得可以触摸
-                                    mView.setViewsEnabled(true);
-                                    //结束注册界面，返回登录界面
-                                    //因为RegisteredActivity是LoginActivity的子Activity
-                                    //所以结束自身就会返回LoginActivity
-                                    mView.startLoginActivity();
-                                } else {
-                                    //注册失败
-
-                                    //解析注册失败的信息
-                                    String message = jsonObject.optString("message");
-                                    //弹出注册失败的信息
-                                    ToastUtils.createToast(message);
-
-                                    //注册按钮显示注册失败
-                                    mView.changeProgressStyle(-1);
-                                    //所有View变得可触摸
-                                    mView.setViewsEnabled(true);
-                                }
-                            } catch (JSONException e) {
+                                String json = response.body().string();
+                                parse(json);
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
-                    }, texts[0], texts[1], mModel.getRole());
-                } else {
-                    //该填写的信息有为空的
 
-                    //注册按钮显示注册失败
-                    mView.changeProgressStyle(-1);
-                    //所有View变得可触摸
-                    mView.setViewsEnabled(true);
-                }
-                break;
+                        @Override
+                        public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+//            HttpUtils.sendRegisteredRequest(RetrofitUtils.getRegisteredUrl(), new Callback() {
+//                @Override
+//                public void onFailure(Call call, IOException e) {
+//
+//                }
+//
+//                @Override
+//                public void onResponse(Call call, Response response) throws IOException {
+//                    String json = response.body().string();
+//                    LogUtils.show(json);
+//                    parse(json);
+//                }
+//            }, texts[0], texts[1], mModel.getRole());
+        } else {
+            //该填写的信息有为空的
+
+            //注册按钮显示注册失败
+            mView.changeProgressStyle(-1);
+            //所有View变得可触摸
+            mView.setViewsEnabled(true);
+        }
+    }
+
+    //处理拉取回来的数据
+    public void parse(String json) {
+        try {
+            //解析Json
+            JSONObject jsonObject = new JSONObject(json);
+            String status = jsonObject.optString("status");
+            //判断注册是是否成功
+            if (status.equals("SUCCESS")) {
+                //注册成功
+
+                //注册按钮停止加载
+                mView.changeProgressStyle(100);
+                //所有view变得可以触摸
+                mView.setViewsEnabled(true);
+                //结束注册界面，返回登录界面
+                //因为RegisteredActivity是LoginActivity的子Activity
+                //所以结束自身就会返回LoginActivity
+                mView.startLoginActivity();
+            } else {
+                //注册失败
+
+                //解析注册失败的信息
+                String message = jsonObject.optString("message");
+                //弹出注册失败的信息
+                ToastUtils.createToast(message);
+
+                //注册按钮显示注册失败
+                mView.changeProgressStyle(-1);
+                //所有View变得可触摸
+                mView.setViewsEnabled(true);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

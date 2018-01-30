@@ -15,4 +15,9 @@ public class RegisteredModel extends BaseModel {
     public void saveRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public String getRole() {
+        return role;
+    }
 }
