@@ -3,10 +3,12 @@ package io.flippedclassroom.server.web;
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Constant;
 import io.flippedclassroom.server.entity.*;
+import io.flippedclassroom.server.exception.PositionInvalidException;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.EDataService;
 import io.flippedclassroom.server.service.PreviewService;
 import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.ImageUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.Api;
@@ -47,25 +49,26 @@ public class FileController {
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
 	@ApiOperation(value = "获取头像", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "成功获取头像")
-	public void getAvatar(@ApiIgnore @CurrentUser User user, HttpServletResponse response) {
+	public JsonResponse getAvatar(@ApiIgnore @CurrentUser User user, HttpServletResponse response) {
 		String avatarPosition = user.getAvatar();
-		if (avatarPosition == null) {
+		try {
 			try {
+				// 保证位置合法
+				AssertUtils.assertPositionValid(avatarPosition);
+				InputStream in = new FileInputStream(user.getAvatar());
+				response.setContentType(MediaType.IMAGE_PNG_VALUE);
+				IOUtils.copy(in, response.getOutputStream());
+				return new JsonResponse(Constant.SUCCESS, "Successfully get user " + user.getId() + "'s avatar!");
+			} catch (PositionInvalidException e) {
 				String md5 = DigestUtils.md5DigestAsHex(user.getId().toString().getBytes());
 				URL url = new URL(Constant.defaultAvatarLink.replace("MD5", md5));
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(connection.getInputStream(), response.getOutputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
+				return new JsonResponse(Constant.SUCCESS, "Successfully generate avatar from gravatar!");
 			}
-		} else {
-			try {
-				InputStream in = new FileInputStream(user.getAvatar());
-				response.setContentType(MediaType.IMAGE_PNG_VALUE);
-				IOUtils.copy(in, response.getOutputStream());
-			} catch (Exception ignored) {
-			}
+		} catch (IOException ignored) {
+			return new JsonResponse(Constant.FAILED, "Something error occurs during the progress!");
 		}
 	}
 
