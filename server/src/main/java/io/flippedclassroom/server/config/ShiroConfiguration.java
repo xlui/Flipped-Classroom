@@ -6,6 +6,7 @@ import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
@@ -43,16 +44,6 @@ public class ShiroConfiguration {
 	}
 
 	/**
-	 * 多 Realm 情况下配置仅通过一个 Realm 的验证即可
-	 */
-	@Bean
-	public ModularRealmAuthenticator modularRealmAuthenticator() {
-		ModularRealmAuthenticator modularRealmAuthenticator = new ModularRealmAuthenticator();
-		modularRealmAuthenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
-		return modularRealmAuthenticator;
-	}
-
-	/**
 	 * 基于 Token 的 Realm
 	 * 注入了自定义的验证类
 	 */
@@ -72,6 +63,26 @@ public class ShiroConfiguration {
 		PasswordShiroRealm passwordShiroRealm = new PasswordShiroRealm();
 		passwordShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
 		return passwordShiroRealm;
+	}
+
+	/**
+	 * 多 Realm 情况下配置仅通过一个 Realm 的验证即可
+	 */
+	@Bean
+	public ModularRealmAuthenticator modularRealmAuthenticator() {
+		ModularRealmAuthenticator modularRealmAuthenticator = new ModularRealmAuthenticator();
+		modularRealmAuthenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+		return modularRealmAuthenticator;
+	}
+
+	/**
+	 * 开启 Shiro Aop 注解支持 `@RequiresPermissions`
+	 */
+	@Bean
+	public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+		AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+		authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+		return authorizationAttributeSourceAdvisor;
 	}
 
 	/**
@@ -108,7 +119,11 @@ public class ShiroConfiguration {
 
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
+
+		filterChainDefinitionMap.put("/check", "jwt");  // 检查 Token 的有效性
 		filterChainDefinitionMap.put("/profile", "jwt");
+		filterChainDefinitionMap.put("/avatar", "jwt");
+
 		filterChainDefinitionMap.put("/course/**", "jwt");
 		filterChainDefinitionMap.put("/**", "anon");
 

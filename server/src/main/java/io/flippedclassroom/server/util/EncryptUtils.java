@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.utils;
+package io.flippedclassroom.server.util;
 
 import io.flippedclassroom.server.config.Constant;
 import io.flippedclassroom.server.entity.User;
@@ -8,9 +8,10 @@ import org.apache.shiro.util.ByteSource;
 
 import java.util.Date;
 
-public class EncryptUtil {
+public class EncryptUtils {
 	/**
 	 * 生成随机盐，并加密密码
+	 *
 	 * @param user 需要加密密码的用户
 	 */
 	public static void encrypt(User user) {

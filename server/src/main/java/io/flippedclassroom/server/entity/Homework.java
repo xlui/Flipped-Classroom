@@ -19,7 +19,7 @@ public class Homework implements Serializable {
 	private String answer;      // 作业答案
 
 	// 课后作业与课程多对一关系
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "course_id")
 	@JsonIgnore
 	private Course course;
