@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="logo_box">
-	<h3>翻转课堂欢迎你</h3>
+	<h3>翻转课堂欢迎您</h3>
 	<form action="#" name="f" method="post">
 		<div class="input_outer">
 			<span class="u_user"></span>
@@ -22,13 +22,17 @@
 			onFocus="$('.login_password').hide()" onBlur="if(this.value=='') $('.login_password').show()" 
 			value="" type="password">
 		</div>
+		<div class=row>
+	    <input type="radio" name="user"  id="man1" value="" />&nbsp;&nbsp;教师
+        <input type="radio" name="user" id="man2" value="0" />&nbsp;&nbsp;学生        	
+	    </div>
 		<div class="mb2"><a class="act-but submit" href="huzhu/index.html" style="color: #FFFFFF">登录</a></div>
-		<input name="savesid" value="0" id="check-box" class="checkbox" type="checkbox"><span>记住用户名</span>
-	</form>
-	<a href="#" class="login-fgetpwd" style="color: #FFFFFF ">忘记密码？</a>
-
+		<div><input name="savesid" value="0" id="check-box" class="checkbox" type="checkbox">
+	    <span>记住用户名</span>	
+	    <a href="#" class="login-fgetpwd" style="color: #FFFFFF ">忘记密码？</a></div>
+    </form>
 	<div class="sas">
-		<a href="#">还没注册账号！</a>
+		<a href="regist.html">还没注册账号！</a>
 	</div>
 	<div class="sas"></div>
 </div>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>请注册</title>
+<link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+	
+<div class="logo_box">
+	<h1>&nbsp;&nbsp;&nbsp;&nbsp;<font face="verdana">翻转课堂欢迎您</h1>
+	<br>
+	<form action="#" name="f" method="post">
+		<div class="input_outer">
+			<span class="u_user"></span>
+		  <input name="reg_name" class="text" onFocus=" if(this.value=='输入ID或用户名登录') 
+			this.value=''" onBlur="if(this.value=='') this.value='输入ID或用户名登录'"  
+			style="color: rgb(255, 255, 255) !important" type="text" placeholder="输入用户名">
+		</div>
+		
+		<div class="input_outer">
+			<span class="us_uer"></span>
+			
+		  <input name="reg_pass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" 
+			onFocus="$('.login_password').hide()" onBlur="if(this.value=='') $('.login_password').show()" 
+			value="" type="password" placeholder="输入密码" size="20" maxlength="16">
+		</div>
+        <div class="input_outer">
+			<span class="us_uer"></span>
+			
+			<input name="reg_repass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" 
+			onFocus="$('.login_password').hide()" onBlur="if(this.value=='') $('.login_password').show()" 
+			value="" type="password" placeholder="确认密码" size="20" maxlength="16">
+		</div>
+        <div class="input_outer">
+			<span class="us_regis_tel"></span>
+			<input name="reg_tel" class="text" onFocus=" if(this.value=='输入手机号') 
+			this.value=''" onBlur="if(this.value=='') this.value='输入手机号'"  
+			style="color: rgb(255, 255, 255) !important" type="text" placeholder="输入手机号"  maxlength="11">
+	  </div>
+      <div class="input_outer">
+			<span class="us_regis_qq"></span>
+			<input name="reg_qq" class="text" onFocus=" if(this.value=='输入QQ号') 
+			this.value=''" onBlur="if(this.value=='') this.value='输入QQ'" 
+			style="color: rgb(255, 255, 255) !important" type="text" placeholder="输入QQ">
+	  </div>
+	  <div class=row>
+	    <input type="radio" name="user"  id="man1" value="" />&nbsp;&nbsp;教师
+        <input type="radio" name="user" id="man2" value="0" />&nbsp;&nbsp;学生        	
+	  </div>
+		<div class="mb2"><a class="act-but submit" href="#" style="color: #FFFFFF">注册</a></div>
+	
+	</form>
+
+	<div class="row tips"></div>
+	<input type="checkbox" id="checkBox">		
+		<span>我已阅读并同意
+		<a href="#" target="_blank">服务条款</a>
+		</span>
+		
+<script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
+</body>
+</html>
