@@ -3,8 +3,8 @@ package io.flippedclassroom.server;
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.entity.*;
 import io.flippedclassroom.server.service.*;
-import io.flippedclassroom.server.utils.EncryptUtil;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.EncryptUtils;
+import io.flippedclassroom.server.util.LogUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -67,7 +67,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@RequestMapping("/init")
 	@Transactional
 	public String init() {
-		Logger logger = LogUtil.getLogger();
+		Logger logger = LogUtils.getLogger();
 
 		logger.info("从数据库中查询需要初始化的实体");
 		User userStudent1 = userService.findUserByUsername("1");
@@ -137,9 +137,9 @@ public class ServerApplication extends SpringBootServletInitializer {
 		commentSecond = new Comment("这是第二条评论");
 
 		// 密码加密存储
-		EncryptUtil.encrypt(userStudent1);
-		EncryptUtil.encrypt(userStudent2);
-		EncryptUtil.encrypt(userTeacher);
+		EncryptUtils.encrypt(userStudent1);
+		EncryptUtils.encrypt(userStudent2);
+		EncryptUtils.encrypt(userTeacher);
 
 		// 设置关系
 		logger.info("设置关系");

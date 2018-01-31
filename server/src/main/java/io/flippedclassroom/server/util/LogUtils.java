@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.utils;
+package io.flippedclassroom.server.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 全局日志
  */
-public class LogUtil {
+public class LogUtils {
 	private static Logger logger = null;
 
 	public static Logger getLogger() {

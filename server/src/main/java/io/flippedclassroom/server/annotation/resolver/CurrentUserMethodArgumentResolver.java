@@ -3,7 +3,7 @@ package io.flippedclassroom.server.annotation.resolver;
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentR
 
 	@Override
 	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-		LogUtil.getLogger().info("注入当前登录用户");
+		LogUtils.getLogger().info("注入当前登录用户");
 		AuthenticationToken token = (AuthenticationToken) SecurityUtils.getSubject().getPrincipal();
 		String username = (String) token.getPrincipal();
 		if (username != null) {

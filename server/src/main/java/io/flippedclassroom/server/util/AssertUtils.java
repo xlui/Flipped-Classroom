@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.utils;
+package io.flippedclassroom.server.util;
 
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.exception.InputException;
@@ -6,7 +6,7 @@ import io.flippedclassroom.server.exception.InputException;
 /**
  * 通用断言
  */
-public class AssertUtil {
+public class AssertUtils {
 	/**
 	 * 断言用户名、密码非空
 	 *

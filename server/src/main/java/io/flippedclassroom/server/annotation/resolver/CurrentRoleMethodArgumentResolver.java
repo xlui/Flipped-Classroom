@@ -2,7 +2,7 @@ package io.flippedclassroom.server.annotation.resolver;
 
 import io.flippedclassroom.server.annotation.CurrentRole;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class CurrentRoleMethodArgumentResolver implements HandlerMethodArgumentR
 
 	@Override
 	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-		LogUtil.getLogger().info("注入当前用户的 Role");
+		LogUtils.getLogger().info("注入当前用户的 Role");
 		AuthenticationToken token = (AuthenticationToken) SecurityUtils.getSubject().getPrincipal();
 		String username = (String) token.getPrincipal();
 		if (username != null) {

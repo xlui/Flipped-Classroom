@@ -10,10 +10,10 @@ import io.flippedclassroom.server.exception.InputException;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.RoleService;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.utils.AssertUtil;
-import io.flippedclassroom.server.utils.EncryptUtil;
-import io.flippedclassroom.server.utils.JWTUtil;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.AssertUtils;
+import io.flippedclassroom.server.util.EncryptUtils;
+import io.flippedclassroom.server.util.JWTUtils;
+import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +43,12 @@ public class UserController {
 			"\n\"role\": {\"role\": \"teacher或者student\"}\n}")
 	@ApiResponse(code = 200, message = "成功注册")
 	public JsonResponse register(@RequestBody User user) throws InputException {
-		AssertUtil.assertUsernamePasswordNotNull(user);
+		AssertUtils.assertUsernamePasswordNotNull(user);
 		User newUser = new User(user.getUsername(), user.getPassword());
 		if (userService.findUserByUsername(newUser.getUsername()) != null) {
 			return new JsonResponse(Constant.FAILED, "账号已存在");
 		} else {
-			EncryptUtil.encrypt(newUser);
+			EncryptUtils.encrypt(newUser);
 
 			try {
 				Role role = roleService.findRoleByRoleName(user.getRole().getRole());
@@ -73,16 +73,16 @@ public class UserController {
 			@ApiResponse(code = 403, message = "身份认证失败！"),
 	})
 	public Map postLogin(@RequestBody User user) throws InputException {
-		AssertUtil.assertUsernamePasswordNotNull(user);
+		AssertUtils.assertUsernamePasswordNotNull(user);
 
 		// 用户登录
 		PasswordToken passwordToken = new PasswordToken(user.getUsername(), user.getPassword());
 		SecurityUtils.getSubject().login(passwordToken);
 
 		User loginUser = userService.findUserByUsername(user.getUsername());
-		String token = JWTUtil.sign(loginUser.getUsername(), loginUser.getPassword());
-		LogUtil.getLogger().info("生成 Token！\n" + token);
-		LogUtil.getLogger().info("保存 用户名-Token 对到 Redis");
+		String token = JWTUtils.sign(loginUser.getUsername(), loginUser.getPassword());
+		LogUtils.getLogger().info("生成 Token！\n" + token);
+		LogUtils.getLogger().info("保存 用户名-Token 对到 Redis");
 		redisService.save(loginUser.getUsername(), token);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();

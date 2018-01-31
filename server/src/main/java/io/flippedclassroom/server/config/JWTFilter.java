@@ -1,9 +1,9 @@
 package io.flippedclassroom.server.config;
 
 import io.flippedclassroom.server.entity.JsonResponse;
-import io.flippedclassroom.server.utils.JWTUtil;
-import io.flippedclassroom.server.utils.JsonUtil;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.JWTUtils;
+import io.flippedclassroom.server.util.JsonUtils;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import java.io.IOException;
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
-		Logger logger = LogUtil.getLogger();
+		Logger logger = LogUtils.getLogger();
 		logger.info("进入 Token 验证的 Filter");
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -33,7 +33,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 			logger.info("成功在 HTTP 头部发现 Authorization，进入 Token 验证...");
 			logger.info("记录 Authorization: " + authorization);
 			try {
-				String username = JWTUtil.getUsername(authorization);
+				String username = JWTUtils.getUsername(authorization);
 				TokenToken tokenToken = new TokenToken(username, authorization);
 				getSubject(request, response).login(tokenToken);
 				return true;
@@ -48,7 +48,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 	private boolean tokenAuthFailed(HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("utf-8");
 		JsonResponse jsonResponse = new JsonResponse(Constant.FAILED, "need token auth");
-		response.getOutputStream().print(JsonUtil.getObjectMapper().writeValueAsString(jsonResponse));
+		response.getOutputStream().print(JsonUtils.getObjectMapper().writeValueAsString(jsonResponse));
 		return false;
 	}
 }

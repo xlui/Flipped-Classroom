@@ -7,15 +7,17 @@ import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.EDataService;
 import io.flippedclassroom.server.service.PreviewService;
 import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.util.ImageUtils;
+import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -43,42 +45,52 @@ public class FileController {
 	private EDataService eDataService;
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
-	@ApiOperation(value = "获取头像")
+	@ApiOperation(value = "获取头像", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "成功获取头像")
 	public void getAvatar(@ApiIgnore @CurrentUser User user, HttpServletResponse response) {
-//		todo: Test this API
 		String avatarPosition = user.getAvatar();
 		if (avatarPosition == null) {
 			try {
-				URL url = new URL(Constant.defaultAvatarLink.replace("MD5", MD5Encoder.encode(user.getId().toString().getBytes())));
+				String md5 = DigestUtils.md5DigestAsHex(user.getId().toString().getBytes());
+				URL url = new URL(Constant.defaultAvatarLink.replace("MD5", md5));
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(connection.getInputStream(), response.getOutputStream());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else {
 			try {
-				InputStream in = new FileInputStream(new File(user.getAvatar()));
-				response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+				InputStream in = new FileInputStream(user.getAvatar());
+				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(in, response.getOutputStream());
 			} catch (Exception ignored) {
-
 			}
 		}
 	}
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.POST)
-	@ApiOperation(value = "设置头像")
+	@ApiOperation(value = "设置头像", httpMethod = "POST")
 	@ApiResponse(code = 200, message = "成功设置头像")
 	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Constant.FAILED, "upload file is null!");
 		} else {
 			try {
-				String avatarPosition = Constant.avatarPosition + "user" + user.getId();
-				FileUtils.writeByteArrayToFile(new File(avatarPosition), multipartFile.getBytes());
-				user.setAvatar(avatarPosition);
+				String fileName = multipartFile.getOriginalFilename();
+				String suffix = fileName.substring(fileName.lastIndexOf("."));
+				String avatarPosition = Constant.avatarPosition + "user-" + user.getId();
+				LogUtils.getLogger().info("上传文件后缀名：" + suffix);
+
+				FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
+
+				if (!suffix.equals(".png")) {
+					LogUtils.getLogger().info("将源文件后缀改为 png，并删除源文件");
+					ImageUtils.convertFormat(avatarPosition + suffix, avatarPosition + ".png", "PNG");
+					FileUtils.deleteQuietly(new File(avatarPosition + suffix));
+				}
+
+				user.setAvatar(avatarPosition + ".png");
 				userService.save(user);
 				return new JsonResponse(Constant.SUCCESS, "Successfully set avatar!");
 			} catch (IOException e) {
