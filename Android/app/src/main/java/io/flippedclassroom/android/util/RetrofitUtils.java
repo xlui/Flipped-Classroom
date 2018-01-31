@@ -33,6 +33,22 @@ public class RetrofitUtils {
 
         @GET("profile")
         Observable<User> getProfile(@Header("Authorization") String token);
+
+        @POST("profile")
+        Call<ResponseBody> postProfile(@Header("Authorization") String token, @Body RequestBody body);
+    }
+
+    public static RequestBody getProfileBody(User user) {
+        JSONObject jsonObject = new JSONObject();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        try {
+            jsonObject.put("nick_name", user.getNickName());
+            jsonObject.put("gender", user.getGender());
+            jsonObject.put("signature", user.getSignature());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return RequestBody.create(JSON, jsonObject.toString());
     }
 
     public static RequestBody getLoginBody(String id, String password) {

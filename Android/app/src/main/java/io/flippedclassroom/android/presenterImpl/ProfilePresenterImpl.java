@@ -28,6 +28,10 @@ import io.flippedclassroom.android.view.ProfileView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class ProfilePresenterImpl extends BasePresenter implements ProfilePresenter {
@@ -38,6 +42,10 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     private int[] ids = new int[]{R.id.tv_info_name, R.id.tv_info_value};
     private List<Map<String, String>> list = new ArrayList<>();
 
+    private static final int POSITION_NICKNAME = 1;
+    private static final int POSITION_GENDER = 2;
+    private static final int POSITION_SIGNATURE = 3;
+
     public ProfilePresenterImpl(ProfileActivity activity, Context mContext) {
         super(mContext);
         mView = activity;
@@ -46,7 +54,30 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
 
     @Override
     public void onClick(int viewId) {
+        switch (viewId) {
+            case R.id.btn_commit_post:
+                postUserInfo();
+                break;
+        }
+    }
 
+    private void postUserInfo() {
+        mView.showProgressDialog();
+        User user = mModel.getUser();
+        Retrofit retrofit = RetrofitManager.getRetrofit();
+        RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
+        accountService.postProfile(mModel.getToken(),RetrofitUtils.getProfileBody(user))
+                .enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                mView.hideProgressDialog();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
     //保存List被点击的位置
@@ -56,19 +87,14 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     public void onClick(int view, int position) {
         currentClickPosition = position;
         switch (position) {
-            case 1:
-            case 3:
+            case POSITION_NICKNAME:
+            case POSITION_SIGNATURE:
                 mView.showEditDialog();
                 break;
-            case 2:
+            case POSITION_GENDER:
                 mView.showChooseDialog();
                 break;
         }
-    }
-
-    @Override
-    public void onSelectGender(int checkedId) {
-
     }
 
     @Override
@@ -183,13 +209,13 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
         //把修改的数据保存起来
         //之后提交的时候用
         switch (position) {
-            case 1:
+            case POSITION_NICKNAME:
                 mModel.getUser().setNickName(newValue);
                 break;
-            case 2:
+            case POSITION_GENDER:
                 mModel.getUser().setGender(newValue);
                 break;
-            case 3:
+            case POSITION_SIGNATURE:
                 mModel.getUser().setSignature(newValue);
         }
 

@@ -26,11 +26,11 @@ import io.flippedclassroom.android.presenterImpl.ProfilePresenterImpl;
 import io.flippedclassroom.android.util.DialogBuilder;
 import io.flippedclassroom.android.view.ProfileView;
 
-public class ProfileActivity extends BaseActivity implements ProfileView, ListView.OnItemClickListener {
+public class ProfileActivity extends BaseActivity implements ProfileView, ListView.OnItemClickListener, View.OnClickListener {
     @BindView(R.id.civ_avatar)
     CircleImageView civAvatar;
     @BindView(R.id.btn_commit_post)
-    Button tvCommitPost;
+    Button btnCommitPost;
     @BindView(R.id.tb_toolbar)
     Toolbar tbToolbar;
     @BindView(R.id.lv_user_info_list)
@@ -60,6 +60,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
         //初始化一些弹窗
         initDialogs();
         lvUserInfoList.setOnItemClickListener(this);
+        btnCommitPost.setOnClickListener(this);
     }
 
     //加载Dialog
@@ -107,7 +108,12 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
 
     @Override
     public void hideProgressDialog() {
-        mProgressDialog.cancel();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.cancel();
+            }
+        });
     }
 
     @Override
@@ -130,5 +136,10 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mPresenter.onClick(view.getId(), position);
+    }
+
+    @Override
+    public void onClick(View v) {
+        mPresenter.onClick(v.getId());
     }
 }
