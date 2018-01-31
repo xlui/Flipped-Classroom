@@ -13,6 +13,7 @@ import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
+import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.SplashActivity;
@@ -62,17 +63,6 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
 
                 }
             });
-//            HttpUtils.sendRequest(RetrofitUtils.getCheckTokenUrl(), token, new Callback() {
-//                @Override
-//                public void onFailure(Call call, IOException e) {
-//                }
-//
-//                @Override
-//                public void onResponse(Call call, Response response) throws IOException {
-//                    String json = response.body().string();
-//                    parse(json, role);
-//                }
-//            });
         }
     }
 
