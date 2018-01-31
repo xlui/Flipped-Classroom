@@ -18,7 +18,6 @@ import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,21 +38,16 @@ public class UserController {
 	private RedisService redisService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@Transactional
 	@ApiOperation(value = "用户注册", httpMethod = "POST")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "user", value = "\\{\n\"username\": \"新用户的用户名\",\n\"password\": \"新用户的密码\"," +
-					"\n\"role\": {\"role\": \"teacher或者student\"}\n}"),
-	})
-	@ApiResponses({
-			@ApiResponse(code = 200, message = "成功注册"),
-	})
+	@ApiImplicitParam(name = "user", value = "\\{\n\"username\": \"新用户的用户名\",\n\"password\": \"新用户的密码\"," +
+			"\n\"role\": {\"role\": \"teacher或者student\"}\n}")
+	@ApiResponse(code = 200, message = "成功注册")
 	public JsonResponse register(@RequestBody User user) throws InputException {
+		AssertUtil.assertUsernamePasswordNotNull(user);
 		User newUser = new User(user.getUsername(), user.getPassword());
 		if (userService.findUserByUsername(newUser.getUsername()) != null) {
 			return new JsonResponse(Constant.FAILED, "账号已存在");
 		} else {
-			AssertUtil.assertUsernamePasswordNotNull(newUser);
 			EncryptUtil.encrypt(newUser);
 
 			try {
@@ -70,11 +64,9 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户名密码登录", httpMethod = "POST")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "user", value = "{\n\"username\":\"1\",\n \"password\":\"dev\" \n}", required = true, dataType = "string", paramType = "body")
-	})
+	@ApiImplicitParam(name = "user", value = "{\n\"username\":\"1\",\n \"password\":\"dev\" \n}", required = true, dataType = "string", paramType = "body")
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "为用户生成的 Token"),
 			@ApiResponse(code = 401, message = "权限认证失败！"),
@@ -90,6 +82,7 @@ public class UserController {
 		User loginUser = userService.findUserByUsername(user.getUsername());
 		String token = JWTUtil.sign(loginUser.getUsername(), loginUser.getPassword());
 		LogUtil.getLogger().info("生成 Token！\n" + token);
+		LogUtil.getLogger().info("保存 用户名-Token 对到 Redis");
 		redisService.save(loginUser.getUsername(), token);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
@@ -102,7 +95,7 @@ public class UserController {
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
 	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "Token 有效")
-	public JsonResponse check() {
+	public JsonResponse check() {    // 也用作 Token 登录校验
 		return new JsonResponse(Constant.SUCCESS, "Token is valid");
 	}
 
@@ -117,7 +110,7 @@ public class UserController {
 		return map;
 	}
 
-	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "需要 Token 验证")
 	@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
 	@ApiResponses({

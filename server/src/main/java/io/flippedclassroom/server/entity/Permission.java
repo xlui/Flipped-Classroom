@@ -18,7 +18,7 @@ public class Permission implements Serializable {
 	private String permission;      // 权限名
 
 	// 权限与角色的多对多关系
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinTable(name = "t_role_permission", joinColumns = {@JoinColumn(name = "permission_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
 	private List<Role> roleList;
 

@@ -1,6 +1,6 @@
 package io.flippedclassroom.server.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -20,15 +20,15 @@ public class Comment implements Serializable {
 	private Date date = new Date();
 	private Long reply = -1L;
 
-	// 课程评论与用户的多对一关系
-	@ManyToOne(cascade = CascadeType.MERGE)
+	// 课程评论与用户的多对一关系，单向关系
+	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	// 课程评论与课程的多对一关系
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "course_id")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Course course;
 
 	public Comment() {

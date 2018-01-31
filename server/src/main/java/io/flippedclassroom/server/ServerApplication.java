@@ -1,5 +1,6 @@
 package io.flippedclassroom.server;
 
+import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.entity.*;
 import io.flippedclassroom.server.service.*;
 import io.flippedclassroom.server.utils.EncryptUtil;
@@ -10,14 +11,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 @RestController
+@ApiIgnore
 public class ServerApplication extends SpringBootServletInitializer {
 	@Autowired
 	private UserService userService;
@@ -30,16 +34,44 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@Autowired
 	private CommentService commentService;
 
+	@RequestMapping("/")
+	public String index() {
+		return "<html>\n" +
+				"<head>\n" +
+				"    <meta charset=\"utf-8\"/>\n" +
+				"    <title>XD</title>\n" +
+				"</head>\n" +
+				"<body>\n" +
+				"<p>Hello fc.xd.style!</p>\n" +
+				"<br/>\n" +
+				"<p>API 说明：<a href=\"https://fc.xd.style/swagger-ui.html\">httpsL//fc.xd.style/swagger-ui.html</a>\n" +
+				"</body>\n" +
+				"</html>\n";
+	}
+
+	/**
+	 * 测试 Token 的有效性
+	 */
+	@RequestMapping("/hello")
+	public String hello(@CurrentUser User user) {
+		String username = user.getUsername();
+		if (username != null) {
+			return "Hello " + username;
+		}
+		return "Hello World!";
+	}
+
 	/**
 	 * 负责数据库的初始化
 	 */
-	@ApiIgnore
 	@RequestMapping("/init")
+	@Transactional
 	public String init() {
 		Logger logger = LogUtil.getLogger();
 
 		logger.info("从数据库中查询需要初始化的实体");
-		User userStudent = userService.findUserByUsername("1");
+		User userStudent1 = userService.findUserByUsername("1");
+		User userStudent2 = userService.findUserByUsername("3");
 		User userTeacher = userService.findUserByUsername("2");
 		// 角色默认有三种：学生、教师、管理员
 		Role roleStudent = roleService.findRoleByRoleName("student");
@@ -58,49 +90,38 @@ public class ServerApplication extends SpringBootServletInitializer {
 		Permission permissionAddComment = permissionService.findPermissionByPermissionName("course:comment:add");
 		Permission permissionUploadData = permissionService.findPermissionByPermissionName("course:data:upload");
 		// 评论初始化
-		Comment commentFirst = commentService.findCommentById(1L);
-		Comment commentSecond = commentService.findCommentById(2L);
+		List<Comment> comments = commentService.findCommentsByCourse(courseMath);
+		Comment commentFirst = null, commentSecond = null;
+		if (comments.size() > 0) {
+			commentFirst = comments.get(0);
+			commentSecond = comments.get(1);
+		}
 
 		// 如果数据库中存在这些实体，删除并重新初始化
 		logger.info("如果数据库中存在初始化信息，删除");
-		if (userStudent != null)
-			userService.delete(userStudent);
-		if (userTeacher != null)
-			userService.delete(userTeacher);
-		if (roleAdmin == null)
-			roleAdmin = new Role("admin");
-		if (roleStudent == null)
-			roleStudent = new Role("student");
-		if (roleTeacher == null)
-			roleTeacher = new Role("teacher");
-		if (courseMath != null)
-			courseService.delete(courseMath);
-		if (courseDataStructure != null)
-			courseService.delete(courseDataStructure);
-		if (courseDatabase != null)
-			courseService.delete(courseDatabase);
-		if (permissionUpdate != null)
-			permissionService.delete(permissionUpdate);
-		if (permissionDelete != null)
-			permissionService.delete(permissionDelete);
-		if (permissionCreate != null)
-			permissionService.delete(permissionCreate);
-		if (permissionJoin != null)
-			permissionService.delete(permissionJoin);
-		if (permissionViewComment != null)
-			permissionService.delete(permissionViewComment);
-		if (permissionAddComment != null)
-			permissionService.delete(permissionAddComment);
-		if (permissionUploadData != null)
-			permissionService.delete(permissionUploadData);
-		if (commentFirst != null)
-			commentService.delete(commentFirst);
-		if (commentSecond != null)
-			commentService.delete(commentSecond);
+		if (userStudent1 != null) userService.delete(userStudent1);
+		if (userStudent2 != null) userService.delete(userStudent2);
+		if (userTeacher != null) userService.delete(userTeacher);
+		if (roleAdmin == null) roleAdmin = new Role("admin");
+		if (roleStudent == null) roleStudent = new Role("student");
+		if (roleTeacher == null) roleTeacher = new Role("teacher");
+		if (courseMath != null) courseService.delete(courseMath);
+		if (courseDataStructure != null) courseService.delete(courseDataStructure);
+		if (courseDatabase != null) courseService.delete(courseDatabase);
+		if (permissionUpdate != null) permissionService.delete(permissionUpdate);
+		if (permissionDelete != null) permissionService.delete(permissionDelete);
+		if (permissionCreate != null) permissionService.delete(permissionCreate);
+		if (permissionJoin != null) permissionService.delete(permissionJoin);
+		if (permissionViewComment != null) permissionService.delete(permissionViewComment);
+		if (permissionAddComment != null) permissionService.delete(permissionAddComment);
+		if (permissionUploadData != null) permissionService.delete(permissionUploadData);
+		if (commentFirst != null) commentService.delete(commentFirst);
+		if (commentSecond != null) commentService.delete(commentSecond);
 
 		// 重新初始化
 		logger.info("重新初始化...");
-		userStudent = new User("1", "dev");
+		userStudent1 = new User("1", "dev");
+		userStudent2 = new User("3", "dev");
 		userTeacher = new User("2", "std");
 		courseMath = new Course("数学", "数学专业");
 		courseDataStructure = new Course("数据结构", "计算机专业");
@@ -116,14 +137,16 @@ public class ServerApplication extends SpringBootServletInitializer {
 		commentSecond = new Comment("这是第二条评论");
 
 		// 密码加密存储
-		EncryptUtil.encrypt(userStudent);
+		EncryptUtil.encrypt(userStudent1);
+		EncryptUtil.encrypt(userStudent2);
 		EncryptUtil.encrypt(userTeacher);
 
 		// 设置关系
 		logger.info("设置关系");
-		userStudent.setRole(roleStudent);
-		userStudent.setCourseList(Arrays.asList(courseDataStructure, courseDatabase));
-
+		userStudent1.setRole(roleStudent);
+		userStudent1.setCourseList(Arrays.asList(courseMath, courseDatabase, courseDataStructure));
+		userStudent2.setRole(roleStudent);
+		userStudent2.setCourseList(Arrays.asList(courseDataStructure, courseDatabase));
 		userTeacher.setRole(roleTeacher);
 		userTeacher.setCourseList(Arrays.asList(courseMath, courseDatabase, courseDataStructure));
 
@@ -135,20 +158,36 @@ public class ServerApplication extends SpringBootServletInitializer {
 		permissionAddComment.setRoleList(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
 		permissionUploadData.setRoleList(Arrays.asList(roleTeacher, roleAdmin));
 
-		commentFirst.setUser(userStudent);
+		commentFirst.setUser(userStudent1);
 		commentFirst.setCourse(courseMath);
 		commentSecond.setUser(userTeacher);
 		commentSecond.setCourse(courseMath);
 
 		// 保存
 		logger.info("保存到数据库");
-		userService.save(Arrays.asList(userStudent, userTeacher));
-		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
-		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin,
-				permissionViewComment, permissionAddComment, permissionUploadData));
+		userService.save(userStudent1);
+		userService.save(userStudent2);
+		userService.save(userTeacher);
+		roleService.save(roleStudent);
+		roleService.save(roleTeacher);
+		roleService.save(roleAdmin);
+		permissionService.save(permissionAddComment);
+		permissionService.save(permissionCreate);
+		permissionService.save(permissionDelete);
+		permissionService.save(permissionJoin);
+		permissionService.save(permissionUpdate);
+		permissionService.save(permissionUploadData);
+		permissionService.save(permissionViewComment);
 		commentService.save(commentFirst);
 		commentSecond.setReply(commentFirst.getId());
 		commentService.save(commentSecond);
+//		userService.save(Arrays.asList(userStudent1, userStudent2, userTeacher));
+//		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
+//		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin,
+//				permissionViewComment, permissionAddComment, permissionUploadData));
+//		commentService.save(commentFirst);
+//		commentSecond.setReply(commentFirst.getId());
+//		commentService.save(commentSecond);
 
 		return "init success";
 	}

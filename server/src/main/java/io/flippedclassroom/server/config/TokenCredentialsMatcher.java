@@ -30,6 +30,7 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 
 		// Redis Check First
 		if (!redisService.get(principal).equals(credentials)) {
+			logger.info("Redis 校验失败！！！");
 			return false;
 		}
 
