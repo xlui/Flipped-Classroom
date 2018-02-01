@@ -1,6 +1,8 @@
 package io.flippedclassroom.android.view;
 
 
+import android.graphics.Bitmap;
+
 import io.flippedclassroom.android.adapter.CourseAdapter;
 
 public interface CourseView {
@@ -32,5 +34,8 @@ public interface CourseView {
     void updateCourseList(CourseAdapter adapter);
 
     //更新测栏的顶部
-    void updateHeaderLayout(String nickName,String signature);
+    void updateHeaderText(String nickName,String signature);
+
+    //设置头像
+    void updateAvatar(Bitmap avatar);
 }

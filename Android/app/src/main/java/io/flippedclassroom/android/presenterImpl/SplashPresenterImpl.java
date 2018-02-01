@@ -10,16 +10,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
-import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.SplashActivity;
-import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.view.SplashView;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SplashPresenterImpl extends BasePresenter implements SplashPresenter {
@@ -44,12 +46,9 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
             //结束SplashActivity，跳转到LoginActivity
             mView.startLoginActivity();
         } else {
-            //用token发起网路请求
-            Retrofit retrofit = RetrofitManager.getRetrofit();
-            RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
-            accountService.check(token).enqueue(new retrofit2.Callback<ResponseBody>() {
+            AppCache.getRetrofitService().check(mModel.getToken(), new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     try {
                         String json = response.body().string();
                         parse(json, role);
@@ -59,7 +58,7 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
                 }
 
                 @Override
-                public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
 
                 }
             });

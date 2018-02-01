@@ -35,9 +35,14 @@
         <activity
             android:name=".activity.SettingActivity"
             android:parentActivityName=".activity.CourseActivity" />
-        <activity android:name=".activity.ProfileActivity"
-            android:parentActivityName=".activity.CourseActivity"
-            />
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:parentActivityName=".activity.CourseActivity" />
+
+        <service
+            android:name=".service.RetrofitService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

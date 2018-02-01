@@ -1,14 +1,11 @@
 package io.flippedclassroom.android.presenterImpl;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +14,12 @@ import java.util.TreeMap;
 
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.activity.ProfileActivity;
+import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.User;
 import io.flippedclassroom.android.model.ProfileModel;
 import io.flippedclassroom.android.presenter.ProfilePresenter;
 import io.flippedclassroom.android.util.RetrofitManager;
-import io.flippedclassroom.android.util.RetrofitUtils;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.ProfileView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -64,10 +61,7 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     private void postUserInfo() {
         mView.showProgressDialog();
         User user = mModel.getUser();
-        Retrofit retrofit = RetrofitManager.getRetrofit();
-        RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
-        accountService.postProfile(mModel.getToken(),RetrofitUtils.getProfileBody(user))
-                .enqueue(new Callback<ResponseBody>() {
+        AppCache.getRetrofitService().postProfile(user, mModel.getToken(), new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 mView.hideProgressDialog();
@@ -144,10 +138,7 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     }
 
     private void loadTextInfo() {
-        Retrofit retrofit = RetrofitManager.getRetrofit();
-        RetrofitUtils.AccountService accountService = retrofit.create(RetrofitUtils.AccountService.class);
-        accountService.getProfile(mModel.getToken()).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<User>() {
+        AppCache.getRetrofitService().getProfile(mModel.getToken(), new Consumer<User>() {
             @Override
             public void accept(User user) throws Exception {
                 //缓存数据
