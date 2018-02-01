@@ -1,6 +1,6 @@
 package io.flippedclassroom.server.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -18,7 +18,9 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private String username;    // 用户名
 	@Column(nullable = false)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;    // 密码加盐 hash
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String salt;        // 每个用户唯一的盐
 
 	// 以下均可选
@@ -28,24 +30,22 @@ public class User implements Serializable {
 	private String signature;   // 个性签名
 
 	// 用户与认证情况的一对一关系
-	@OneToOne(cascade = CascadeType.ALL)    // 用户是关系的维护端
-	@JoinColumn(name = "auth_id")           // 指定外键名称
-	@Fetch(FetchMode.JOIN)                  // 会使用 left join 查询，只产生一条 sql 语句
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)    // 用户是关系的维护端
+	@JoinColumn(name = "auth_id")                                // 指定外键名称
+	@Fetch(FetchMode.JOIN)                                        // 会使用 left join 查询，只产生一条 sql 语句
 	private Authentication authentication;
 
-	// 用户与角色的多对一关系
-	@ManyToOne(cascade = CascadeType.ALL)
+	// 用户与角色的多对一关系，单向关系
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Role role;
 
 	// 用户与课程的多对多关系，通过表 `t_user_course` 维持
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "course_id")})
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private List<Course> courseList;
-
-	@OneToMany(mappedBy = "user")
-	@JsonIgnore
-	private List<Comment> commentList;
 
 	public User() {
 		super();
@@ -148,13 +148,5 @@ public class User implements Serializable {
 
 	public void setCourseList(List<Course> courseList) {
 		this.courseList = courseList;
-	}
-
-	public List<Comment> getCommentList() {
-		return commentList;
-	}
-
-	public void setCommentList(List<Comment> commentList) {
-		this.commentList = commentList;
 	}
 }

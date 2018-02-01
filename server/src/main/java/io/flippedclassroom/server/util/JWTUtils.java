@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.utils;
+package io.flippedclassroom.server.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Token 生成与校验
  */
-public class JWTUtil {
+public class JWTUtils {
 	/**
 	 * 校验 token
 	 *

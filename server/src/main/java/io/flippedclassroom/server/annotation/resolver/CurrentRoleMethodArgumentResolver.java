@@ -1,7 +1,6 @@
 package io.flippedclassroom.server.annotation.resolver;
 
-import io.flippedclassroom.server.annotation.CurrentUser;
-import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.annotation.CurrentRole;
 import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.SecurityUtils;
@@ -16,23 +15,22 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Component
-public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentRoleMethodArgumentResolver implements HandlerMethodArgumentResolver {
 	@Autowired
 	private UserService userService;
 
 	@Override
 	public boolean supportsParameter(MethodParameter methodParameter) {
-		return methodParameter.getParameterType().isAssignableFrom(User.class) &&
-				methodParameter.hasParameterAnnotation(CurrentUser.class);
+		return methodParameter.getParameterType().isAssignableFrom(String.class) && methodParameter.hasParameterAnnotation(CurrentRole.class);
 	}
 
 	@Override
 	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-		LogUtils.getLogger().info("注入当前登录用户");
+		LogUtils.getLogger().info("注入当前用户的 Role");
 		AuthenticationToken token = (AuthenticationToken) SecurityUtils.getSubject().getPrincipal();
 		String username = (String) token.getPrincipal();
 		if (username != null) {
-			return userService.findUserByUsername(username);
+			return userService.findUserByUsername(username).getRole().getRole();
 		}
 		throw new MissingServletRequestPartException("Injection Failed!");
 	}

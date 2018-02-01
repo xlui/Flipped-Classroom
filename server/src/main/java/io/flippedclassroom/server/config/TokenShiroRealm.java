@@ -1,18 +1,27 @@
 package io.flippedclassroom.server.config;
 
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.entity.Permission;
+import io.flippedclassroom.server.entity.Role;
+import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Shiro Realm 1: Token 登录验证
  */
 public class TokenShiroRealm extends AuthorizingRealm {
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * 通过重写 supports 方法来避免重复校验
 	 */
@@ -26,7 +35,20 @@ public class TokenShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-		return null;
+		LogUtils.getLogger().info("在 Token 验证中，开始 给用户赋予权限");
+		SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+		TokenToken tokenToken = (TokenToken) principalCollection.getPrimaryPrincipal();
+		User user = userService.findUserByUsername((String) tokenToken.getPrincipal());
+
+		// 可以在这里进行缓存
+
+		Role role = user.getRole();
+		authorizationInfo.addRole(role.getRole());
+		for (Permission permission : role.getPermissionList()) {
+			authorizationInfo.addStringPermission(permission.getPermission());
+		}
+
+		return authorizationInfo;
 	}
 
 	/**
@@ -34,9 +56,9 @@ public class TokenShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-		LogUtil.getLogger().info("开始 token 认证");
+		LogUtils.getLogger().info("开始 token 认证");
 		TokenToken tokenToken = (TokenToken) authenticationToken;
-		LogUtil.getLogger().info("从输入得到的用户名：" + tokenToken.getPrincipal());
+		LogUtils.getLogger().info("从输入得到的用户名：" + tokenToken.getPrincipal());
 
 		return new SimpleAuthenticationInfo(
 				tokenToken,

@@ -19,7 +19,7 @@ public class Quiz implements Serializable {
 	private String answer;      // 题目答案
 
 	// 随堂测试与课程的多对一关系
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "course_id")
 	@JsonIgnore
 	private Course course;

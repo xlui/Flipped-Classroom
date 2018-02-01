@@ -3,8 +3,8 @@ package io.flippedclassroom.server.config;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.utils.JWTUtil;
-import io.flippedclassroom.server.utils.LogUtil;
+import io.flippedclassroom.server.util.JWTUtils;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
@@ -22,7 +22,7 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 
 	@Override
 	public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-		Logger logger = LogUtil.getLogger();
+		Logger logger = LogUtils.getLogger();
 
 		logger.info("进入自定义 Token 校验！");
 		String principal = (String) token.getPrincipal();
@@ -30,12 +30,13 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 
 		// Redis Check First
 		if (!redisService.get(principal).equals(credentials)) {
+			logger.info("Redis 校验失败！！！");
 			return false;
 		}
 
 		logger.info("Token 中的信息：\n" + principal + ", " + credentials);
 		User user = userService.findUserByUsername(principal);
 
-		return JWTUtil.verify(credentials, user.getUsername(), user.getPassword());
+		return JWTUtils.verify(credentials, user.getUsername(), user.getPassword());
 	}
 }
