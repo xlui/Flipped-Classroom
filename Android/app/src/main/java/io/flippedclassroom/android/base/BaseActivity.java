@@ -10,10 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.WindowManager;
 
 import butterknife.ButterKnife;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
-//Activity的基类，利用泛型来组合Presenter
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
-    protected T mPresenter;
+//Activity的基类
+public abstract class BaseActivity extends SwipeBackActivity {
     private boolean isLife = true;
 
     @Override
@@ -21,6 +21,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
         ButterKnife.bind(this);
+        //默认不能滑动退出
+        getSwipeBackLayout().setEnableGesture(false);
         initPresenter();
         initViews();
     }

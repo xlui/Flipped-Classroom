@@ -1,14 +1,12 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.app.AppCache;
-import io.flippedclassroom.android.util.PreferenceUtils;
+import android.content.Context;
 
-public class LoginModel {
-    public void saveToken(String token) {
-        PreferenceUtils.saveToken(token);
-    }
+import io.flippedclassroom.android.base.BaseModel;
 
-    public void saveRole(String role) {
-        PreferenceUtils.saveRole(role);
+public class LoginModel extends BaseModel {
+
+    public LoginModel(Context mContext) {
+        super(mContext);
     }
 }

@@ -1,25 +1,27 @@
-package io.flippedclassroom.android.view;
+package io.flippedclassroom.android.activity;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.RegisteredPresenter;
+import io.flippedclassroom.android.presenterImpl.RegisteredPresenterImpl;
+import io.flippedclassroom.android.view.RegisteredView;
 
-//注册的Activity，显示注册界面和注册界面的生命周期
-public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
+public class RegisteredActivity extends BaseActivity implements RegisteredView,
+        View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+    private RegisteredPresenter mPresenter;
+
     @BindView(R.id.tb_toolbar)
     Toolbar tbToolbar;
     @BindView(R.id.til_user_id)
@@ -44,14 +46,14 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new RegisteredPresenter(this);
+        mPresenter = new RegisteredPresenterImpl(this, getContext());
     }
 
     @Override
     protected void initViews() {
         setActionBar(tbToolbar, 0, "注册");
-        btnRegistered.setOnClickListener(mPresenter);
-        rgRadioGroup.setOnCheckedChangeListener(mPresenter);
+        btnRegistered.setOnClickListener(this);
+        rgRadioGroup.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -60,7 +62,8 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
     }
 
     //获取所有的Text
-    public String[] getAllText() {
+    @Override
+    public String[] getAllTexts() {
         Editable id = tilUserId.getEditText().getText();
         Editable password = tilUserPassword.getEditText().getText();
         Editable passwordAgain = tilPasswordAgain.getEditText().getText();
@@ -82,7 +85,7 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
     //为100显示加载成功
     //1-99显示加载中
     //-1表示加载失败
-    public void loading(final int progress) {
+    public void changeProgressStyle(final int progress) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -92,7 +95,7 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
     }
 
     //设置各个View的是否可以触摸
-    public void setEnabled(final boolean canCheck) {
+    public void setViewsEnabled(final boolean canCheck) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -105,13 +108,18 @@ public class RegisteredActivity extends BaseActivity<RegisteredPresenter> {
         });
     }
 
-    //当点击右上角的返回按钮的时候回调该方法
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-        }
-        return true;
+    public void startLoginActivity() {
+        finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        mPresenter.onClick(v.getId());
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        mPresenter.onCheckedChanged(checkedId);
     }
 }

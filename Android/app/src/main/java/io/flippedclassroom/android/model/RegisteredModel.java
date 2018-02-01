@@ -1,15 +1,23 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.util.PreferenceUtils;
+import android.content.Context;
 
-public class RegisteredModel {
+import io.flippedclassroom.android.base.BaseModel;
+
+public class RegisteredModel extends BaseModel {
     private String role;
 
-    public String getRole() {
-        return role;
+    public RegisteredModel(Context mContext) {
+        super(mContext);
     }
 
-    public void setRole(String role) {
+    @Override
+    public void saveRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public String getRole() {
+        return role;
     }
 }

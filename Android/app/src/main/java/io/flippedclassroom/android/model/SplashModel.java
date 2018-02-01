@@ -1,14 +1,13 @@
 package io.flippedclassroom.android.model;
 
-import io.flippedclassroom.android.util.PreferenceUtils;
+import android.content.Context;
 
-public class SplashModel {
+import io.flippedclassroom.android.base.BaseModel;
 
-    public String getToken() {
-        return PreferenceUtils.getToken();
+public class SplashModel extends BaseModel {
+
+    public SplashModel(Context mContext) {
+        super(mContext);
     }
 
-    public String getRole() {
-        return PreferenceUtils.getRole();
-    }
 }
