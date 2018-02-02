@@ -37,6 +37,8 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 		logger.info("Token 中的信息：\n" + principal + ", " + credentials);
 		User user = userService.findUserByUsername(principal);
 
-		return JWTUtils.verify(credentials, user.getUsername(), user.getPassword());
+		boolean result = JWTUtils.verify(credentials, user.getUsername(), user.getPassword());
+		logger.info("Token 校验结果：" + result);
+		return result;
 	}
 }

@@ -7,6 +7,7 @@ import io.flippedclassroom.server.util.EncryptUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -22,7 +23,7 @@ import java.util.List;
 @SpringBootApplication
 @RestController
 @ApiIgnore
-public class ServerApplication extends SpringBootServletInitializer {
+public class ServerApplication extends SpringBootServletInitializer implements CommandLineRunner {
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -181,13 +182,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 		commentService.save(commentFirst);
 		commentSecond.setReply(commentFirst.getId());
 		commentService.save(commentSecond);
-//		userService.save(Arrays.asList(userStudent1, userStudent2, userTeacher));
-//		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
-//		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin,
-//				permissionViewComment, permissionAddComment, permissionUploadData));
-//		commentService.save(commentFirst);
-//		commentSecond.setReply(commentFirst.getId());
-//		commentService.save(commentSecond);
 
 		return "init success";
 	}
@@ -199,5 +193,10 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder.sources(ServerApplication.class);
+	}
+
+	@Override
+	public void run(String... strings) {
+		System.out.println("测试命令行代码");
 	}
 }

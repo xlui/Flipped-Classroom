@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public class Constant {
 	// version
-	public static final String swaggerVersion = "v0.2.13";
+	public static final String swaggerVersion = "v0.3.0";
 	public static final String version = "v0.0.1";
 
 	// Password Encrypt
