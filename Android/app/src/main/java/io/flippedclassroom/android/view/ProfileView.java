@@ -1,5 +1,6 @@
 package io.flippedclassroom.android.view;
 
+import android.graphics.Bitmap;
 import android.widget.ListAdapter;
 
 public interface ProfileView {
@@ -21,4 +22,10 @@ public interface ProfileView {
 
     //显示选择弹窗
     void showChooseDialog();
+
+    //设置头像
+    void setAvatar(Bitmap bitmap);
+
+    //打开图库
+    void openGallery();
 }
