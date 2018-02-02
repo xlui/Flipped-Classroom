@@ -2,16 +2,22 @@ package io.flippedclassroom.android.presenterImpl;
 
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
+import io.flippedclassroom.android.config.PermissionConfig;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 import io.flippedclassroom.android.util.RetrofitManager;
@@ -62,6 +68,25 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
 
                 }
             });
+        }
+    }
+
+    @Override
+    public void requestPermissions() {
+        //权限申请
+        List<String> permissions = new ArrayList<>();
+        for (String permission : PermissionConfig.permissions) {
+            //逐条权限核对
+            if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(), permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(permission);
+            }
+        }
+        if (!permissions.isEmpty()) {
+            ActivityCompat.requestPermissions((SplashActivity) mContext,
+                    permissions.toArray(new String[permissions.size()]), 1);
+        } else {
+            mView.bindService();
         }
     }
 

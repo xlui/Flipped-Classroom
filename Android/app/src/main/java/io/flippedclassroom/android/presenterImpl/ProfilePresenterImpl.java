@@ -1,12 +1,29 @@
 package io.flippedclassroom.android.presenterImpl;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Binder;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +36,18 @@ import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.User;
 import io.flippedclassroom.android.model.ProfileModel;
 import io.flippedclassroom.android.presenter.ProfilePresenter;
+import io.flippedclassroom.android.util.LogUtils;
 import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.ProfileView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,9 +62,12 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     private int[] ids = new int[]{R.id.tv_info_name, R.id.tv_info_value};
     private List<Map<String, String>> list = new ArrayList<>();
 
-    private static final int POSITION_NICKNAME = 1;
-    private static final int POSITION_GENDER = 2;
-    private static final int POSITION_SIGNATURE = 3;
+    private final int POSITION_NICKNAME = 1;
+    private final int POSITION_GENDER = 2;
+    private final int POSITION_SIGNATURE = 3;
+
+    private final long MAX_FILE_SIZE = 2 * 1024 * 1024;
+    private boolean hasSetAvatar = false;
 
     public ProfilePresenterImpl(ProfileActivity activity, Context mContext) {
         super(mContext);
@@ -54,6 +80,9 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
         switch (viewId) {
             case R.id.btn_commit_post:
                 postUserInfo();
+                break;
+            case R.id.civ_avatar:
+                mView.openGallery();
                 break;
         }
     }
@@ -111,6 +140,68 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
         }
     }
 
+
+    @Override
+    public void onSelectImage(Uri uri) {
+        //两种情况存在
+        String filePath = "";
+        long fileSize = 0;
+        //URI的scheme直接就是file://.....
+        if ("file".equals(uri.getScheme())) {
+            //直接调用getPath方法就可以了
+            filePath = uri.getPath();
+        } else {
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = mContext.getContentResolver()
+                    .query(uri, filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int path = cursor.getColumnIndex(filePathColumn[0]);
+            filePath = cursor.getString(path);
+            cursor.close();
+        }
+        File file = new File(filePath);
+
+        //判断大小,超过2M的不能选择
+        try {
+            InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+            //获取大小
+            long size = inputStream.available();
+
+            //提示重新选择
+            if (size >= MAX_FILE_SIZE) {
+                ToastUtils.createToast("选择图片大于2M，请重新选择");
+            } else {
+
+                Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+                //显示新的头像
+                hasSetAvatar = true;
+                mView.setAvatar(bitmap);
+                mView.showProgressDialog();
+
+                //上传头像
+                AppCache.getRetrofitService().uploadAvatar(mModel.getToken(), file, new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        mView.hideProgressDialog();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        LogUtils.show();
+                    }
+                });
+            }
+
+            inputStream.close();
+        } catch (
+                FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     //设置性别
     private void setGender(View view) {
         RadioGroup radioGroup = view.findViewById(R.id.rg_radio_group);
@@ -134,7 +225,21 @@ public class ProfilePresenterImpl extends BasePresenter implements ProfilePresen
     }
 
     private void loadAvatar() {
+        AppCache.getRetrofitService().getAvatar(mModel.getToken(), new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (hasSetAvatar) {
+                    return;
+                }
+                Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+                mView.setAvatar(bitmap);
+            }
 
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
     private void loadTextInfo() {

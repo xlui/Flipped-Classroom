@@ -2,7 +2,11 @@ package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -24,9 +28,11 @@ import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.ProfilePresenter;
 import io.flippedclassroom.android.presenterImpl.ProfilePresenterImpl;
 import io.flippedclassroom.android.util.DialogBuilder;
+import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.ProfileView;
 
 public class ProfileActivity extends BaseActivity implements ProfileView, ListView.OnItemClickListener, View.OnClickListener {
+
     @BindView(R.id.civ_avatar)
     CircleImageView civAvatar;
     @BindView(R.id.btn_commit_post)
@@ -61,6 +67,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
         initDialogs();
         lvUserInfoList.setOnItemClickListener(this);
         btnCommitPost.setOnClickListener(this);
+        civAvatar.setOnClickListener(this);
     }
 
     //加载Dialog
@@ -134,6 +141,19 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
     }
 
     @Override
+    public void setAvatar(Bitmap bitmap) {
+        civAvatar.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void openGallery() {
+        //利用Intent打开图库
+        Intent albumIntent = new Intent(Intent.ACTION_PICK);
+        albumIntent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(albumIntent, ProfilePresenter.SELECT_IMAGE);
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mPresenter.onClick(view.getId(), position);
     }
@@ -141,5 +161,18 @@ public class ProfileActivity extends BaseActivity implements ProfileView, ListVi
     @Override
     public void onClick(View v) {
         mPresenter.onClick(v.getId());
+    }
+
+    //打开别的Activity之后，返回时回调这个方法
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ProfilePresenter.SELECT_IMAGE:
+                if (data != null) {
+                    Uri uri = data.getData();
+                    mPresenter.onSelectImage(uri);
+                }
+        }
     }
 }

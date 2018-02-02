@@ -72,6 +72,10 @@ public class CourseJson {
     //生成course的list
     public List<Course> getCoursesList() {
         List<Course> list = new ArrayList<>();
+        //选择课程为0，送回一个空的List
+        if (getCourses() == null) {
+            return list;
+        }
         for (CoursesBean bean : getCourses()) {
             Course course = new Course();
             course.setId(bean.getId());
