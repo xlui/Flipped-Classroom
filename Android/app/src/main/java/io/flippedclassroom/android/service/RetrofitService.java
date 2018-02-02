@@ -118,7 +118,7 @@ public class RetrofitService extends Service {
     //上传头像
     public void uploadAvatar(String token, File file, Callback<ResponseBody> callback) {
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part part = MultipartBody.Part.createFormData("file", "avatar", body);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", "avatar.png", body);
         mAccountService.uploadAvatar(token, part).enqueue(callback);
     }
 
