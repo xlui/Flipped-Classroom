@@ -8,6 +8,7 @@ import android.os.IBinder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 
 import io.flippedclassroom.android.bean.Course;
@@ -20,6 +21,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Callback;
@@ -111,6 +113,13 @@ public class RetrofitService extends Service {
     //拉取头像
     public void getAvatar(String token, Callback<ResponseBody> callback) {
         mAccountService.getAvatar(token).enqueue(callback);
+    }
+
+    //上传头像
+    public void uploadAvatar(String token, File file, Callback<ResponseBody> callback) {
+        RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", "avatar.png", body);
+        mAccountService.uploadAvatar(token, part).enqueue(callback);
     }
 
     //课程列表请求

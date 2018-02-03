@@ -4,17 +4,25 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BaseActivity;
+import io.flippedclassroom.android.config.PermissionConfig;
 import io.flippedclassroom.android.presenter.SplashPresenter;
 import io.flippedclassroom.android.presenterImpl.SplashPresenterImpl;
 import io.flippedclassroom.android.service.RetrofitService;
@@ -30,7 +38,7 @@ public class SplashActivity extends BaseActivity implements SplashView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        bindService();
+        mPresenter.requestPermissions();
     }
 
     ServiceConnection connection = new ServiceConnection() {
@@ -50,7 +58,8 @@ public class SplashActivity extends BaseActivity implements SplashView {
     };
 
     //保存Service
-    private void bindService() {
+    @Override
+    public void bindService() {
         bindService(new Intent(this, RetrofitService.class), connection, BIND_AUTO_CREATE);
     }
 
@@ -91,5 +100,18 @@ public class SplashActivity extends BaseActivity implements SplashView {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                for (int result : grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        System.exit(0);
+                    }
+                }
+                bindService();
+        }
     }
 }

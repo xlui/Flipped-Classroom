@@ -7,4 +7,7 @@ public interface SplashView {
 
     //去往课程界面
     void startCourseActivity();
+
+    //绑定服务
+    void bindService();
 }
