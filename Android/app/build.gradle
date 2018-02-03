@@ -41,4 +41,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'me.imid.swipebacklayout.lib:library:1.1.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
+
+    compile 'com.acker:simplezxing:1.5' //二维码
 }

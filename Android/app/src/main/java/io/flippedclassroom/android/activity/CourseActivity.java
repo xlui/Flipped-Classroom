@@ -15,14 +15,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -31,13 +29,14 @@ import io.flippedclassroom.android.adapter.CourseAdapter;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.CoursePresenterImpl;
-import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.CourseView;
 
 public class CourseActivity extends BaseActivity implements
         SearchView.OnQueryTextListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         SearchView.OnCloseListener,
         CourseView {
+    private static final String TAG = "CourseActivity";
+
     private CoursePresenter mPresenter;
 
     @BindView(R.id.dl_drawer)
@@ -78,6 +77,7 @@ public class CourseActivity extends BaseActivity implements
         initNavigationView();
 
         srlRefresh.setOnRefreshListener(this);
+        fabAddCourse.setOnClickListener(this);
     }
 
     //测栏的顶部组件
@@ -151,6 +151,7 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
+        Log.i(TAG, "onClick: ");
         mPresenter.onClick(v.getId());
     }
 
@@ -192,7 +193,8 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void startNewCourseActivity() {
-
+        Log.i(TAG, "startNewCourseActivity: ");
+        startActivity(new Intent(this, AddCourseActivity.class));
     }
 
     @Override

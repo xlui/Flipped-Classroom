@@ -14,14 +14,12 @@ import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.LoginModel;
 import io.flippedclassroom.android.presenter.LoginPresenter;
-import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.LoginView;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 //Login的Presenter
 public class LoginPresenterImpl extends BasePresenter implements LoginPresenter {
@@ -45,6 +43,7 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
                 break;
             //如果点击了登录的按钮
             case R.id.btn_login_button_login:
+                //mView.startCourseActivity();
                 login();
                 break;
             //如果点击了注册按钮

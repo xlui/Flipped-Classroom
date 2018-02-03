@@ -45,7 +45,9 @@
         <service
             android:name=".service.RetrofitService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".activity.AddCourseActivity"></activity>
     </application>
 
 </manifest>

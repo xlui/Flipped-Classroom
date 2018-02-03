@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,20 +25,17 @@ import io.flippedclassroom.android.bean.User;
 import io.flippedclassroom.android.json.CourseJson;
 import io.flippedclassroom.android.model.CourseModel;
 import io.flippedclassroom.android.presenter.CoursePresenter;
-import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.CourseView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class CoursePresenterImpl extends BasePresenter implements CoursePresenter {
+    private static final String TAG = "CoursePresenterImpl";
     private Handler mHandler = new Handler(Looper.myLooper());
     private boolean canQuit = false;
     private CourseView mView;
@@ -60,6 +58,10 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
                 break;
             case R.id.menu_profile:
                 mContext.startActivity(new Intent(mContext, ProfileActivity.class));
+                break;
+            case R.id.fab_add_course:
+                Log.i(TAG, "onClick: fab_add_course");
+                mView.startNewCourseActivity();
                 break;
         }
     }
@@ -196,6 +198,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void onClick(int viewId, int position) {
+        Log.i(TAG, "onClick: ");
         switch (viewId) {
             //如果点击了查看课程的item
             case R.id.pop_menu_look:
@@ -204,6 +207,8 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             //如果点击了删除课程的item
             case R.id.pop_menu_delete:
                 deleteCourse(position);
+                break;
+
         }
     }
 
