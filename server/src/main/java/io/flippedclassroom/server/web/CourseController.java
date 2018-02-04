@@ -19,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -116,9 +117,14 @@ public class CourseController {
 		if (course == null) {
 			return new JsonResponse(Constant.FAILED, "Course id is invalid!");
 		} else {
-			user.getCourseList().add(course);
-			userService.save(user);
-			return new JsonResponse(Constant.SUCCESS, "Successfully add course!");
+			List<Course> courses = user.getCourseList();
+			if (courses.contains(course)) {
+				return new JsonResponse(Constant.FAILED, "should not add a existing course");
+			} else {
+				courses.add(course);
+				userService.save(user);
+				return new JsonResponse(Constant.SUCCESS, "Successfully add course!");
+			}
 		}
 	}
 
