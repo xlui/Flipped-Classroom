@@ -43,4 +43,6 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.2.0'
 
     compile 'com.acker:simplezxing:1.5'
+    compile 'com.nightonke:boommenu:2.1.1'
+    compile 'com.github.markushi:circlebutton:1.1'
 }
