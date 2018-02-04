@@ -47,6 +47,7 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     protected void initViews() {
+        getSwipeBackLayout().setEnableGesture(true);
         setActionBar(tbToolbar, 0, "添加课程");
         abtAdd.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
@@ -72,10 +73,10 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void AddSuccess() {
         ToastUtils.createToast("添加成功");
-        //这个地方可能需要加一点逻辑
         //返回主界面应该自动刷新
         Intent intent = new Intent(this, CourseActivity.class);
-        intent.putExtra(CoursePresenter.ADD_COURSE, CoursePresenter.ADD_COURSE);
+        intent.putExtra(CoursePresenter.NEW_INTENT, CoursePresenter.ADD_COURSE);
+        startActivity(intent);
         finish();
     }
 
@@ -103,12 +104,5 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
                 }
                 break;
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

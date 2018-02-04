@@ -7,7 +7,8 @@ import android.content.Intent;
 import io.flippedclassroom.android.adapter.CourseAdapter;
 
 public interface CoursePresenter {
-    final String ADD_COURSE = "AddCourse";
+    final String NEW_INTENT = "NewIntent";
+    final int ADD_COURSE = 1;
 
     //处理点击事件
     void onClick(int viewId);

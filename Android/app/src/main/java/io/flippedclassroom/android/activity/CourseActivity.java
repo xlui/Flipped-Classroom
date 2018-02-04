@@ -232,6 +232,11 @@ public class CourseActivity extends BaseActivity implements
     }
 
     @Override
+    public void startRefresh() {
+        onRefresh();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:

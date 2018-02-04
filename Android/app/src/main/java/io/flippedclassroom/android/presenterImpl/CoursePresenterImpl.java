@@ -141,7 +141,6 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
     }
 
     private void parseCourseList(List<Course> courseList) {
-        ToastUtils.createToast("加载成功");
         //存入model
         mModel.saveCourseList(courseList);
 
@@ -213,7 +212,16 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void parseIntent(Intent intent) {
-
+        int result = intent.getIntExtra(CoursePresenter.NEW_INTENT, -1);
+        if (result == -1) {
+            return;
+        }
+        //处理新的Intent
+        switch (result) {
+            case CoursePresenter.ADD_COURSE:
+                mView.startRefresh();
+                break;
+        }
     }
 
     //删除课程的方法

@@ -38,4 +38,7 @@ public interface CourseView {
 
     //设置头像
     void updateAvatar(Bitmap avatar);
+
+    //开始刷新
+    void startRefresh();
 }
