@@ -2,9 +2,11 @@ package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +36,6 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
     EditText editText;
     @BindView(R.id.tb_toolbar)
     Toolbar tbToolbar;
-
     @Override
     protected int getLayout() {
         return R.layout.activity_add_course;
@@ -60,6 +61,7 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+
         switch (view.getId()) {
             case R.id.ac_choose_add:
                 mPresenter.codeAdd(editText.getText().toString());
@@ -82,6 +84,7 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void AddError(String msg) {
+
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 

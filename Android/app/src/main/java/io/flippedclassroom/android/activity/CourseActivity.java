@@ -151,6 +151,7 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
+        Log.i(TAG, "onClick: ");
         mPresenter.onClick(v.getId());
     }
 

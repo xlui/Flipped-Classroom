@@ -62,6 +62,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             case R.id.fab_add_course:
                 mView.startNewCourseActivity();
                 break;
+
         }
     }
 
@@ -221,6 +222,7 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             case CoursePresenter.ADD_COURSE:
                 mView.startRefresh();
                 break;
+
         }
     }
 
