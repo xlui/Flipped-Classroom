@@ -2,7 +2,9 @@ package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,20 +13,27 @@ import android.widget.Toast;
 import com.acker.simplezxing.activity.CaptureActivity;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
+import io.flippedclassroom.android.presenter.AddCoursePresenter;
+import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.AddCoursePresenterImpl;
+import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.AddCourseView;
 
-public class AddCourseActivity extends BaseActivity implements View.OnClickListener,AddCourseView{
-    private static final String TAG = "AddCourseActivity";
+public class AddCourseActivity extends BaseActivity implements View.OnClickListener, AddCourseView {
 
-    AddCoursePresenterImpl presenter;
+    AddCoursePresenter mPresenter;
 
     @BindView(R.id.ac_choose_fab)
     FloatingActionButton floatingActionButton;
-    @BindView(R.id.ac_choose_add)Button abtAdd;
-    @BindView(R.id.ac_choose_ed)EditText editText;
+    @BindView(R.id.ac_choose_add)
+    Button abtAdd;
+    @BindView(R.id.ac_choose_ed)
+    EditText editText;
+    @BindView(R.id.tb_toolbar)
+    Toolbar tbToolbar;
 
     @Override
     protected int getLayout() {
@@ -33,25 +42,26 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     protected void initPresenter() {
-        presenter = new AddCoursePresenterImpl(this,this);
+        mPresenter = new AddCoursePresenterImpl(this.getContext(), this);
     }
 
     @Override
     protected void initViews() {
+        setActionBar(tbToolbar, 0, "添加课程");
         abtAdd.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
     }
 
     @Override
     public Context getContext() {
-        return null;
+        return this;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.ac_choose_add:
-                presenter.codeAdd(editText.getText().toString());
+                mPresenter.codeAdd(editText.getText().toString());
                 break;
             case R.id.ac_choose_fab:
                 startActivityForResult(new Intent(this, CaptureActivity.class), CaptureActivity.REQ_CODE);
@@ -60,14 +70,18 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
     }
 
     @Override
-    public void AddSucess() {
-        Toast.makeText(this,"sucess",Toast.LENGTH_SHORT).show();
+    public void AddSuccess() {
+        ToastUtils.createToast("添加成功");
+        //这个地方可能需要加一点逻辑
+        //返回主界面应该自动刷新
+        Intent intent = new Intent(this, CourseActivity.class);
+        intent.putExtra(CoursePresenter.ADD_COURSE, CoursePresenter.ADD_COURSE);
         finish();
     }
 
     @Override
     public void AddError(String msg) {
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -78,16 +92,23 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
                 switch (resultCode) {
                     case RESULT_OK:
                         editText.setText(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
-                        presenter.codeAdd(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
+                        mPresenter.codeAdd(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
                         break;
                     case RESULT_CANCELED:
                         if (data != null) {
                             editText.setText(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
-                            presenter.codeAdd(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
+                            mPresenter.codeAdd(data.getStringExtra(CaptureActivity.EXTRA_SCAN_RESULT));
                         }
                         break;
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

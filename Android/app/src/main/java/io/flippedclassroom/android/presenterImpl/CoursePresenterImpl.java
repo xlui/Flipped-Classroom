@@ -54,13 +54,12 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
                 loginOut();
                 break;
             case R.id.menu_setting:
-                mContext.startActivity(new Intent(mContext, SettingActivity.class));
+                mView.startSettingActivity();
                 break;
             case R.id.menu_profile:
-                mContext.startActivity(new Intent(mContext, ProfileActivity.class));
+                mView.startProfileActivity();
                 break;
             case R.id.fab_add_course:
-                Log.i(TAG, "onClick: fab_add_course");
                 mView.startNewCourseActivity();
                 break;
         }
@@ -210,6 +209,11 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
                 break;
 
         }
+    }
+
+    @Override
+    public void parseIntent(Intent intent) {
+
     }
 
     //删除课程的方法

@@ -3,66 +3,57 @@ package io.flippedclassroom.android.presenterImpl;
 import android.content.Context;
 import android.text.TextUtils;
 
+import java.io.IOException;
+
+import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
-import io.flippedclassroom.android.config.APIs;
-import io.flippedclassroom.android.util.PreferenceUtils;
-import io.flippedclassroom.android.util.RetrofitManager;
+import io.flippedclassroom.android.model.AddCourseModel;
+import io.flippedclassroom.android.presenter.AddCoursePresenter;
+import io.flippedclassroom.android.util.LogUtils;
+import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.view.AddCourseView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by wanhao on 2018/2/3.
- */
+public class AddCoursePresenterImpl extends BasePresenter implements AddCoursePresenter {
 
-public class AddCoursePresenterImpl extends BasePresenter implements AddCoursePresenter{
+    AddCourseView mView;
+    AddCourseModel mModel;
 
-    AddCourseView view;
-
-    public AddCoursePresenterImpl(Context mContext,AddCourseView view) {
-        super(mContext);
-        this.view = view;
+    public AddCoursePresenterImpl(Context context, AddCourseView view) {
+        super(context);
+        this.mView = view;
+        mModel = new AddCourseModel(context);
     }
+
     @Override
-    public void codeAdd(String code){
-        if(TextUtils.isEmpty(code)){
-            view.AddError("error");
-            return;
+    public void codeAdd(String code) {
+        if (TextUtils.isEmpty(code)) {
+            ToastUtils.createToast("课程代码为空");
         }
 
+        AppCache.getRetrofitService().addCourse(mModel.getToken(), Integer.parseInt(code), new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    //解析并且处理Json
+                    parse(response.body().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        APIs.CourseService service = RetrofitManager.getRetrofit().create(APIs.CourseService.class);
-        String token = PreferenceUtils.getToken();
-        if(TextUtils.isEmpty(token)){
-            view.AddError("eror");
-        }else{
-            service.addCourse(token,Integer.parseInt(code))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<Response<ResponseBody>>() {
-                        @Override
-                        public void accept(Response<ResponseBody> response) throws Exception {
-                            if(response.isSuccessful()){
-                                view.AddSucess();
-                            }else {
-                                view.AddError("error");
-                            }
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            view.AddError("error");
-                        }
-                    });
-        }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
-
+    private void parse(String json) {
+        //判断失败还是成功
+    }
 }
 
-interface AddCoursePresenter{
-    void codeAdd(String code);
-}

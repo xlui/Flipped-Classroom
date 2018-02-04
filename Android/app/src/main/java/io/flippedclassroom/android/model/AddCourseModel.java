@@ -1,8 +1,12 @@
 package io.flippedclassroom.android.model;
 
-/**
- * Created by Xkf on 2018/2/4.
- */
+import android.content.Context;
 
-public class AddCourseModel {
+import io.flippedclassroom.android.base.BaseModel;
+
+public class AddCourseModel extends BaseModel {
+
+    public AddCourseModel(Context mContext) {
+        super(mContext);
+    }
 }

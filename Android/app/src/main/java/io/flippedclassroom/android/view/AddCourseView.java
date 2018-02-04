@@ -1,10 +1,9 @@
 package io.flippedclassroom.android.view;
 
-/**
- * Created by wanhao on 2018/2/3.
- */
-
 public interface AddCourseView {
-    void AddSucess();
+    //添加成功的时候回调
+    void AddSuccess();
+
+    //添加失败的售后回调
     void AddError(String msg);
 }

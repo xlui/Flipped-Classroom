@@ -47,7 +47,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".activity.AddCourseActivity"></activity>
+        <activity android:name=".activity.AddCourseActivity"
+            android:parentActivityName=".activity.CourseActivity"
+            />
     </application>
 
 </manifest>

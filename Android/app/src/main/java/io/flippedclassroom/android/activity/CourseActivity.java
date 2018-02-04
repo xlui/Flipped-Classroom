@@ -151,7 +151,6 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
-        Log.i(TAG, "onClick: ");
         mPresenter.onClick(v.getId());
     }
 
@@ -178,12 +177,18 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void startProfileActivity() {
-
+        startActivity(new Intent(this, ProfileActivity.class));
     }
 
     @Override
     public void startSettingActivity() {
+        startActivity(new Intent(this, SettingActivity.class));
+    }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        mPresenter.parseIntent(intent);
     }
 
     @Override
@@ -193,7 +198,6 @@ public class CourseActivity extends BaseActivity implements
 
     @Override
     public void startNewCourseActivity() {
-        Log.i(TAG, "startNewCourseActivity: ");
         startActivity(new Intent(this, AddCourseActivity.class));
     }
 

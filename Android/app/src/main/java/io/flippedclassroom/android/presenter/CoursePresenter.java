@@ -2,10 +2,12 @@ package io.flippedclassroom.android.presenter;
 
 
 import android.content.Context;
+import android.content.Intent;
 
 import io.flippedclassroom.android.adapter.CourseAdapter;
 
 public interface CoursePresenter {
+    final String ADD_COURSE = "AddCourse";
 
     //处理点击事件
     void onClick(int viewId);
@@ -25,6 +27,8 @@ public interface CoursePresenter {
     //Adapter的点击事件
     void onClick(int viewId, int position);
 
+    //解析新的Intent
+    void parseIntent(Intent intent);
 
     Context getContext();
 }

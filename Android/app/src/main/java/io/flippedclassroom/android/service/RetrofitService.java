@@ -135,5 +135,8 @@ public class RetrofitService extends Service {
         mCourseService.deleteCourse(token, courseId).enqueue(callback);
     }
 
-
+    //添加课程请求
+    public void addCourse(String token, int courseId, Callback<ResponseBody> callback) {
+        mCourseService.addCourse(token, courseId).enqueue(callback);
+    }
 }
