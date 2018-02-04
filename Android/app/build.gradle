@@ -42,5 +42,5 @@ dependencies {
     compile 'me.imid.swipebacklayout.lib:library:1.1.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
 
-    compile 'com.acker:simplezxing:1.5' //二维码
+    compile 'com.acker:simplezxing:1.5'
 }
