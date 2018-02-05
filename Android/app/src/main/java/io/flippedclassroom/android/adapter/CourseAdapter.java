@@ -10,12 +10,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.bean.Course;
 import io.flippedclassroom.android.presenter.CoursePresenter;
-import io.flippedclassroom.android.util.LogUtils;
 
 //课程列表的Adapter
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {

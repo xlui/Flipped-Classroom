@@ -2,6 +2,7 @@ package io.flippedclassroom.android.presenterImpl;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,12 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.activity.CourseActivity;
+import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.config.PermissionConfig;
 import io.flippedclassroom.android.model.SplashModel;
 import io.flippedclassroom.android.presenter.SplashPresenter;
-import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.SplashActivity;
 import io.flippedclassroom.android.view.SplashView;
@@ -28,7 +30,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class SplashPresenterImpl extends BasePresenter implements SplashPresenter {
     private SplashModel mModel;
@@ -50,7 +51,8 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
         if (TextUtils.isEmpty(token)) {
             //如果是空，表示本地没有存储Token和role，即不能利用token登录
             //结束SplashActivity，跳转到LoginActivity
-            mView.startLoginActivity();
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            mView.switchActivity(intent, true);
         } else {
             AppCache.getRetrofitService().check(mModel.getToken(), new Callback<ResponseBody>() {
                 @Override
@@ -102,7 +104,8 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
                 String student = mContext.getString(R.string.student);
                 //判断身份，决定去往那个Activity
                 if (role.equals(student)) {
-                    mView.startCourseActivity();
+                    Intent intent = new Intent(mContext, CourseActivity.class);
+                    mView.switchActivity(intent, true);
                 } else {
                     ToastUtils.createToast("教师登录");
                 }
@@ -114,7 +117,8 @@ public class SplashPresenterImpl extends BasePresenter implements SplashPresente
                 mModel.deleteRole();
                 mModel.deleteId();
                 //前往login界面
-                mView.startLoginActivity();
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                mView.switchActivity(intent, true);
             }
         } catch (JSONException e) {
             e.printStackTrace();

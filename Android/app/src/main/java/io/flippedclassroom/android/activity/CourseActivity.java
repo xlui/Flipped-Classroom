@@ -177,35 +177,18 @@ public class CourseActivity extends BaseActivity implements
     }
 
     @Override
-    public void startProfileActivity() {
-        startActivity(new Intent(this, ProfileActivity.class));
+    public void switchActivity(Intent intent, boolean needFinish) {
+        startActivity(intent);
+        if (needFinish) {
+            finish();
+        }
     }
 
-    @Override
-    public void startSettingActivity() {
-        startActivity(new Intent(this, SettingActivity.class));
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         mPresenter.parseIntent(intent);
-    }
-
-    @Override
-    public void startAccountActivity() {
-
-    }
-
-    @Override
-    public void startNewCourseActivity() {
-        startActivity(new Intent(this, AddCourseActivity.class));
-    }
-
-    @Override
-    public void returnLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
     }
 
     @Override

@@ -130,18 +130,15 @@ public class LoginActivity extends BaseActivity implements LoginView, View.OnCli
     }
 
     @Override
-    public void startRegisteredActivity() {
-        startActivity(new Intent(this, RegisteredActivity.class));
-    }
-
-    @Override
-    public void startCourseActivity() {
-        startActivity(new Intent(this, CourseActivity.class));
-        finish();
-    }
-
-    @Override
     public void onClick(View v) {
         mPresenter.onClick(v.getId());
+    }
+
+    @Override
+    public void switchActivity(Intent intent, boolean needFinish) {
+        startActivity(intent);
+        if(needFinish){
+            finish();
+        }
     }
 }

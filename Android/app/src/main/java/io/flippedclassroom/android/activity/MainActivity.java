@@ -2,30 +2,33 @@ package io.flippedclassroom.android.activity;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import com.nightonke.boommenu.BoomButtons.TextInsideCircleButton;
-import com.nightonke.boommenu.BoomMenuButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
+import io.flippedclassroom.android.presenter.MainPresenter;
+import io.flippedclassroom.android.presenterImpl.MainPresenterImpl;
+import io.flippedclassroom.android.view.MainView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MainView {
+    private MainPresenter mPresenter;
 
-    @BindView(R.id.ac_main_bmb)
-    BoomMenuButton bmb;
-
+    @BindView(R.id.tb_toolbar)
+    Toolbar tbToolbar;
+    @BindView(R.id.vp_view_pager)
+    ViewPager vpViewPager;
+    @BindView(R.id.tl_tab_layout)
+    TabLayout tlTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        for (int i = 0; i < bmb.getPiecePlaceEnum().pieceNumber(); i++) {
-            TextInsideCircleButton.Builder builder = new TextInsideCircleButton.Builder()
-                    //.normalImageRes(R.drawable.main_icon_1)
-                    .normalText("Butter Doesn't fly!");
-            bmb.addBuilder(builder);
-        }
+        mPresenter.parseIntent(getIntent());
+        mPresenter.createContent(getSupportFragmentManager());
     }
 
     @Override
@@ -35,16 +38,30 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-
+        mPresenter = new MainPresenterImpl(getContext(), this);
     }
 
     @Override
-    protected void initViews() {
-
-    }
+    protected void initViews() {}
 
     @Override
     public Context getContext() {
-        return null;
+        return this;
+    }
+
+    @Override
+    public void setToolbar(String title) {
+        setActionBar(tbToolbar, 0, title);
+    }
+
+    @Override
+    public void updateContent(FragmentStatePagerAdapter adapter) {
+        vpViewPager.setAdapter(adapter);
+        //关联viewpager和tablayout
+        tlTabLayout.setupWithViewPager(vpViewPager);
+        //设置底栏
+        tlTabLayout.getTabAt(0).setIcon(R.drawable.material_tab);
+        tlTabLayout.getTabAt(1).setIcon(R.drawable.test_tab);
+        tlTabLayout.getTabAt(2).setIcon(R.drawable.more_tab);
     }
 }

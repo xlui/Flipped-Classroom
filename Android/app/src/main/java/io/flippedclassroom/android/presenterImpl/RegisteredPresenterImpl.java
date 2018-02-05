@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.presenterImpl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -9,11 +10,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.activity.LoginActivity;
 import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.RegisteredModel;
 import io.flippedclassroom.android.presenter.RegisteredPresenter;
-import io.flippedclassroom.android.util.RetrofitManager;
 import io.flippedclassroom.android.util.ToastUtils;
 import io.flippedclassroom.android.activity.RegisteredActivity;
 import io.flippedclassroom.android.view.RegisteredView;
@@ -21,7 +22,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class RegisteredPresenterImpl extends BasePresenter implements RegisteredPresenter {
     private RegisteredModel mModel;
@@ -127,7 +127,8 @@ public class RegisteredPresenterImpl extends BasePresenter implements Registered
                 //结束注册界面，返回登录界面
                 //因为RegisteredActivity是LoginActivity的子Activity
                 //所以结束自身就会返回LoginActivity
-                mView.startLoginActivity();
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                mView.switchActivity(intent, true);
             } else {
                 //注册失败
 

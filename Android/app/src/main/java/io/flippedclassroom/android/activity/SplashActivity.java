@@ -85,18 +85,6 @@ public class SplashActivity extends BaseActivity implements SplashView {
     }
 
     @Override
-    public void startLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
-    }
-
-    @Override
-    public void startCourseActivity() {
-        startActivity(new Intent(this, CourseActivity.class));
-        finish();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
@@ -112,6 +100,14 @@ public class SplashActivity extends BaseActivity implements SplashView {
                     }
                 }
                 bindService();
+        }
+    }
+
+    @Override
+    public void switchActivity(Intent intent, boolean needFinish) {
+        startActivity(intent);
+        if (needFinish) {
+            finish();
         }
     }
 }

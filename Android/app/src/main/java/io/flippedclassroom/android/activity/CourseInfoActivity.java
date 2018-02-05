@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
 import io.flippedclassroom.android.bean.Course;
+import io.flippedclassroom.android.config.ConstantConfig;
 
 public class CourseInfoActivity extends BaseActivity {
 
@@ -40,7 +41,7 @@ public class CourseInfoActivity extends BaseActivity {
         setActionBar(tbToolbar, 0, "课程详情");
         getSwipeBackLayout().setEnableGesture(true);
         Intent intent = getIntent();
-        Course course = intent.getParcelableExtra("Course");
+        Course course = intent.getParcelableExtra(ConstantConfig.NEW_INTENT);
         tvCourseCode.setText("课程代码 : " + course.getCode());
         tvCourseMajor.setText("专业 : " + course.getMajor());
         tvCourseName.setText("课程 : " + course.getName());

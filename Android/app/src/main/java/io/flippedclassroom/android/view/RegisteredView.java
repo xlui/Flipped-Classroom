@@ -1,7 +1,7 @@
 package io.flippedclassroom.android.view;
 
 
-public interface RegisteredView{
+public interface RegisteredView extends SwitchActivityInterface{
     //获取界面内所有的Text
     String[] getAllTexts();
 
@@ -14,6 +14,4 @@ public interface RegisteredView{
     //设置各个View的是否可以触摸
     void setViewsEnabled(boolean canCheck);
 
-    //前往注册界面
-    void startLoginActivity();
 }

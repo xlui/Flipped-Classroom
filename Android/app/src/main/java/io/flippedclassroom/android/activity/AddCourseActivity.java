@@ -14,6 +14,7 @@ import com.acker.simplezxing.activity.CaptureActivity;
 import butterknife.BindView;
 import io.flippedclassroom.android.R;
 import io.flippedclassroom.android.base.BaseActivity;
+import io.flippedclassroom.android.config.ConstantConfig;
 import io.flippedclassroom.android.presenter.AddCoursePresenter;
 import io.flippedclassroom.android.presenter.CoursePresenter;
 import io.flippedclassroom.android.presenterImpl.AddCoursePresenterImpl;
@@ -73,7 +74,7 @@ public class AddCourseActivity extends BaseActivity implements View.OnClickListe
         ToastUtils.createToast("添加成功");
         //返回主界面应该自动刷新
         Intent intent = new Intent(this, CourseActivity.class);
-        intent.putExtra(CoursePresenter.NEW_INTENT, CoursePresenter.ADD_COURSE);
+        intent.putExtra(ConstantConfig.NEW_INTENT, ConstantConfig.INTENT_ADD_COURSE);
         startActivity(intent);
         finish();
     }

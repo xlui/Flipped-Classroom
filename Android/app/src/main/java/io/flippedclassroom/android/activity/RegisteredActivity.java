@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -109,11 +110,6 @@ public class RegisteredActivity extends BaseActivity implements RegisteredView,
     }
 
     @Override
-    public void startLoginActivity() {
-        finish();
-    }
-
-    @Override
     public void onClick(View v) {
         mPresenter.onClick(v.getId());
     }
@@ -121,5 +117,13 @@ public class RegisteredActivity extends BaseActivity implements RegisteredView,
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         mPresenter.onCheckedChanged(checkedId);
+    }
+
+    @Override
+    public void switchActivity(Intent intent, boolean needFinish) {
+        startActivity(intent);
+        if (needFinish) {
+            finish();
+        }
     }
 }

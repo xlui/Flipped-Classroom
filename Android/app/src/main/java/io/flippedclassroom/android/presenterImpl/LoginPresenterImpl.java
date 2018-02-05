@@ -1,6 +1,7 @@
 package io.flippedclassroom.android.presenterImpl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -9,7 +10,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.activity.CourseActivity;
 import io.flippedclassroom.android.activity.LoginActivity;
+import io.flippedclassroom.android.activity.RegisteredActivity;
 import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.model.LoginModel;
@@ -48,7 +51,8 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
                 break;
             //如果点击了注册按钮
             case R.id.tv_login_registered:
-                mView.startRegisteredActivity();
+                Intent intent = new Intent(mContext, RegisteredActivity.class);
+                mView.switchActivity(intent, false);
         }
     }
 
@@ -115,7 +119,8 @@ public class LoginPresenterImpl extends BasePresenter implements LoginPresenter 
 
             if (role.equals(mContext.getString(R.string.student))) {
                 //前往学生界面
-                mView.startCourseActivity();
+                Intent intent = new Intent(mContext, CourseActivity.class);
+                mView.switchActivity(intent, true);
             } else {
 
             }

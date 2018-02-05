@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.flippedclassroom.android.R;
+import io.flippedclassroom.android.activity.AddCourseActivity;
 import io.flippedclassroom.android.activity.CourseActivity;
 import io.flippedclassroom.android.activity.CourseInfoActivity;
+import io.flippedclassroom.android.activity.LoginActivity;
+import io.flippedclassroom.android.activity.MainActivity;
 import io.flippedclassroom.android.activity.ProfileActivity;
 import io.flippedclassroom.android.activity.SettingActivity;
 import io.flippedclassroom.android.adapter.CourseAdapter;
@@ -22,6 +25,7 @@ import io.flippedclassroom.android.app.AppCache;
 import io.flippedclassroom.android.base.BasePresenter;
 import io.flippedclassroom.android.bean.Course;
 import io.flippedclassroom.android.bean.User;
+import io.flippedclassroom.android.config.ConstantConfig;
 import io.flippedclassroom.android.json.CourseJson;
 import io.flippedclassroom.android.model.CourseModel;
 import io.flippedclassroom.android.presenter.CoursePresenter;
@@ -49,20 +53,23 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
 
     @Override
     public void onClick(int viewId) {
+        Intent intent;
         switch (viewId) {
             case R.id.menu_login_out:
                 loginOut();
                 break;
             case R.id.menu_setting:
-                mView.startSettingActivity();
+                intent = new Intent(mContext, SettingActivity.class);
+                mView.switchActivity(intent, false);
                 break;
             case R.id.menu_profile:
-                mView.startProfileActivity();
+                intent = new Intent(mContext, ProfileActivity.class);
+                mView.switchActivity(intent, false);
                 break;
             case R.id.fab_add_course:
-                mView.startNewCourseActivity();
+                intent = new Intent(mContext, AddCourseActivity.class);
+                mView.switchActivity(intent, false);
                 break;
-
         }
     }
 
@@ -70,7 +77,8 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
         mModel.deleteId();
         mModel.deleteRole();
         mModel.deleteToken();
-        mView.returnLoginActivity();
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        mView.switchActivity(intent, true);
     }
 
     @Override
@@ -207,19 +215,28 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
             case R.id.pop_menu_delete:
                 deleteCourse(position);
                 break;
-
+            case R.id.iv_card_bg:
+                startMainActivity(position);
+                break;
         }
+    }
+
+    private void startMainActivity(int position) {
+        Course course = mModel.getCourseList().get(position);
+        Intent intent = new Intent(mContext, MainActivity.class);
+        intent.putExtra(ConstantConfig.NEW_INTENT, course);
+        mView.switchActivity(intent, true);
     }
 
     @Override
     public void parseIntent(Intent intent) {
-        int result = intent.getIntExtra(CoursePresenter.NEW_INTENT, -1);
+        int result = intent.getIntExtra(ConstantConfig.NEW_INTENT, ConstantConfig.INTENT_NO_VALUE);
         if (result == -1) {
             return;
         }
         //处理新的Intent
         switch (result) {
-            case CoursePresenter.ADD_COURSE:
+            case ConstantConfig.INTENT_ADD_COURSE:
                 mView.startRefresh();
                 break;
 
@@ -250,8 +267,8 @@ public class CoursePresenterImpl extends BasePresenter implements CoursePresente
         Intent intent = new Intent(mContext, CourseInfoActivity.class);
         //把课程序列化进去
         //在创建Activity的时候重新读取数据
-        intent.putExtra("Course", mModel.getCourseList().get(position));
-        mContext.startActivity(intent);
+        intent.putExtra(ConstantConfig.NEW_INTENT, mModel.getCourseList().get(position));
+        mView.switchActivity(intent, false);
     }
 
 
