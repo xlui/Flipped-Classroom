@@ -45,4 +45,5 @@ dependencies {
     compile 'com.acker:simplezxing:1.5'
     compile 'com.nightonke:boommenu:2.1.1'
     compile 'com.github.markushi:circlebutton:1.1'
+    compile 'com.truizlop.sectionedrecyclerview:library:1.2.0'
 }
