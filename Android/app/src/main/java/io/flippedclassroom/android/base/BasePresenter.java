@@ -1,10 +1,13 @@
 package io.flippedclassroom.android.base;
 
+import android.app.Activity;
+import android.content.Context;
 
-public abstract class BasePresenter<T extends BaseActivity> {
-    protected T mView;
+//Presenter基类
+public abstract class BasePresenter {
+    protected Context mContext;
 
-    public BasePresenter(T view) {
-        mView = view;
+    public BasePresenter(Context mContext) {
+        this.mContext = mContext;
     }
 }

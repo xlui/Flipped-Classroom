@@ -3,6 +3,7 @@ package io.flippedclassroom.android.util;
 
 import android.util.Log;
 
+//打印log的工具类，方便打印
 public class LogUtils {
     private static String TAG = "FlippedClassroom";
 

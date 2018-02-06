@@ -1,11 +1,15 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 课后作业
  */
+@ApiModel(value = "课后作业", description = "与随堂测试题目不同")
 @Entity
 public class Homework implements Serializable {
 	@Id
@@ -15,8 +19,9 @@ public class Homework implements Serializable {
 	private String answer;      // 作业答案
 
 	// 课后作业与课程多对一关系
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "course_id")
+	@JsonIgnore
 	private Course course;
 
 	public Homework() {
