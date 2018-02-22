@@ -28,7 +28,7 @@ public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentR
 
 	@Override
 	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-		LogUtils.getLogger().info("注入当前登录用户");
+		LogUtils.getInstance().info("注入当前登录用户");
 		AuthenticationToken token = (AuthenticationToken) SecurityUtils.getSubject().getPrincipal();
 		String username = (String) token.getPrincipal();
 		if (username != null) {

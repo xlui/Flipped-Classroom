@@ -26,7 +26,7 @@ public class CurrentRoleMethodArgumentResolver implements HandlerMethodArgumentR
 
 	@Override
 	public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
-		LogUtils.getLogger().info("注入当前用户的 Role");
+		LogUtils.getInstance().info("注入当前用户的 Role");
 		AuthenticationToken token = (AuthenticationToken) SecurityUtils.getSubject().getPrincipal();
 		String username = (String) token.getPrincipal();
 		if (username != null) {

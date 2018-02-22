@@ -44,7 +44,7 @@ public class PasswordShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-		LogUtils.getLogger().info("在 用户名密码 验证中，开始 给用户赋予权限");
+		LogUtils.getInstance().info("在 用户名密码 验证中，开始 给用户赋予权限");
 		SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 		PasswordToken passwordToken = (PasswordToken) principalCollection.getPrimaryPrincipal();
 		User user = userService.findUserByUsername((String) passwordToken.getPrincipal());
@@ -65,9 +65,9 @@ public class PasswordShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-		LogUtils.getLogger().info("开始 用户名密码 认证");
+		LogUtils.getInstance().info("开始 用户名密码 认证");
 		String username = (String) authenticationToken.getPrincipal();
-		LogUtils.getLogger().info("从输入得到的用户名：" + username);
+		LogUtils.getInstance().info("从输入得到的用户名：" + username);
 		User user = userService.findUserByUsername(username);
 
 		if (user == null) {

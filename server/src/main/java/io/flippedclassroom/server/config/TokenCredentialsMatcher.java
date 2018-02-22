@@ -22,7 +22,7 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 
 	@Override
 	public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-		Logger logger = LogUtils.getLogger();
+		Logger logger = LogUtils.getInstance();
 
 		logger.info("进入自定义 Token 校验！");
 		String principal = (String) token.getPrincipal();

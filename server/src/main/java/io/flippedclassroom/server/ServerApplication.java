@@ -68,7 +68,7 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	@RequestMapping("/init")
 	@Transactional
 	public String init() {
-		Logger logger = LogUtils.getLogger();
+		Logger logger = LogUtils.getInstance();
 
 		logger.info("从数据库中查询需要初始化的实体");
 		User userStudent1 = userService.findUserByUsername("1");

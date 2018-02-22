@@ -22,7 +22,7 @@ import java.io.IOException;
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
-		Logger logger = LogUtils.getLogger();
+		Logger logger = LogUtils.getInstance();
 		logger.info("进入 Token 验证的 Filter");
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -48,7 +48,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 	private boolean tokenAuthFailed(HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("utf-8");
 		JsonResponse jsonResponse = new JsonResponse(Constant.FAILED, "need token auth");
-		response.getOutputStream().print(JsonUtils.getObjectMapper().writeValueAsString(jsonResponse));
+		response.getOutputStream().print(JsonUtils.getInstance().writeValueAsString(jsonResponse));
 		return false;
 	}
 }

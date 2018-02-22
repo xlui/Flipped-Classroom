@@ -83,12 +83,12 @@ public class FileController {
 				String fileName = multipartFile.getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf("."));
 				String avatarPosition = Constant.avatarPosition + "user-" + user.getId();
-				LogUtils.getLogger().info("上传文件后缀名：" + suffix);
+				LogUtils.getInstance().info("上传文件后缀名：" + suffix);
 
 				FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
 
 				if (!suffix.equals(".png")) {
-					LogUtils.getLogger().info("将源文件后缀改为 png，并删除源文件");
+					LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
 					ImageUtils.convertFormat(avatarPosition + suffix, avatarPosition + ".png", "PNG");
 					FileUtils.deleteQuietly(new File(avatarPosition + suffix));
 				}

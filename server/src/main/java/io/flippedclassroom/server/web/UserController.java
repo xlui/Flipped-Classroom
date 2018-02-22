@@ -81,8 +81,8 @@ public class UserController {
 
 		User loginUser = userService.findUserByUsername(user.getUsername());
 		String token = JWTUtils.sign(loginUser.getUsername(), loginUser.getPassword());
-		LogUtils.getLogger().info("生成 Token！\n" + token);
-		LogUtils.getLogger().info("保存 用户名-Token 对到 Redis");
+		LogUtils.getInstance().info("生成 Token！\n" + token);
+		LogUtils.getInstance().info("保存 用户名-Token 对到 Redis");
 		redisService.save(loginUser.getUsername(), token);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
