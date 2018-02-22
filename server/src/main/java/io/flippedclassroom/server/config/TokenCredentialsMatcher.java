@@ -27,10 +27,13 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 		logger.info("进入自定义 Token 校验！");
 		String principal = (String) token.getPrincipal();
 		String credentials = (String) token.getCredentials();
+		String redisCheck = redisService.get(principal);
 
 		// Redis Check First
-		if (!redisService.get(principal).equals(credentials)) {
-			logger.info("Redis 校验失败！！！");
+		if (!redisCheck.equals(credentials)) {
+			logger.warn("Redis 校验失败！！！");
+			logger.info("Redis 中得到的 Token：" + redisCheck);
+			logger.info("进行校验的 Token：" + credentials);
 			return false;
 		}
 

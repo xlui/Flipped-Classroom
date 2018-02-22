@@ -100,9 +100,9 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 
 		// 如果数据库中存在这些实体，删除并重新初始化
 		logger.info("如果数据库中存在初始化信息，删除");
-		if (userStudent1 != null) userService.delete(userStudent1);
-		if (userStudent2 != null) userService.delete(userStudent2);
-		if (userTeacher != null) userService.delete(userTeacher);
+		if (userStudent1 == null) userStudent1 = new User("1", "dev");
+		if (userStudent2 == null) userStudent2 = new User("3", "dev");
+		if (userTeacher == null) userTeacher = new User("2", "std");
 		if (roleAdmin == null) roleAdmin = new Role("admin");
 		if (roleStudent == null) roleStudent = new Role("student");
 		if (roleTeacher == null) roleTeacher = new Role("teacher");
@@ -121,9 +121,6 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 
 		// 重新初始化
 		logger.info("重新初始化...");
-		userStudent1 = new User("1", "dev");
-		userStudent2 = new User("3", "dev");
-		userTeacher = new User("2", "std");
 		courseMath = new Course("数学", "数学专业");
 		courseDataStructure = new Course("数据结构", "计算机专业");
 		courseDatabase = new Course("数据库", "计算机专业");
