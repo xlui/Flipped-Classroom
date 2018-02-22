@@ -19,4 +19,9 @@ public class RedisServiceImpl implements RedisService {
 	public String get(String username) {
 		return stringRedisTemplate.opsForValue().get(username);
 	}
+
+	@Override
+	public void delete(String name) {
+		stringRedisTemplate.delete(name);
+	}
 }

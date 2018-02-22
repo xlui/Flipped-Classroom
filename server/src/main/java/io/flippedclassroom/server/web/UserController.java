@@ -92,6 +92,13 @@ public class UserController {
 		return map;
 	}
 
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ApiOperation(value = "登出，会删除保存的 Token", httpMethod = "GET")
+	public JsonResponse logout(@ApiIgnore @CurrentUser User user) {
+		redisService.delete(user.getUsername());
+		return new JsonResponse(Constant.SUCCESS, "Logout success");
+	}
+
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
 	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "Token 有效")
