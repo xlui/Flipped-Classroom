@@ -9,9 +9,9 @@
 到 [Apache Tomcat](https://tomcat.apache.org/) 下载最新的 Tomcat，并解压到安装位置。
 
 ```bash
-wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-9/v9.0.4/bin/apache-tomcat-9.0.4.tar.gz
-tar xzvf apache-tomcat-9.0.4.tar.gz
-mv apache-tomcat-9.0.4 /usr/local/tomcat
+wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-9/v9.0.5/bin/apache-tomcat-9.0.5.tar.gz
+tar xzvf apache-tomcat-9.0.5.tar.gz
+mv apache-tomcat-9.0.5 /usr/local/tomcat
 ```
 
 修改 Tomcat 默认的配置文件 `/usr/local/tomcat/conf/server.xml`：
@@ -39,7 +39,7 @@ mv apache-tomcat-9.0.4 /usr/local/tomcat
 ## 2. 安装 Java
 
 ```bash
-yum install java
+yum install java -y
 ```
 
 ## 3. 创建数据库
@@ -57,13 +57,13 @@ flush privileges;
 
 数据库端口默认为 3306，如果有修改应该在项目的配置文件 `server/src/main/resources/application.properties` 中修改：
 
-```properties
+```yml
 spring.datasource.url=jdbc:mysql://localhost:3306/flippedclassroom
 ```
 
 为：
 
-```
+```yml
 spring.datasource.url=jdbc:mysql://localhost:新端口号/flippedclassroom
 ```
 
@@ -107,7 +107,52 @@ docker run --name redis -p 6379:6379 --restart=always -d redis
 scp -P 服务器ssh端口号 /path/to/FlippedClassroom/server/target/server-0.0.1-SNAPSHOT.war USERNAME@SERVER_IP:
 ```
 
-## 6. 部署并配置 supervisor 接管 Tomcat
+如果需要多次部署，可以通过脚本来简化服务器部署流程：
+
+```bash
+#!/bin/bash
+depPath=/usr/local/tomcat/flippedclassroom
+snap='server-0.0.1-SNAPSHOT'
+
+if [ $? -ne 0 ]
+then
+    echo "You must be root to run this sceipt!"
+    exit 1
+fi
+
+rm ${depPath}/ROOT -rf
+unzip ~/${snap}.war -d ${depPath}/ROOT
+rm -f ~/${snap}.war
+# 需要先配置好 supervisor，如果没有，请修改为命令手动重启 tomcat
+supervisorctl restart tomcat
+sleep 5
+```
+
+## 6. 创建必要文件夹并设置权限
+
+项目默认保存上传的文件到 `/var/www/uploads/` 下，所以需要创建对应的目录并授予权限。
+
+创建目录：
+
+```bash
+mkdir -p /var/www/uploads/avatar
+mkdir -p /var/www/uploads/course/preview
+mkdir -p /var/www/uploads/course/edata
+mkdir -p /var/www/uploads/course/picture
+```
+
+确保你当前的用户（运行项目的用户）对 `/var/www` 有写入（write）权限，如果没有，请授予。
+
+另一种更好的方式是创建 nologin 用户：
+
+```bash
+useradd -M -s /usr/bin/nologin www  # 添加 nologin 用户 www
+chown -R www:www /var/www           # 更改 /var/www 及其子目录的所属用户与组
+chmod -R 775 /var/www                   # 更改 /var/www 及其子目录的权限，允许 www 组用户写入
+usermod -a -G www CURRENTUSER   # 将 CURRENTUSER 加入 www 组，这样 CURRENTUSER 就可以在 /var/www 中写入/删除新文件
+```
+
+## 7. 部署并配置 supervisor 接管 Tomcat
 
 虽然 Tomcat 也会自动解压 war 文件，但是它自动解压的速度太慢，我们使用 unzip 手动解压：
 
@@ -128,7 +173,7 @@ yum install supervisor
 
 创建 Tomcat 的配置文件 `/etc/supervisord.d/tomcat.ini`:
 
-```conf
+```ini
 [program:tomcat]
 directory=/usr/local/tomcat
 command=/usr/local/tomcat/bin/catalina.sh run
@@ -160,11 +205,11 @@ supervisorctl restart tomcat
 
 关于 supervisorctl，是 supervisor 提供给我们的一个简化管理的工具，更多内容请看：[https://xlui.me/t/supervisor/](https://xlui.me/t/supervisor/)
 
-## 6. Nginx 反向代理
+## 8. Nginx 反向代理
 
 如果需要部署到域名下，通过 nginx 进行反向代理是最佳的方案。以下给出 nginx 反向代理的配置（/path/to/nginx/conf/vhost/domain_name.conf）：
 
-```conf
+```nginx
 location / {
     proxy_pass http://127.0.0.1:8081/;
     proxy_redirect off;
@@ -189,6 +234,6 @@ location / {
 
 重启 nginx，就可以通过域名访问项目了。
 
-## 7. 结束
+## 9. 结束
 
 以上，就可以成功使用 server 端提供的 API 进行操作。如果有问题，欢迎邮件：[i@xlui.me](mailto:i@xlui.me) 或者 Issues。

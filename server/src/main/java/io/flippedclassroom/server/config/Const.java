@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.3.5";
+	public static final String swaggerVersion = "v0.3.6";
 	public static final String version = "v0.0.1";
 
 	// Password Encrypt
@@ -15,9 +15,9 @@ public class Const {
 	public static final String SUCCESS = "SUCCESS";
 	public static final String FAILED = "FAILED";
 
-	// token 有效期，当前设置为一天
+	// token 有效期，当前设置为十天
 	public static long expire() {
-		return System.currentTimeMillis() + Duration.ofDays(1).toMillis();
+		return System.currentTimeMillis() + Duration.ofDays(10).toMillis();
 	}
 
 	// 上传文件大小

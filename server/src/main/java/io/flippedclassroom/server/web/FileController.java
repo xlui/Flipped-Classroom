@@ -11,9 +11,7 @@ import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.ImageUtils;
 import io.flippedclassroom.server.util.LogUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -47,8 +45,10 @@ public class FileController {
 	private EDataService eDataService;
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
-	@ApiOperation(value = "获取头像", httpMethod = "GET")
-	@ApiResponse(code = 200, message = "成功获取头像")
+	@ApiOperation(value = "获取头像", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse getAvatar(@ApiIgnore @CurrentUser User user, HttpServletResponse response) {
 		String avatarPosition = user.getAvatar();
 		try {
@@ -58,26 +58,31 @@ public class FileController {
 				InputStream in = new FileInputStream(user.getAvatar());
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(in, response.getOutputStream());
-				return new JsonResponse(Const.SUCCESS, "Successfully get user " + user.getId() + "'s avatar!");
+				return new JsonResponse(Const.SUCCESS, "成功获得用户 " + user.getId() + "的头像！");
 			} catch (PositionInvalidException e) {
 				String md5 = DigestUtils.md5DigestAsHex(user.getId().toString().getBytes());
 				URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(connection.getInputStream(), response.getOutputStream());
-				return new JsonResponse(Const.SUCCESS, "Successfully generate avatar from gravatar!");
+				return new JsonResponse(Const.SUCCESS, "成功从 gravatar 生成头像！");
 			}
 		} catch (IOException ignored) {
-			return new JsonResponse(Const.FAILED, "Something error occurs during the progress!");
+			return new JsonResponse(Const.FAILED, "IOException!");
 		}
 	}
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.POST)
 	@ApiOperation(value = "设置头像", httpMethod = "POST")
-	@ApiResponse(code = 200, message = "成功设置头像")
+	@ApiImplicitParams(
+			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式")
+	)
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null!");
+			return new JsonResponse(Const.FAILED, "上传的文件为空！");
 		} else {
 			try {
 				String fileName = multipartFile.getOriginalFilename();
@@ -95,10 +100,10 @@ public class FileController {
 
 				user.setAvatar(avatarPosition + ".png");
 				userService.save(user);
-				return new JsonResponse(Const.SUCCESS, "Successfully set avatar!");
+				return new JsonResponse(Const.SUCCESS, "成功设置头像！");
 			} catch (IOException e) {
 				e.printStackTrace();
-				return new JsonResponse(Const.FAILED, "Something error during saving avatar! Please try later!");
+				return new JsonResponse(Const.FAILED, "IOException!");
 			}
 		}
 	}
@@ -121,7 +126,9 @@ public class FileController {
 
 	@RequestMapping(value = "/course/{courseID}/data/preview/{previewID}", method = RequestMethod.GET)
 	@ApiOperation(value = "下载预习资料")
-	@ApiResponse(code = 200, message = "成功下载预习资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID) {
 //		todo: 下载预习资料
 		return new JsonResponse(Const.SUCCESS, "Helo");
@@ -131,7 +138,9 @@ public class FileController {
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.POST)
 	@RequiresPermissions("course:data:upload")
 	@ApiOperation(value = "课前预习资料")
-	@ApiResponse(code = 200, message = "成功上传课前预习资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse postPreview(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user, @PathVariable Long courseID) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
@@ -193,20 +202,20 @@ public class FileController {
 					InputStream in = new FileInputStream(pictureLocation);
 					response.setContentType(MediaType.IMAGE_PNG_VALUE);
 					IOUtils.copy(in, response.getOutputStream());
-					return new JsonResponse(Const.SUCCESS, "Successfully get course " + course.getId() + " 's picture!");
+					return new JsonResponse(Const.SUCCESS, "成功获取课程 " + course.getId() + " 的图片！");
 				} catch (PositionInvalidException e) {
 					String md5 = DigestUtils.md5DigestAsHex(course.getId().toString().getBytes());
 					URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
 					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 					response.setContentType(MediaType.IMAGE_PNG_VALUE);
 					IOUtils.copy(connection.getInputStream(), response.getOutputStream());
-					return new JsonResponse(Const.SUCCESS, "Successfully get default picture for course " + course.getId());
+					return new JsonResponse(Const.SUCCESS, "成功为课程 " + course.getId() + "从 gravatar 生成图片！");
 				}
 			} catch (IOException e) {
-				return new JsonResponse(Const.FAILED, "Course Id is invalid!");
+				return new JsonResponse(Const.FAILED, "IOException!");
 			}
 		} else {
-			return new JsonResponse(Const.FAILED, "Course Id is invalid!");
+			return new JsonResponse(Const.FAILED, "Course Id 非法！");
 		}
 	}
 
@@ -215,11 +224,11 @@ public class FileController {
 	@ApiResponse(code = 200, message = "Json Response")
 	public JsonResponse postCoursePicture(@PathVariable Long courseID, @RequestPart(name = "file") MultipartFile multipartFile) {
 		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
 		}
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
 		}
 		String coursePicturePosition = Const.coursePicture + "course-" + courseID;
 		String fileName = multipartFile.getOriginalFilename();
@@ -237,6 +246,6 @@ public class FileController {
 		}
 		course.setPicture(coursePicturePosition + ".png");
 		courseService.save(course);
-		return new JsonResponse(Const.SUCCESS, "Successfully save course picture!");
+		return new JsonResponse(Const.SUCCESS, "成功设置课程图片！");
 	}
 }

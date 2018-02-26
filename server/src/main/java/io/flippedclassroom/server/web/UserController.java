@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、检查Token有效性、查看用户资料、更新用户资料")
+@Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、用户登出、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
 public class UserController {
 	@Autowired
@@ -40,9 +40,13 @@ public class UserController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户注册", httpMethod = "POST")
-	@ApiImplicitParam(name = "user", value = "\\{\n\"username\": \"新用户的用户名\",\n\"password\": \"新用户的密码\"," +
-			"\n\"role\": {\"role\": \"teacher或者student\"}\n}")
-	@ApiResponse(code = 200, message = "成功注册")
+	@ApiImplicitParam(name = "user", value = "{\n" +
+			"\"username\" : \"新用户的用户名\",\n" +
+			"\"password\" : \"新用户的密码\",\n" +
+			"\"role\": {\"role\": \"teacher或者student\"}\n}")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse register(@RequestBody User user) throws InputException {
 		AssertUtils.assertUsernamePasswordNotNull(user);
 		User newUser = new User(user.getUsername(), user.getPassword());
@@ -72,7 +76,7 @@ public class UserController {
 			"\"password\":\"dev\" \n" +
 			"}", required = true, dataType = "string", paramType = "body")
 	@ApiResponses({
-			@ApiResponse(code = 200, message = "{\n" +
+			@ApiResponse(code = 200, message = "自定义的 Map 的 JSON 化：\n{\n" +
 					"  \"status\" : \"SUCCESS\",\n" +
 					"  \"token\" : \"Token\",\n" +
 					"  \"role\" : \"student\"\n" +
@@ -108,22 +112,33 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	@ApiOperation(value = "登出，会删除保存的 Token", httpMethod = "GET")
+	@ApiOperation(value = "登出，会删除保存的 Token", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse logout(@ApiIgnore @CurrentUser User user) {
 		redisService.delete(user.getUsername());
 		return new JsonResponse(Const.SUCCESS, "Logout success");
 	}
 
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
-	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET")
-	@ApiResponse(code = 200, message = "Token 有效")
+	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse check() {    // 也用作 Token 登录校验
 		return new JsonResponse(Const.SUCCESS, "Token is valid");
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
-	@ApiOperation(value = "用户个人资料", notes = "需要 Token 验证")
-	@ApiResponse(code = 200, message = "json 化的用户信息")
+	@ApiOperation(value = "用户个人资料", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "用户资料：\n{\n" +
+					"  \"nick_name\" : \"昵称\",\n" +
+					"  \"gender\" : \"性别\",\n" +
+					"  \"signature\" : \"个性签名\"\n" +
+					"}")
+	)
 	public Map getProfile(@ApiIgnore @CurrentUser User user) {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("nick_name", user.getNick_name());
@@ -133,13 +148,11 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "需要 Token 验证")
+	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
 	@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
-	@ApiResponses({
-			@ApiResponse(code = 200, message = "成功修改资料！"),
-			@ApiResponse(code = 401, message = "权限认证失败！"),
-			@ApiResponse(code = 403, message = "身份认证失败！"),
-	})
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse postProfile(@RequestBody User user, @ApiIgnore @CurrentUser User currentUser) {
 		currentUser.setNick_name(user.getNick_name());
 		currentUser.setGender(user.getGender());
