@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.web;
+package io.flippedclassroom.server.web.api;
 
 import io.flippedclassroom.server.config.Const;
 import io.swagger.annotations.Api;

@@ -1,0 +1,41 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="head(title)">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title th:text="${title}"></title>
+        <link rel="stylesheet" th:href="@{~/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{~/css/fontawesome.min.css}"/>
+        <link rel="stylesheet" th:href="@{~/css/main.css}"/>
+        <!-- Delete the following lines when deploy -->
+        <link rel="stylesheet" href="../static/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="../static/css/fontawesome.min.css"/>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="masthead">
+    <nav class="navbar navbar-expand-lg navbar-fixed-top fc-masthead">
+        <div class="container">
+            <a class="navbar-brand fc-nav-item" th:href="@{/}">FlippedClassroom</a>
+        </div>
+
+    </nav>
+</th:block>
+
+<th:block th:fragment="footer">
+    <footer class="footer">
+        <p>
+            Build by <a href="https://github.com/spring-projects/spring-boot">Spring Boot</a>
+            and <a href="https://github.com/twbs/bootstrap">Bootstrap</a>
+            and <a href="https://github.com/FortAwesome/Font-Awesome">Font-Awesome</a>.
+            Fork me on <a href="https://github.com/xlui/FlippedClassroom"><i class="fa fa-github"></i>GitHub</a>!
+        </p>
+        <p><a href="#">Back to top</a></p>
+    </footer>
+
+    <script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>
+</th:block>
+</body>
+</html>

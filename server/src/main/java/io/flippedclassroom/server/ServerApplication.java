@@ -35,21 +35,6 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	@Autowired
 	private CommentService commentService;
 
-	@RequestMapping("/")
-	public String index() {
-		return "<html>\n" +
-				"<head>\n" +
-				"    <meta charset=\"utf-8\"/>\n" +
-				"    <title>XD</title>\n" +
-				"</head>\n" +
-				"<body>\n" +
-				"<p>Hello fc.xd.style!</p>\n" +
-				"<br/>\n" +
-				"<p>API 说明：<a href=\"https://fc.xd.style/swagger-ui.html\">httpsL//fc.xd.style/swagger-ui.html</a>\n" +
-				"</body>\n" +
-				"</html>\n";
-	}
-
 	/**
 	 * 测试 Token 的有效性
 	 */

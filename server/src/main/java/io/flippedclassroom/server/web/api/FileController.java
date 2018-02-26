@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.web;
+package io.flippedclassroom.server.web.api;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
