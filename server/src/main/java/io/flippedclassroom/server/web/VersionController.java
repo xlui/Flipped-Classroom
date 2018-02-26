@@ -1,6 +1,6 @@
 package io.flippedclassroom.server.web;
 
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,6 +21,6 @@ public class VersionController {
 			@ApiResponse(code = 200, message = "当前版本")
 	})
 	public String version() {
-		return Constant.version;
+		return Const.version;
 	}
 }

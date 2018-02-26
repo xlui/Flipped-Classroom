@@ -1,8 +1,8 @@
 package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
-import io.flippedclassroom.server.config.Constant;
-import io.flippedclassroom.server.config.PasswordToken;
+import io.flippedclassroom.server.config.Const;
+import io.flippedclassroom.server.config.token.PasswordToken;
 import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.entity.Role;
 import io.flippedclassroom.server.entity.User;
@@ -12,8 +12,8 @@ import io.flippedclassroom.server.service.RoleService;
 import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.EncryptUtils;
-import io.flippedclassroom.server.util.JWTUtils;
 import io.flippedclassroom.server.util.LogUtils;
+import io.flippedclassroom.server.util.TokenUtils;
 import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -46,47 +47,61 @@ public class UserController {
 		AssertUtils.assertUsernamePasswordNotNull(user);
 		User newUser = new User(user.getUsername(), user.getPassword());
 		if (userService.findUserByUsername(newUser.getUsername()) != null) {
-			return new JsonResponse(Constant.FAILED, "账号已存在");
+			return new JsonResponse(Const.FAILED, "账号已存在");
 		} else {
 			EncryptUtils.encrypt(newUser);
 
 			try {
 				Role role = roleService.findRoleByRoleName(user.getRole().getRole());
 				if (role == null) {
-					return new JsonResponse(Constant.FAILED, "非法角色类型");
+					return new JsonResponse(Const.FAILED, "非法角色类型");
 				}
 				newUser.setRole(role);
 				userService.save(newUser);
-				return new JsonResponse(Constant.SUCCESS, "成功注册");
+				return new JsonResponse(Const.SUCCESS, "成功注册");
 			} catch (NullPointerException e) {
-				return new JsonResponse(Constant.FAILED, "非法角色类型");
+				return new JsonResponse(Const.FAILED, "非法角色类型");
 			}
 		}
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户名密码登录", httpMethod = "POST")
-	@ApiImplicitParam(name = "user", value = "{\n\"username\":\"1\",\n \"password\":\"dev\" \n}", required = true, dataType = "string", paramType = "body")
+	@ApiImplicitParam(name = "user", value = "{\n" +
+			"\"username\":\"1\",\n " +
+			"\"password\":\"dev\" \n" +
+			"}", required = true, dataType = "string", paramType = "body")
 	@ApiResponses({
-			@ApiResponse(code = 200, message = "为用户生成的 Token"),
+			@ApiResponse(code = 200, message = "{\n" +
+					"  \"status\" : \"SUCCESS\",\n" +
+					"  \"token\" : \"Token\",\n" +
+					"  \"role\" : \"student\"\n" +
+					"}"),
 			@ApiResponse(code = 401, message = "权限认证失败！"),
 			@ApiResponse(code = 403, message = "身份认证失败！"),
 	})
-	public Map postLogin(@RequestBody User user) throws InputException {
-		AssertUtils.assertUsernamePasswordNotNull(user);
+	public Map postLogin(@RequestBody User user) {
+		try {
+			AssertUtils.assertUsernamePasswordNotNull(user);
+		} catch (InputException e) {
+			Map<String, String> map = new HashMap<>();
+			map.put("status", Const.FAILED);
+			map.put("message", "用户名或密码不合法！");
+			return map;
+		}
 
 		// 用户登录
 		PasswordToken passwordToken = new PasswordToken(user.getUsername(), user.getPassword());
 		SecurityUtils.getSubject().login(passwordToken);
 
 		User loginUser = userService.findUserByUsername(user.getUsername());
-		String token = JWTUtils.sign(loginUser.getUsername(), loginUser.getPassword());
+		String token = TokenUtils.sign(loginUser.getUsername(), loginUser.getPassword());
 		LogUtils.getInstance().info("生成 Token！\n" + token);
 		LogUtils.getInstance().info("保存 用户名-Token 对到 Redis");
 		redisService.save(loginUser.getUsername(), token);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		map.put("status", Constant.SUCCESS);
+		map.put("status", Const.SUCCESS);
 		map.put("token", token);
 		map.put("role", loginUser.getRole().getRole());
 		return map;
@@ -96,14 +111,14 @@ public class UserController {
 	@ApiOperation(value = "登出，会删除保存的 Token", httpMethod = "GET")
 	public JsonResponse logout(@ApiIgnore @CurrentUser User user) {
 		redisService.delete(user.getUsername());
-		return new JsonResponse(Constant.SUCCESS, "Logout success");
+		return new JsonResponse(Const.SUCCESS, "Logout success");
 	}
 
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
 	@ApiOperation(value = "检查 Token 的有效性", httpMethod = "GET")
 	@ApiResponse(code = 200, message = "Token 有效")
 	public JsonResponse check() {    // 也用作 Token 登录校验
-		return new JsonResponse(Constant.SUCCESS, "Token is valid");
+		return new JsonResponse(Const.SUCCESS, "Token is valid");
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
@@ -130,6 +145,6 @@ public class UserController {
 		currentUser.setGender(user.getGender());
 		currentUser.setSignature(user.getSignature());
 		userService.save(currentUser);
-		return new JsonResponse(Constant.SUCCESS, "成功修改资料");
+		return new JsonResponse(Const.SUCCESS, "成功修改资料");
 	}
 }

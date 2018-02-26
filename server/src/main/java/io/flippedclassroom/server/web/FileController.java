@@ -1,7 +1,7 @@
 package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.*;
 import io.flippedclassroom.server.exception.PositionInvalidException;
 import io.flippedclassroom.server.service.CourseService;
@@ -58,17 +58,17 @@ public class FileController {
 				InputStream in = new FileInputStream(user.getAvatar());
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(in, response.getOutputStream());
-				return new JsonResponse(Constant.SUCCESS, "Successfully get user " + user.getId() + "'s avatar!");
+				return new JsonResponse(Const.SUCCESS, "Successfully get user " + user.getId() + "'s avatar!");
 			} catch (PositionInvalidException e) {
 				String md5 = DigestUtils.md5DigestAsHex(user.getId().toString().getBytes());
-				URL url = new URL(Constant.defaultAvatarLink.replace("MD5", md5));
+				URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(connection.getInputStream(), response.getOutputStream());
-				return new JsonResponse(Constant.SUCCESS, "Successfully generate avatar from gravatar!");
+				return new JsonResponse(Const.SUCCESS, "Successfully generate avatar from gravatar!");
 			}
 		} catch (IOException ignored) {
-			return new JsonResponse(Constant.FAILED, "Something error occurs during the progress!");
+			return new JsonResponse(Const.FAILED, "Something error occurs during the progress!");
 		}
 	}
 
@@ -77,12 +77,12 @@ public class FileController {
 	@ApiResponse(code = 200, message = "成功设置头像")
 	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
-			return new JsonResponse(Constant.FAILED, "upload file is null!");
+			return new JsonResponse(Const.FAILED, "upload file is null!");
 		} else {
 			try {
 				String fileName = multipartFile.getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf("."));
-				String avatarPosition = Constant.avatarPosition + "user-" + user.getId();
+				String avatarPosition = Const.avatarPosition + "user-" + user.getId();
 				LogUtils.getInstance().info("上传文件后缀名：" + suffix);
 
 				FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
@@ -95,10 +95,10 @@ public class FileController {
 
 				user.setAvatar(avatarPosition + ".png");
 				userService.save(user);
-				return new JsonResponse(Constant.SUCCESS, "Successfully set avatar!");
+				return new JsonResponse(Const.SUCCESS, "Successfully set avatar!");
 			} catch (IOException e) {
 				e.printStackTrace();
-				return new JsonResponse(Constant.FAILED, "Something error during saving avatar! Please try later!");
+				return new JsonResponse(Const.FAILED, "Something error during saving avatar! Please try later!");
 			}
 		}
 	}
@@ -110,11 +110,11 @@ public class FileController {
 		Map<String, Object> map = new HashMap<>();
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			map.put("status", Constant.FAILED);
+			map.put("status", Const.FAILED);
 			map.put("message", "course id is invalid!");
 			return map;
 		}
-		map.put("status", Constant.SUCCESS);
+		map.put("status", Const.SUCCESS);
 		map.put("preview", course.getPreviewList());
 		return map;
 	}
@@ -124,7 +124,7 @@ public class FileController {
 	@ApiResponse(code = 200, message = "成功下载预习资料")
 	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID) {
 //		todo: 下载预习资料
-		return new JsonResponse(Constant.SUCCESS, "Helo");
+		return new JsonResponse(Const.SUCCESS, "Helo");
 	}
 
 
@@ -134,22 +134,22 @@ public class FileController {
 	@ApiResponse(code = 200, message = "成功上传课前预习资料")
 	public JsonResponse postPreview(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user, @PathVariable Long courseID) {
 		if (multipartFile == null) {
-			return new JsonResponse(Constant.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			return new JsonResponse(Constant.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
-		String coursePreviewPosition = Constant.coursePreviewPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
+		String coursePreviewPosition = Const.coursePreviewPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
 		Preview preview = new Preview(coursePreviewPosition);
 		try {
 			FileUtils.writeByteArrayToFile(new File(coursePreviewPosition), multipartFile.getBytes());
 			preview.setCourse(course);
 			previewService.save(preview);
-			return new JsonResponse(Constant.SUCCESS, "Successfully save preview data!");
+			return new JsonResponse(Const.SUCCESS, "Successfully save preview data!");
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new JsonResponse(Constant.FAILED, "IOException occurs during saving preview file!");
+			return new JsonResponse(Const.FAILED, "IOException occurs during saving preview file!");
 		}
 	}
 
@@ -159,13 +159,13 @@ public class FileController {
 	@ApiResponse(code = 200, message = "成功上传电子资料")
 	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID) {
 		if (multipartFile == null) {
-			return new JsonResponse(Constant.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			return new JsonResponse(Constant.FAILED, "upload file is null OR course id is invalid!");
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
-		String courseEDataPosition = Constant.courseEDataPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
+		String courseEDataPosition = Const.courseEDataPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
 		EData eData = new EData(courseEDataPosition);
 		try {
 			// 写入文件
@@ -173,10 +173,70 @@ public class FileController {
 			// 更新数据库
 			eData.setCourse(course);
 			eDataService.save(eData);
-			return new JsonResponse(Constant.SUCCESS, "Successfully save E-Data!");
+			return new JsonResponse(Const.SUCCESS, "Successfully save E-Data!");
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new JsonResponse(Constant.FAILED, "IOException occurs during saving E-Data!");
+			return new JsonResponse(Const.FAILED, "IOException occurs during saving E-Data!");
 		}
+	}
+
+	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.GET)
+	@ApiOperation(value = "获取课程图片")
+	@ApiResponse(code = 200, message = "课程图片流")
+	public JsonResponse getCoursePicture(@PathVariable Long courseID, HttpServletResponse response) {
+		Course course = courseService.findCourseById(courseID);
+		if (course != null) {
+			String pictureLocation = course.getPicture();
+			try {
+				try {
+					AssertUtils.assertPositionValid(pictureLocation);
+					InputStream in = new FileInputStream(pictureLocation);
+					response.setContentType(MediaType.IMAGE_PNG_VALUE);
+					IOUtils.copy(in, response.getOutputStream());
+					return new JsonResponse(Const.SUCCESS, "Successfully get course " + course.getId() + " 's picture!");
+				} catch (PositionInvalidException e) {
+					String md5 = DigestUtils.md5DigestAsHex(course.getId().toString().getBytes());
+					URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					response.setContentType(MediaType.IMAGE_PNG_VALUE);
+					IOUtils.copy(connection.getInputStream(), response.getOutputStream());
+					return new JsonResponse(Const.SUCCESS, "Successfully get default picture for course " + course.getId());
+				}
+			} catch (IOException e) {
+				return new JsonResponse(Const.FAILED, "Course Id is invalid!");
+			}
+		} else {
+			return new JsonResponse(Const.FAILED, "Course Id is invalid!");
+		}
+	}
+
+	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.POST)
+	@ApiOperation(value = "上传课程图片")
+	@ApiResponse(code = 200, message = "Json Response")
+	public JsonResponse postCoursePicture(@PathVariable Long courseID, @RequestPart(name = "file") MultipartFile multipartFile) {
+		if (multipartFile == null) {
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
+		}
+		Course course = courseService.findCourseById(courseID);
+		if (course == null) {
+			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
+		}
+		String coursePicturePosition = Const.coursePicture + "course-" + courseID;
+		String fileName = multipartFile.getOriginalFilename();
+		String suffix = fileName.substring(fileName.lastIndexOf("."));
+		LogUtils.getInstance().info("课程图像后缀名：" + suffix);
+		try {
+			FileUtils.writeByteArrayToFile(new File(coursePicturePosition + suffix), multipartFile.getBytes());
+			if (suffix == null || !suffix.equals(".png")) {
+				LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
+				ImageUtils.convertFormat(coursePicturePosition + suffix, coursePicturePosition + ".png", "PNG");
+				FileUtils.deleteQuietly(new File(coursePicturePosition + suffix));
+			}
+		} catch (IOException e) {
+			return new JsonResponse(Const.FAILED, "IOException occur!");
+		}
+		course.setPicture(coursePicturePosition + ".png");
+		courseService.save(course);
+		return new JsonResponse(Const.SUCCESS, "Successfully save course picture!");
 	}
 }

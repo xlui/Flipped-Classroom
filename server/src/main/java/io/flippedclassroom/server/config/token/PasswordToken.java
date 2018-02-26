@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.config;
+package io.flippedclassroom.server.config.token;
 
 import org.apache.shiro.authc.AuthenticationToken;
 

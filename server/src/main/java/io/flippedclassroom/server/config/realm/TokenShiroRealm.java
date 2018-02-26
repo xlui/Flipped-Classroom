@@ -1,5 +1,6 @@
-package io.flippedclassroom.server.config;
+package io.flippedclassroom.server.config.realm;
 
+import io.flippedclassroom.server.config.token.TokenToken;
 import io.flippedclassroom.server.entity.Permission;
 import io.flippedclassroom.server.entity.Role;
 import io.flippedclassroom.server.entity.User;

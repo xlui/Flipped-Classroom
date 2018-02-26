@@ -1,6 +1,7 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.flippedclassroom.server.config.Const;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Course implements Serializable {
 	private Long id;
 	private String name;        // 课程名
 	private String major;       // 课程所属专业
+	private String picture;        // 课程图片
 	private Long count = 0L;    // 参与课程人数
 	private String code;        // 课程唯一代码
 
@@ -146,5 +148,16 @@ public class Course implements Serializable {
 
 	public void setCommentList(List<Comment> commentList) {
 		this.commentList = commentList;
+	}
+
+	public String getPicture() {
+		if (picture == null) {
+			picture = Const.coursePictureLink.replace("COURSEID", this.id.toString());
+		}
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
 	}
 }

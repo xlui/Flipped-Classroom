@@ -2,7 +2,7 @@ package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentRole;
 import io.flippedclassroom.server.annotation.CurrentUser;
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.Comment;
 import io.flippedclassroom.server.entity.Course;
 import io.flippedclassroom.server.entity.JsonResponse;
@@ -38,7 +38,7 @@ public class CourseController {
 	@ApiResponse(code = 200, message = "课程列表，JSON形式")
 	public Map getCourses(@ApiIgnore @CurrentUser User user) {
 		Map<String, Object> map = new HashMap<>();
-		map.put("status", Constant.SUCCESS);
+		map.put("status", Const.SUCCESS);
 		map.put("courses", user.getCourseList());
 		return map;
 	}
@@ -62,12 +62,12 @@ public class CourseController {
 	public JsonResponse updateCourse(@PathVariable Long courseID, @RequestBody Course course) {
 		Course newCourse = courseService.findCourseById(courseID);
 		if (newCourse == null) {
-			return new JsonResponse(Constant.FAILED, "course id is invalid!");
+			return new JsonResponse(Const.FAILED, "course id is invalid!");
 		}
 		newCourse.setName(course.getName());
 		newCourse.setMajor(course.getMajor());
 		courseService.save(newCourse);
-		return new JsonResponse(Constant.SUCCESS, "Successfully update course info!");
+		return new JsonResponse(Const.SUCCESS, "Successfully update course info!");
 	}
 
 	@RequestMapping(value = "/{courseID}/delete", method = RequestMethod.GET)
@@ -79,20 +79,20 @@ public class CourseController {
 
 		try {
 			if (course == null) {
-				return new JsonResponse(Constant.FAILED, "Course id is invalid!");
+				return new JsonResponse(Const.FAILED, "Course id is invalid!");
 			}
 
 			if (role.equals("student")) {        // 学生删除课程逻辑
 				user.getCourseList().remove(course);
 				userService.save(user);
-				return new JsonResponse(Constant.SUCCESS, "Successfully delete course!");
+				return new JsonResponse(Const.SUCCESS, "Successfully delete course!");
 			} else {
 				courseService.delete(course);
-				return new JsonResponse(Constant.SUCCESS, "Successfully delete course!");
+				return new JsonResponse(Const.SUCCESS, "Successfully delete course!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new JsonResponse(Constant.FAILED, "Unknown exception happened during delete the course, please try again!");
+			return new JsonResponse(Const.FAILED, "Unknown exception happened during delete the course, please try again!");
 		}
 	}
 
@@ -105,7 +105,7 @@ public class CourseController {
 		Course newCourse = new Course(course.getName(), course.getMajor());
 		user.getCourseList().add(newCourse);
 		userService.save(user);
-		return new JsonResponse(Constant.SUCCESS, "Successfully create a new course");
+		return new JsonResponse(Const.SUCCESS, "Successfully create a new course");
 	}
 
 	@RequestMapping(value = "/{courseID}/join", method = RequestMethod.GET)
@@ -115,15 +115,15 @@ public class CourseController {
 	public JsonResponse joinCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			return new JsonResponse(Constant.FAILED, "Course id is invalid!");
+			return new JsonResponse(Const.FAILED, "Course id is invalid!");
 		} else {
 			List<Course> courses = user.getCourseList();
 			if (courses.contains(course)) {
-				return new JsonResponse(Constant.FAILED, "should not add a existing course");
+				return new JsonResponse(Const.FAILED, "should not add a existing course");
 			} else {
 				courses.add(course);
 				userService.save(user);
-				return new JsonResponse(Constant.SUCCESS, "Successfully add course!");
+				return new JsonResponse(Const.SUCCESS, "Successfully add course!");
 			}
 		}
 	}
@@ -136,11 +136,11 @@ public class CourseController {
 		Course course = courseService.findCourseById(courseID);
 		Map<String, Object> map = new LinkedHashMap<>();
 		if (course == null) {
-			map.put("status", Constant.FAILED);
+			map.put("status", Const.FAILED);
 			map.put("commetns", null);
 			return map;
 		} else {
-			map.put("status", Constant.SUCCESS);
+			map.put("status", Const.SUCCESS);
 			map.put("comments", course.getCommentList());
 			return map;
 		}
@@ -154,14 +154,14 @@ public class CourseController {
 	public JsonResponse commentCourse(@PathVariable Long courseID, @RequestBody Comment comment, @ApiIgnore @CurrentUser User user) {
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
-			return new JsonResponse(Constant.FAILED, "Course id is invalid!");
+			return new JsonResponse(Const.FAILED, "Course id is invalid!");
 		} else {
 			Comment newComment = new Comment(comment.getContent());
 			newComment.setUser(user);
 			newComment.setCourse(course);
 			newComment.setReply(comment.getReply());
 			commentService.save(newComment);
-			return new JsonResponse(Constant.SUCCESS, "Successfully add a comment!");
+			return new JsonResponse(Const.SUCCESS, "Successfully add a comment!");
 		}
 	}
 }

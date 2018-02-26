@@ -4,14 +4,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 
 import java.util.Date;
 
 /**
  * Token 生成与校验
  */
-public class JWTUtils {
+public class TokenUtils {
 	/**
 	 * 校验 token
 	 *
@@ -62,7 +62,7 @@ public class JWTUtils {
 			return JWT.create()
 					.withClaim("username", username)
 					.withClaim("date", new Date())
-					.withExpiresAt(new Date(Constant.expire))
+					.withExpiresAt(new Date(Const.expire()))
 					.sign(algorithm);
 		} catch (Exception e) {
 			return null;

@@ -1,6 +1,6 @@
 package io.flippedclassroom.server.util;
 
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.User;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -18,6 +18,6 @@ public class EncryptUtils {
 		SecureRandomNumberGenerator numberGenerator = new SecureRandomNumberGenerator();
 		String salt = user.getUsername() + numberGenerator.nextBytes(12).toHex() + new Date().getTime();
 		user.setSalt(salt);
-		user.setPassword((new SimpleHash(Constant.algorithm, user.getPassword(), ByteSource.Util.bytes(salt), Constant.iteration)).toString());
+		user.setPassword((new SimpleHash(Const.algorithm, user.getPassword(), ByteSource.Util.bytes(salt), Const.iteration)).toString());
 	}
 }

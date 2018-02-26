@@ -3,8 +3,8 @@ package io.flippedclassroom.server.config;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.util.JWTUtils;
 import io.flippedclassroom.server.util.LogUtils;
+import io.flippedclassroom.server.util.TokenUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
@@ -40,7 +40,7 @@ public class TokenCredentialsMatcher extends SimpleCredentialsMatcher {
 		logger.info("Token 中的信息：\n" + principal + ", " + credentials);
 		User user = userService.findUserByUsername(principal);
 
-		boolean result = JWTUtils.verify(credentials, user.getUsername(), user.getPassword());
+		boolean result = TokenUtils.verify(credentials, user.getUsername(), user.getPassword());
 		logger.info("Token 校验结果：" + result);
 		return result;
 	}
