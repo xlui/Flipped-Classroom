@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/logo.png" width=72 height=72>
+<img src="Images/logo.png" width=72 height=72>
 
 <h2 align="center">翻转课堂</h2>
 

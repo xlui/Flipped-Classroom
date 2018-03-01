@@ -2,9 +2,9 @@ package io.flippedclassroom.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.flippedclassroom.server.advice.ExceptionHandlerAdvice;
-import io.flippedclassroom.server.config.Constant;
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.JsonResponse;
-import io.flippedclassroom.server.web.UserController;
+import io.flippedclassroom.server.web.api.UserController;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.ThreadContext;
 import org.junit.Before;
@@ -54,10 +54,10 @@ public class UserControllerTests {
 	@Test
 	public void testRegister() throws Exception {
 		String register = "/register";
-		JsonResponse successResult = new JsonResponse(Constant.SUCCESS, "成功注册");
-		JsonResponse roleInvalidResult = new JsonResponse(Constant.FAILED, "非法角色类型");
-		JsonResponse usernameDuplicateResult = new JsonResponse(Constant.FAILED, "账号已存在");
-		JsonResponse usernamePasswordNullResult = new JsonResponse(Constant.FAILED, "username or password invalid!");
+		JsonResponse successResult = new JsonResponse(Const.SUCCESS, "成功注册");
+		JsonResponse roleInvalidResult = new JsonResponse(Const.FAILED, "非法角色类型");
+		JsonResponse usernameDuplicateResult = new JsonResponse(Const.FAILED, "账号已存在");
+		JsonResponse usernamePasswordNullResult = new JsonResponse(Const.FAILED, "username or password invalid!");
 
 		mockMvc.perform(post(register)
 				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -105,8 +105,8 @@ public class UserControllerTests {
 	@Test
 	public void testLogin() throws Exception {
 		String login = "/login";
-		JsonResponse UsernameOrPasswordInvalid = new JsonResponse(Constant.FAILED, "username or password invalid!");
-		JsonResponse UsernameOrPasswordError = new JsonResponse(Constant.FAILED, "Oops! 身份认证失败！");
+		JsonResponse UsernameOrPasswordInvalid = new JsonResponse(Const.FAILED, "username or password invalid!");
+		JsonResponse UsernameOrPasswordError = new JsonResponse(Const.FAILED, "Oops! 身份认证失败！");
 
 //		mockMvc.perform(post(login)
 //				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)

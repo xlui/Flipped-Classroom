@@ -7,12 +7,11 @@ import org.slf4j.LoggerFactory;
  * 全局日志
  */
 public class LogUtils {
-	private static Logger logger = null;
+	public static Logger getInstance() {
+		return Inner.logger;
+	}
 
-	public static Logger getLogger() {
-		if (logger == null) {
-			logger = LoggerFactory.getLogger("FlippedClassroom");
-		}
-		return logger;
+	private static final class Inner {
+		private static final Logger logger = LoggerFactory.getLogger("FlippedClassroom");
 	}
 }

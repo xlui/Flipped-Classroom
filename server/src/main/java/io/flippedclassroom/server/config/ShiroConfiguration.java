@@ -1,5 +1,8 @@
 package io.flippedclassroom.server.config;
 
+import io.flippedclassroom.server.config.realm.PasswordShiroRealm;
+import io.flippedclassroom.server.config.realm.TokenShiroRealm;
+import io.flippedclassroom.server.filter.TokenFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -30,8 +33,8 @@ public class ShiroConfiguration {
 	@Bean
 	public HashedCredentialsMatcher hashedCredentialsMatcher() {
 		HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
-		credentialsMatcher.setHashAlgorithmName(Constant.algorithm);
-		credentialsMatcher.setHashIterations(Constant.iteration);
+		credentialsMatcher.setHashAlgorithmName(Const.algorithm);
+		credentialsMatcher.setHashIterations(Const.iteration);
 		return credentialsMatcher;
 	}
 
@@ -114,16 +117,16 @@ public class ShiroConfiguration {
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 
 		Map<String, Filter> filterMap = new HashMap<>();
-		filterMap.put("jwt", new JWTFilter());
+		filterMap.put("jwt", new TokenFilter());
 		shiroFilterFactoryBean.setFilters(filterMap);
 
 		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
 
+		filterChainDefinitionMap.put("/logout", "jwt");
 		filterChainDefinitionMap.put("/check", "jwt");  // 检查 Token 的有效性
 		filterChainDefinitionMap.put("/profile", "jwt");
 		filterChainDefinitionMap.put("/avatar", "jwt");
-
 		filterChainDefinitionMap.put("/course/**", "jwt");
 		filterChainDefinitionMap.put("/**", "anon");
 

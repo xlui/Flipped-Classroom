@@ -7,6 +7,7 @@ import io.flippedclassroom.server.util.EncryptUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -22,7 +23,7 @@ import java.util.List;
 @SpringBootApplication
 @RestController
 @ApiIgnore
-public class ServerApplication extends SpringBootServletInitializer {
+public class ServerApplication extends SpringBootServletInitializer implements CommandLineRunner {
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -33,21 +34,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 	private PermissionService permissionService;
 	@Autowired
 	private CommentService commentService;
-
-	@RequestMapping("/")
-	public String index() {
-		return "<html>\n" +
-				"<head>\n" +
-				"    <meta charset=\"utf-8\"/>\n" +
-				"    <title>XD</title>\n" +
-				"</head>\n" +
-				"<body>\n" +
-				"<p>Hello fc.xd.style!</p>\n" +
-				"<br/>\n" +
-				"<p>API 说明：<a href=\"https://fc.xd.style/swagger-ui.html\">httpsL//fc.xd.style/swagger-ui.html</a>\n" +
-				"</body>\n" +
-				"</html>\n";
-	}
 
 	/**
 	 * 测试 Token 的有效性
@@ -67,7 +53,7 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@RequestMapping("/init")
 	@Transactional
 	public String init() {
-		Logger logger = LogUtils.getLogger();
+		Logger logger = LogUtils.getInstance();
 
 		logger.info("从数据库中查询需要初始化的实体");
 		User userStudent1 = userService.findUserByUsername("1");
@@ -99,9 +85,9 @@ public class ServerApplication extends SpringBootServletInitializer {
 
 		// 如果数据库中存在这些实体，删除并重新初始化
 		logger.info("如果数据库中存在初始化信息，删除");
-		if (userStudent1 != null) userService.delete(userStudent1);
-		if (userStudent2 != null) userService.delete(userStudent2);
-		if (userTeacher != null) userService.delete(userTeacher);
+		if (userStudent1 == null) userStudent1 = new User("1", "dev");
+		if (userStudent2 == null) userStudent2 = new User("3", "dev");
+		if (userTeacher == null) userTeacher = new User("2", "std");
 		if (roleAdmin == null) roleAdmin = new Role("admin");
 		if (roleStudent == null) roleStudent = new Role("student");
 		if (roleTeacher == null) roleTeacher = new Role("teacher");
@@ -120,9 +106,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 
 		// 重新初始化
 		logger.info("重新初始化...");
-		userStudent1 = new User("1", "dev");
-		userStudent2 = new User("3", "dev");
-		userTeacher = new User("2", "std");
 		courseMath = new Course("数学", "数学专业");
 		courseDataStructure = new Course("数据结构", "计算机专业");
 		courseDatabase = new Course("数据库", "计算机专业");
@@ -181,13 +164,6 @@ public class ServerApplication extends SpringBootServletInitializer {
 		commentService.save(commentFirst);
 		commentSecond.setReply(commentFirst.getId());
 		commentService.save(commentSecond);
-//		userService.save(Arrays.asList(userStudent1, userStudent2, userTeacher));
-//		roleService.save(Arrays.asList(roleStudent, roleTeacher, roleAdmin));
-//		permissionService.save(Arrays.asList(permissionUpdate, permissionDelete, permissionCreate, permissionJoin,
-//				permissionViewComment, permissionAddComment, permissionUploadData));
-//		commentService.save(commentFirst);
-//		commentSecond.setReply(commentFirst.getId());
-//		commentService.save(commentSecond);
 
 		return "init success";
 	}
@@ -199,5 +175,10 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder.sources(ServerApplication.class);
+	}
+
+	@Override
+	public void run(String... strings) {
+		System.out.println("测试命令行代码");
 	}
 }

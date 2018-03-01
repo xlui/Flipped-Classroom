@@ -7,4 +7,6 @@ public interface RedisService {
 	void save(String username, String token);
 
 	String get(String username);
+
+	void delete(String name);
 }
