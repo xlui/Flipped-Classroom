@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "版本", description = "用于应用内确认版本更新，检查应用内版本信息，与本 API 返回的比对，进行相应的响应")
 @RestController
+@RequestMapping("/api")
 public class VersionController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ApiOperation(value = "版本信息", httpMethod = "GET")

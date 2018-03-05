@@ -7,12 +7,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/").setViewName("/index");
+		registry.addViewController("/index").setViewName("/index");
+		registry.addViewController("/login").setViewName("/login");
+	}
+
 	// 注入自定义注解
 	@Bean
 	public CurrentUserMethodArgumentResolver currentUserMethodArgumentResolver() {

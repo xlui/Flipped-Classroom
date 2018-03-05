@@ -1,19 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <th:block th:include="base::head('Flipped Classroom')"/>
-    <!-- Delete the following lines when deploy -->
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="../static/css/fontawesome.min.css"/>
+    <th:block th:include="base::head(title='翻转课堂 —— 创造全新的课堂体验！')"/>
 </head>
+
 <body>
-<th:block th:include="base::masthead"/>
-<div class="container">
-    <h1>测试！</h1>
-    <p>
-        API 说明：<a href="https://fc.xd.style/swagger-ui.html">https://fc.xd.style/swagger-ui.html</a>
-    </p>
+<div class="container" id="container">
+    <th:block th:include="base::LeftBar(page='home')"/>
+    <section class="main">
+        <div id="mainContent">
+            <!-- 手机端菜单 -->
+            <div id="menu"><a href="#">菜单</a></div>
+            <!-- 开发社区 -->
+            <div class="box">
+                <a href="#" name="bbs"></a>
+                <div class="sub-category">
+                    <div><i class="iconfont icon-shequ"></i>开发社区</div>
+                </div>
+                <div>
+                    <a target="_blank" href="http://blog.csdn.net/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/csdn.ico}" alt="CNDS"/> CNDS</div>
+                            <div class="desc">中国最大的IT社区和服务平台</div>
+                        </div>
+                    </a>
+                    <a href="https://juejin.im/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/gold-favicon.png}" alt="掘金"/> 掘金</div>
+                            <div class="desc">只有高手分享的中文技术社区</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="https://github.com/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/github.ico}" alt="github"/> github</div>
+                            <div class="desc">面向开源及私有软件项目的git托管平台</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="http://stackoverflow.com/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/stackoverflow.ico}" alt="stackoverflow"/> stackoverflow
+                            </div>
+                            <div class="desc">国外编程相关的IT技术问答网站</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- 技术博客 -->
+            <div class="box">
+                <a href="#" name="sill"></a>
+                <div class="sub-category">
+                    <div><i class="iconfont icon-blogger"></i>技术博客</div>
+                </div>
+                <div>
+                    <a target="_blank" href="http://www.alloyteam.com/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/alloyteam-favicon.jpg}" alt="腾讯 AlloyTeam 团队"/> 腾讯
+                                AlloyTeam
+                                团队
+                            </div>
+                            <div class="desc">腾讯Web前端团队，代表作品WebQQ，致力于前端技术的研究</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="https://isux.tencent.com/">
+                        <div class="item">
+                            <div class="logo"><img th:src="@{img/isux-favicon.jpg}" alt="ISUX"/> ISUX</div>
+                            <div class="desc">腾讯社交用户体验设计，简称ISUX，腾讯设计团队网站</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="http://fex.baidu.com/">
+                        <div class="item">
+                            <div class="logo">
+                                <img th:src="@{img/fex-favicon.png}"/> FEX
+                            </div>
+                            <div class="desc">
+                                百度Web前端研发部出品
+                            </div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="http://taobaofed.org/">
+                        <div class="item">
+                            <div class="logo">
+                                <img th:src="@{img/fed-favicon.png}"/> 淘宝前端团队（FED）
+                            </div>
+                            <div class="desc">
+                                用技术为体验提供无限可能
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <th:block th:include="base::footer"/>
+        </div>
+    </section>
 </div>
-<th:block th:include="base::footer"/>
 </body>
+
 </html>

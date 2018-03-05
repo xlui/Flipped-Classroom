@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api")
 @Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传")
 public class FileController {
 	@Autowired
