@@ -15,13 +15,6 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("/index");
-		registry.addViewController("/index").setViewName("/index");
-		registry.addViewController("/login").setViewName("/login");
-	}
-
 	// 注入自定义注解
 	@Bean
 	public CurrentUserMethodArgumentResolver currentUserMethodArgumentResolver() {
