@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.web.api;
+package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
@@ -30,7 +30,6 @@ import java.util.Map;
 
 @Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、用户登出、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
-@RequestMapping("/api")
 public class UserController {
 	@Autowired
 	private UserService userService;

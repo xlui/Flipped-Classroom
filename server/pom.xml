@@ -77,12 +77,6 @@
             <artifactId>commons-io</artifactId>
             <version>RELEASE</version>
         </dependency>
-        <!-- Thymeleaf HTML check -->
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>RELEASE</version>
-        </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
