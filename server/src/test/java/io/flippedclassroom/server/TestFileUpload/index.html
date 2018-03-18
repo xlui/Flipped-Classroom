@@ -9,6 +9,14 @@
     <input type="file" name="file" id="file" required/>
     <input type="submit" value="提交"/>
 </form>
+<br/>
+<div>
+    <div style="background:#848484;width:100px;height:10px;margin-top:5px">
+        <div id="progressNumber" style="background:#428bca;width:0px;height:10px">
+        </div>
+    </div>
+    <font id="percent">0%</font>
+</div>
 <script src="./jquery-3.2.1.min.js"></script>
 <script>
     function submit() {
@@ -23,13 +31,26 @@
             processData: false,
             contentType: false,
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxMzYwOTQ0LCJleHAiOjE1MjIyMjQ5NDQsInVzZXJuYW1lIjoiMSJ9.DIIIvMlO2gUv9XfdBcvoRvuyaDAWj-YZSJhrp2DGauA")
+                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxMzc0NjE4LCJleHAiOjE1MjIyMzg2MTgsInVzZXJuYW1lIjoiMSJ9.7E7RwYmDilDcP3VlTCXqpCOi6IixUwy0eLQntRz9xvE")
+            },
+            xhr: function () {
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener("progress", handleProgress, false);
+                    return xhr;
+                }
             }
         }).done(function (res) {
             alert("Done: " + res);
         }).fail(function (res) {
             alert("Fail: " + res);
         });
+    }
+
+    function handleProgress(e) {
+        var percentComplete = Math.round((e.loaded) * 100 / e.total);
+        $("#percent").html(percentComplete + '%')
+        $("#progressNumber").css("width", "" + percentComplete + "px");
     }
 </script>
 </body>

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 课前预习资料
@@ -16,6 +17,7 @@ public class Preview implements Serializable {
 	@GeneratedValue
 	private Long id;
 	private String position;    // 资料上传位置
+	private String date;
 
 	// 课前预习资料与课程的多对一关系
 	@ManyToOne
@@ -25,10 +27,12 @@ public class Preview implements Serializable {
 
 	public Preview() {
 		super();
+		this.date = new Date().toString();
 	}
 
 	public Preview(String position) {
 		this.position = position;
+		this.date = new Date().toString();
 	}
 
 	public Long getId() {
@@ -53,5 +57,13 @@ public class Preview implements Serializable {
 
 	public void setCourse(Course course) {
 		this.course = course;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 }

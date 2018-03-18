@@ -180,6 +180,22 @@ public class FileController {
 		}
 	}
 
+	@RequestMapping(value = "/course/{courseID}/preview/{previewID}/delete", method = RequestMethod.GET)
+	@ApiOperation(value = "删除 PreviewID 的预习资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
+	)
+	public JsonResponse deletePreview(@PathVariable Long courseID, @PathVariable Long previewID) {
+		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<Preview> preview = course.map(Course::getPreviewList).flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
+		if (preview.isPresent()) {
+			previewService.delete(preview.get());
+			return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
+		} else {
+			return new JsonResponse(Const.FAILED, "Course id or Preview id is invalid!");
+		}
+	}
+
 	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.GET)
 	@ApiOperation(value = "显示某一课程下所有的电子资料")
 	@ApiResponses(
@@ -247,6 +263,22 @@ public class FileController {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new JsonResponse(Const.FAILED, "IOException occurs during saving E-Data!");
+		}
+	}
+
+	@RequestMapping(value = "/course/{courseID}/edata/{eDataID}/delete", method = RequestMethod.GET)
+	@ApiOperation(value = "删除 eDataID 的电子资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
+	)
+	public JsonResponse deleteEData(@PathVariable Long courseID, @PathVariable Long eDataID) {
+		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<EData> eData = course.map(Course::geteDataList).flatMap(eDataList -> eDataList.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
+		if (eData.isPresent()) {
+			eDataService.delete(eData.get());
+			return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
+		} else {
+			return new JsonResponse(Const.FAILED, "Course id or EData id is invalid!");
 		}
 	}
 
