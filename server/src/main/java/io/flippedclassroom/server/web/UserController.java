@@ -18,10 +18,7 @@ import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
@@ -30,6 +27,7 @@ import java.util.Map;
 
 @Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、用户登出、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
+@CrossOrigin
 public class UserController {
 	@Autowired
 	private UserService userService;

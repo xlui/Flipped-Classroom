@@ -14,7 +14,6 @@ import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.DigestUtils;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传")
 public class FileController {
 	@Autowired
@@ -47,7 +47,7 @@ public class FileController {
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
 	@ApiOperation(value = "获取头像", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+			@ApiResponse(code = 200, message = "返回图片流，如果用户没有设置头像，默认从 Gravatar 加载头像")
 	)
 	public JsonResponse getAvatar(@ApiIgnore @CurrentUser User user, HttpServletResponse response) {
 		String avatarPosition = user.getAvatar();
@@ -75,12 +75,12 @@ public class FileController {
 	@RequestMapping(value = "/avatar", method = RequestMethod.POST)
 	@ApiOperation(value = "设置头像", httpMethod = "POST")
 	@ApiImplicitParams(
-			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式")
+			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式存储")
 	)
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) @ApiIgnore MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "上传的文件为空！");
 		} else {
@@ -110,7 +110,9 @@ public class FileController {
 
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.GET)
 	@ApiOperation(value = "显示所有的预习资料")
-	@ApiResponse(code = 200, message = "所有的预习资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "所有的预习资料")
+	)
 	public Map getPreviews(@PathVariable Long courseID) {
 		Map<String, Object> map = new HashMap<>();
 		Course course = courseService.findCourseById(courseID);
@@ -135,13 +137,12 @@ public class FileController {
 	}
 
 
-	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.POST)
-	@RequiresPermissions("course:data:upload")
-	@ApiOperation(value = "课前预习资料")
+	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ApiOperation(value = "上传课前预习资料")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postPreview(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user, @PathVariable Long courseID) {
+	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @ApiIgnore @CurrentUser User user, @PathVariable Long courseID) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -163,7 +164,6 @@ public class FileController {
 	}
 
 	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.POST)
-	@RequiresPermissions("course:data:upload")
 	@ApiOperation(value = "电子资料")
 	@ApiResponse(code = 200, message = "成功上传电子资料")
 	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID) {
