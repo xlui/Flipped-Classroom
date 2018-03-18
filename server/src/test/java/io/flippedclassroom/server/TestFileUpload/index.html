@@ -14,7 +14,6 @@
     function submit() {
         var fd = new FormData();
         var file = $("#file")[0].files[0];
-        alert(file.toString());
         fd.append("file", file);
         $.ajax({
             type: 'POST',
@@ -24,7 +23,7 @@
             processData: false,
             contentType: false,
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxMzQzNDg3LCJleHAiOjE1MjIyMDc0ODcsInVzZXJuYW1lIjoiMSJ9.47VyhRn042kmdfrXKP5yluUi0tbyZgSeD41rOMJni38")
+                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxMzYwOTQ0LCJleHAiOjE1MjIyMjQ5NDQsInVzZXJuYW1lIjoiMSJ9.DIIIvMlO2gUv9XfdBcvoRvuyaDAWj-YZSJhrp2DGauA")
             }
         }).done(function (res) {
             alert("Done: " + res);

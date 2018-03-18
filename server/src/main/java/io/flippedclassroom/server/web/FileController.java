@@ -16,24 +16,26 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin
-@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传")
+@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料")
 public class FileController {
 	@Autowired
 	private UserService userService;
@@ -109,9 +111,18 @@ public class FileController {
 	}
 
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.GET)
-	@ApiOperation(value = "显示所有的预习资料")
+	@ApiOperation(value = "显示某一课程下所有的预习资料")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "所有的预习资料")
+			@ApiResponse(code = 200, message = "当前课程下的所有的预习资料，position 字段是文件位置，为显示做了特别处理。示例：\n{\n" +
+					"  \"preview\" : [ {\n" +
+					"    \"id\" : 1,\n" +
+					"    \"position\" : \"Java 8实战.pdf\"\n" +
+					"  }, {\n" +
+					"    \"id\" : 2,\n" +
+					"    \"position\" : \"JAVA EE开发的颠覆者  SPRING BOOT实战.pdf\"\n" +
+					"  } ],\n" +
+					"  \"status\" : \"SUCCESS\"\n" +
+					"}")
 	)
 	public Map getPreviews(@PathVariable Long courseID) {
 		Map<String, Object> map = new HashMap<>();
@@ -121,23 +132,50 @@ public class FileController {
 			map.put("message", "course id is invalid!");
 			return map;
 		}
+		List<Preview> previews = course.getPreviewList();
+		previews.parallelStream().forEach(preview -> preview.setPosition(preview.getPosition().substring(preview.getPosition().lastIndexOf("/") + 1)));
 		map.put("status", Const.SUCCESS);
-		map.put("preview", course.getPreviewList());
+		map.put("preview", previews);
 		return map;
 	}
 
 	@RequestMapping(value = "/course/{courseID}/data/preview/{previewID}", method = RequestMethod.GET)
 	@ApiOperation(value = "下载预习资料")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+			@ApiResponse(code = 200, message = "返回文件流，和图片加载的方式类似")
 	)
-	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID) {
-//		todo: 下载预习资料
-		return new JsonResponse(Const.SUCCESS, "Helo");
+	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID, HttpServletResponse response) {
+		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		List<Preview> list;
+		try {
+			list = course.orElseThrow(Exception::new).getPreviewList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonResponse(Const.FAILED, "No such course!");
+		}
+		Optional<Preview> preview = list.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst();
+		if (preview.isPresent()) {
+			try {
+				String position = preview.get().getPosition();
+				AssertUtils.assertPositionValid(position);
+				InputStream in = new FileInputStream(position);
+				response.setContentType("application/x-msdownload");
+				IOUtils.copy(in, response.getOutputStream());
+				return new JsonResponse(Const.SUCCESS, "成功下载 " + position.substring(position.lastIndexOf("/") + 1));
+			} catch (PositionInvalidException e) {
+				return new JsonResponse(Const.FAILED, "No such file!");
+			} catch (IOException e) {
+				LogUtils.getInstance().info("IOException during download the file: " + e.getMessage());
+				return new JsonResponse(Const.FAILED, "IOException!!!");
+			}
+		} else {
+			return new JsonResponse(Const.FAILED, "Preview id is invalid!");
+		}
 	}
 
 
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Transactional
 	@ApiOperation(value = "上传课前预习资料")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
@@ -158,7 +196,7 @@ public class FileController {
 			previewService.save(preview);
 			return new JsonResponse(Const.SUCCESS, "Successfully save preview data!");
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogUtils.getInstance().info("上传文件时发生 IOException: " + e.getMessage());
 			return new JsonResponse(Const.FAILED, "IOException occurs during saving preview file!");
 		}
 	}
