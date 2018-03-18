@@ -23,19 +23,20 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin
-@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料")
+@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料、拉取所有电子资料、下载特定 id 的电子资料、上传电子资料、拉取课程图片、上传课程图片")
 public class FileController {
 	@Autowired
 	private UserService userService;
@@ -77,12 +78,12 @@ public class FileController {
 	@RequestMapping(value = "/avatar", method = RequestMethod.POST)
 	@ApiOperation(value = "设置头像", httpMethod = "POST")
 	@ApiImplicitParams(
-			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式存储")
+			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式存储", required = true, allowMultiple = true, dataTypeClass = MultipartFile.class)
 	)
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postAvatar(@RequestPart(name = "file", required = false) @ApiIgnore MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse postAvatar(@ApiIgnore @RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "上传的文件为空！");
 		} else {
@@ -129,7 +130,7 @@ public class FileController {
 		Course course = courseService.findCourseById(courseID);
 		if (course == null) {
 			map.put("status", Const.FAILED);
-			map.put("message", "course id is invalid!");
+			map.put("preview", "course id is invalid!");
 			return map;
 		}
 		List<Preview> previews = course.getPreviewList();
@@ -146,33 +147,11 @@ public class FileController {
 	)
 	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID, HttpServletResponse response) {
 		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
-		List<Preview> list;
-		try {
-			list = course.orElseThrow(Exception::new).getPreviewList();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new JsonResponse(Const.FAILED, "No such course!");
-		}
-		Optional<Preview> preview = list.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst();
-		if (preview.isPresent()) {
-			try {
-				String position = preview.get().getPosition();
-				AssertUtils.assertPositionValid(position);
-				InputStream in = new FileInputStream(position);
-				response.setContentType("application/x-msdownload");
-				IOUtils.copy(in, response.getOutputStream());
-				return new JsonResponse(Const.SUCCESS, "成功下载 " + position.substring(position.lastIndexOf("/") + 1));
-			} catch (PositionInvalidException e) {
-				return new JsonResponse(Const.FAILED, "No such file!");
-			} catch (IOException e) {
-				LogUtils.getInstance().info("IOException during download the file: " + e.getMessage());
-				return new JsonResponse(Const.FAILED, "IOException!!!");
-			}
-		} else {
-			return new JsonResponse(Const.FAILED, "Preview id is invalid!");
-		}
+		Optional<List<Preview>> list = course.map(Course::getPreviewList);
+		Optional<Preview> preview = list.flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
+		return preview.map(p -> this.writeFileStream(response, p.getPosition()))
+				.orElseGet(() -> new JsonResponse(Const.FAILED, "Preview Id is invalid"));
 	}
-
 
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Transactional
@@ -180,7 +159,7 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @ApiIgnore @CurrentUser User user, @PathVariable Long courseID) {
+	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @PathVariable Long courseID) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -201,9 +180,53 @@ public class FileController {
 		}
 	}
 
+	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.GET)
+	@ApiOperation(value = "显示某一课程下所有的电子资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "当前课程下的所有的电子资料，position 字段是文件位置，为显示做了特别处理。示例：\n{\n" +
+					"  \"edata\" : [ {\n" +
+					"    \"id\" : 1,\n" +
+					"    \"position\" : \"JAVA EE开发的颠覆者  SPRING BOOT实战.pdf\"\n" +
+					"  }, {\n" +
+					"    \"id\" : 2,\n" +
+					"    \"position\" : \"Vue学习笔记.md\"\n" +
+					"  } ],\n" +
+					"  \"status\" : \"SUCCESS\"\n" +
+					"}")
+	)
+	public Map getEDataAll(@PathVariable Long courseID) {
+		Map<String, Object> map = new HashMap<>();
+		Course course = courseService.findCourseById(courseID);
+		if (course == null) {
+			map.put("status", Const.FAILED);
+			map.put("edata", "Course id is invalid!");
+			return map;
+		}
+		List<EData> eDataList = course.geteDataList();
+		eDataList.parallelStream().forEach(eData -> eData.setPosition(eData.getPosition().substring(eData.getPosition().lastIndexOf("/") + 1)));
+		map.put("status", Const.SUCCESS);
+		map.put("edata", eDataList);
+		return map;
+	}
+
+	@RequestMapping(value = "/course/{courseID}/data/edata/{eDataID}", method = RequestMethod.GET)
+	@ApiOperation(value = "下载电子资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "返回文件流，和图片加载的方式类似")
+	)
+	public JsonResponse getEData(@PathVariable Long courseID, @PathVariable Long eDataID, HttpServletResponse response) {
+		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<List<EData>> list = course.map(Course::geteDataList);
+		Optional<EData> eData = list.flatMap(eDatas -> eDatas.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
+		return eData.map(eData1 -> writeFileStream(response, eData1.getPosition()))
+				.orElseGet(() -> new JsonResponse(Const.FAILED, "EData Id is invalid!"));
+	}
+
 	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.POST)
-	@ApiOperation(value = "电子资料")
-	@ApiResponse(code = 200, message = "成功上传电子资料")
+	@ApiOperation(value = "上传电子资料")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
@@ -229,7 +252,9 @@ public class FileController {
 
 	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.GET)
 	@ApiOperation(value = "获取课程图片")
-	@ApiResponse(code = 200, message = "课程图片流")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "课程图片流")
+	)
 	public JsonResponse getCoursePicture(@PathVariable Long courseID, HttpServletResponse response) {
 		Course course = courseService.findCourseById(courseID);
 		if (course != null) {
@@ -259,7 +284,9 @@ public class FileController {
 
 	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.POST)
 	@ApiOperation(value = "上传课程图片")
-	@ApiResponse(code = 200, message = "Json Response")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
 	public JsonResponse postCoursePicture(@PathVariable Long courseID, @RequestPart(name = "file") MultipartFile multipartFile) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
@@ -274,16 +301,40 @@ public class FileController {
 		LogUtils.getInstance().info("课程图像后缀名：" + suffix);
 		try {
 			FileUtils.writeByteArrayToFile(new File(coursePicturePosition + suffix), multipartFile.getBytes());
-			if (suffix == null || !suffix.equals(".png")) {
-				LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
-				ImageUtils.convertFormat(coursePicturePosition + suffix, coursePicturePosition + ".png", "PNG");
-				FileUtils.deleteQuietly(new File(coursePicturePosition + suffix));
-			}
 		} catch (IOException e) {
-			return new JsonResponse(Const.FAILED, "IOException occur!");
+			return new JsonResponse(Const.FAILED, "IOException occur! " + e.getMessage());
+		}
+		if (!suffix.equals(".png")) {
+			new Thread(() -> {
+				LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
+				try {
+					ImageUtils.convertFormat(coursePicturePosition + suffix, coursePicturePosition + ".png", "PNG");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				FileUtils.deleteQuietly(new File(coursePicturePosition + suffix));
+			}).start();
 		}
 		course.setPicture(coursePicturePosition + ".png");
 		courseService.save(course);
 		return new JsonResponse(Const.SUCCESS, "成功设置课程图片！");
+	}
+
+	//*******************
+	//  Private Methods
+	//*******************
+	private JsonResponse writeFileStream(HttpServletResponse response, String position) {
+		try {
+			AssertUtils.assertPositionValid(position);
+			InputStream in = new FileInputStream(position);
+			response.setContentType("application/x-msdownload");
+			IOUtils.copy(in, response.getOutputStream());
+			return new JsonResponse(Const.SUCCESS, "成功下载 " + position.substring(position.lastIndexOf("/") + 1));
+		} catch (PositionInvalidException e) {
+			return new JsonResponse(Const.FAILED, "No such file!");
+		} catch (IOException e) {
+			LogUtils.getInstance().info("IOException during download the file: " + e.getMessage());
+			return new JsonResponse(Const.FAILED, "IOException!!!");
+		}
 	}
 }
