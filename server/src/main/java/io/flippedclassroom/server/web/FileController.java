@@ -36,7 +36,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料、拉取所有电子资料、下载特定 id 的电子资料、上传电子资料、拉取课程图片、上传课程图片")
+@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料、拉取所有电子资料、下载特定 id 的电子资料、上传电子资料、拉取课程图片、上传课程图片、删除特定ID的预习资料、删除特定ID的电子资料")
 public class FileController {
 	@Autowired
 	private UserService userService;
@@ -76,10 +76,7 @@ public class FileController {
 	}
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.POST)
-	@ApiOperation(value = "设置头像", httpMethod = "POST")
-	@ApiImplicitParams(
-			@ApiImplicitParam(name = "file", value = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式存储", required = true, allowMultiple = true, dataTypeClass = MultipartFile.class)
-	)
+	@ApiOperation(value = "设置头像", httpMethod = "POST", notes = "头像文件，默认会将非 PNG 格式的图像转换为 PNG 格式存储")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
@@ -114,13 +111,19 @@ public class FileController {
 	@RequestMapping(value = "/course/{courseID}/data/preview", method = RequestMethod.GET)
 	@ApiOperation(value = "显示某一课程下所有的预习资料")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "当前课程下的所有的预习资料，position 字段是文件位置，为显示做了特别处理。示例：\n{\n" +
+			@ApiResponse(code = 200, message = "当前课程下的所有的预习资料，date 字段是上传日期，position 字段是文件位置，为显示做了特别处理。示例：\n{\n" +
 					"  \"preview\" : [ {\n" +
 					"    \"id\" : 1,\n" +
-					"    \"position\" : \"Java 8实战.pdf\"\n" +
+					"    \"position\" : \"Spring 教程 - v1.0.pdf\",\n" +
+					"    \"date\" : \"2018-03-19\",\n" +
+					"    \"size\" : \"2640784\",\n" +
+					"    \"author\" : \"1\"\n" +
 					"  }, {\n" +
 					"    \"id\" : 2,\n" +
-					"    \"position\" : \"JAVA EE开发的颠覆者  SPRING BOOT实战.pdf\"\n" +
+					"    \"position\" : \"Java编程思想（第4版）.pdf\",\n" +
+					"    \"date\" : \"2018-03-19\",\n" +
+					"    \"size\" : \"90923860\",\n" +
+					"    \"author\" : \"1\"\n" +
 					"  } ],\n" +
 					"  \"status\" : \"SUCCESS\"\n" +
 					"}")
@@ -159,7 +162,7 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @PathVariable Long courseID) {
+	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -172,6 +175,8 @@ public class FileController {
 		try {
 			FileUtils.writeByteArrayToFile(new File(coursePreviewPosition), multipartFile.getBytes());
 			preview.setCourse(course);
+			preview.setSize(String.valueOf(multipartFile.getSize()));
+			preview.setAuthor(user.getUsername());
 			previewService.save(preview);
 			return new JsonResponse(Const.SUCCESS, "Successfully save preview data!");
 		} catch (IOException e) {
@@ -189,6 +194,8 @@ public class FileController {
 		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
 		Optional<Preview> preview = course.map(Course::getPreviewList).flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
 		if (preview.isPresent()) {
+			FileUtils.deleteQuietly(new File(preview.get().getPosition()));
+			LogUtils.getInstance().info("删除预习资料：" + preview.get().getPosition());
 			previewService.delete(preview.get());
 			return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
 		} else {
@@ -199,13 +206,19 @@ public class FileController {
 	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.GET)
 	@ApiOperation(value = "显示某一课程下所有的电子资料")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "当前课程下的所有的电子资料，position 字段是文件位置，为显示做了特别处理。示例：\n{\n" +
+			@ApiResponse(code = 200, message = "当前课程下的所有的电子资料，position 字段是文件位置，为显示做了特别处理。size 是文件大小，单位是 byte。示例：\n{\n" +
 					"  \"edata\" : [ {\n" +
 					"    \"id\" : 1,\n" +
-					"    \"position\" : \"JAVA EE开发的颠覆者  SPRING BOOT实战.pdf\"\n" +
+					"    \"position\" : \"Java SE 8.chm\",\n" +
+					"    \"date\" : \"2018-03-19\",\n" +
+					"    \"size\" : \"46518900\",\n" +
+					"    \"author\" : \"1\"\n" +
 					"  }, {\n" +
 					"    \"id\" : 2,\n" +
-					"    \"position\" : \"Vue学习笔记.md\"\n" +
+					"    \"position\" : \"Java 8实战.pdf\",\n" +
+					"    \"date\" : \"2018-03-19\",\n" +
+					"    \"size\" : \"13490536\",\n" +
+					"    \"author\" : \"1\"\n" +
 					"  } ],\n" +
 					"  \"status\" : \"SUCCESS\"\n" +
 					"}")
@@ -243,7 +256,7 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID) {
+	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -258,6 +271,8 @@ public class FileController {
 			FileUtils.writeByteArrayToFile(new File(courseEDataPosition), multipartFile.getBytes());
 			// 更新数据库
 			eData.setCourse(course);
+			eData.setSize(String.valueOf(multipartFile.getSize()));
+			eData.setAuthor(user.getUsername());
 			eDataService.save(eData);
 			return new JsonResponse(Const.SUCCESS, "Successfully save E-Data!");
 		} catch (IOException e) {
@@ -275,6 +290,8 @@ public class FileController {
 		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
 		Optional<EData> eData = course.map(Course::geteDataList).flatMap(eDataList -> eDataList.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
 		if (eData.isPresent()) {
+			FileUtils.deleteQuietly(new File(eData.get().getPosition()));
+			LogUtils.getInstance().info("删除电子资料：" + eData.get().getPosition());
 			eDataService.delete(eData.get());
 			return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
 		} else {

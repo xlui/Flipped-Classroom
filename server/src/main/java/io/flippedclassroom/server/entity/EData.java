@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * 电子学习资料，考虑上传后保存资料的位置
@@ -18,6 +18,8 @@ public class EData implements Serializable {
 	private Long id;
 	private String position;    // 资料保存位置
 	private String date;
+	private String size;
+	private String author;
 
 	// 电子资料与课程的多对一关系
 	@ManyToOne
@@ -27,12 +29,12 @@ public class EData implements Serializable {
 
 	public EData() {
 		super();
-		this.date = new Date().toString();
+		this.date = LocalDate.now().toString();
 	}
 
 	public EData(String position) {
 		this.position = position;
-		this.date = new Date().toString();
+		this.date = LocalDate.now().toString();
 	}
 
 	public Long getId() {
@@ -65,5 +67,21 @@ public class EData implements Serializable {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 }
