@@ -80,7 +80,7 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postAvatar(@ApiIgnore @RequestPart(name = "file", required = false) MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse postAvatar(@RequestPart(name = "file") MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "上传的文件为空！");
 		} else {
@@ -162,7 +162,7 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postPreview(@RequestParam(name = "file") @ApiIgnore MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse postPreview(@RequestParam(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -175,7 +175,7 @@ public class FileController {
 		try {
 			FileUtils.writeByteArrayToFile(new File(coursePreviewPosition), multipartFile.getBytes());
 			preview.setCourse(course);
-			preview.setSize(String.valueOf(multipartFile.getSize()));
+			preview.setSize(multipartFile.getSize());
 			preview.setAuthor(user.getUsername());
 			previewService.save(preview);
 			return new JsonResponse(Const.SUCCESS, "Successfully save preview data!");
@@ -271,7 +271,7 @@ public class FileController {
 			FileUtils.writeByteArrayToFile(new File(courseEDataPosition), multipartFile.getBytes());
 			// 更新数据库
 			eData.setCourse(course);
-			eData.setSize(String.valueOf(multipartFile.getSize()));
+			eData.setSize(multipartFile.getSize());
 			eData.setAuthor(user.getUsername());
 			eDataService.save(eData);
 			return new JsonResponse(Const.SUCCESS, "Successfully save E-Data!");

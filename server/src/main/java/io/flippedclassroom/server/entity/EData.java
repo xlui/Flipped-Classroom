@@ -18,7 +18,7 @@ public class EData implements Serializable {
 	private Long id;
 	private String position;    // 资料保存位置
 	private String date;
-	private String size;
+	private long size;
 	private String author;
 
 	// 电子资料与课程的多对一关系
@@ -69,11 +69,11 @@ public class EData implements Serializable {
 		this.date = date;
 	}
 
-	public String getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(String size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 

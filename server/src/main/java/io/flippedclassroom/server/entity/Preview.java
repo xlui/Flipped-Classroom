@@ -18,7 +18,7 @@ public class Preview implements Serializable {
 	private Long id;
 	private String position;    // 资料上传位置
 	private String date;
-	private String size;
+	private long size;
 	private String author;
 
 	// 课前预习资料与课程的多对一关系
@@ -69,11 +69,11 @@ public class Preview implements Serializable {
 		this.date = date;
 	}
 
-	public String getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(String size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 
