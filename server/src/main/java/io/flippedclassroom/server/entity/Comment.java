@@ -1,12 +1,11 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.flippedclassroom.server.config.Const;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 课程评论
@@ -39,12 +38,12 @@ public class Comment implements Serializable {
 
 	public Comment() {
 		super();
-		this.date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		this.date = Const.currentTime();
 	}
 
 	public Comment(String content) {
 		this.content = content;
-		this.date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		this.date = Const.currentTime();
 	}
 
 	public Long getId() {

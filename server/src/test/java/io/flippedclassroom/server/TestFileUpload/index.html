@@ -25,14 +25,14 @@
         fd.append("file", file);
         $.ajax({
             type: 'POST',
-            url: 'https://api.fc.xd.style/course/52/data/preview',
+            url: 'https://api.fc.xd.style/course/1/data/edata',
             // url: 'http://127.0.0.1:8080/course/1/data/edata',
             data: fd,
             cache: false,
             processData: false,
             contentType: false,
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxNDc0MDY4LCJleHAiOjE1MjIzMzgwNjgsInVzZXJuYW1lIjoiMSJ9.FO6oYgeOHPyIsEtcznjlg2X6H9wdpztfsYhED6bYLbM")
+                xhr.setRequestHeader("authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRlIjoxNTIxNzc5ODM5LCJleHAiOjE1MjI2NDM4MzksInVzZXJuYW1lIjoiMSJ9.xBmj7o4qnJCqZsgJ_k1k5uJzIMapcHH7f6SjKSkZ3uU")
             },
             xhr: function () {
                 var xhr = $.ajaxSettings.xhr();

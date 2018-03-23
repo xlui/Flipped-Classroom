@@ -10,12 +10,14 @@ import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.service.CommentService;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("/course")
-@Api(tags = "课程管理", description = "课程相关的所有内容都需要 Token 验证。目前包括：列出所有课程、查找课程、更新课程、删除课程、创建课程、加入课程、查看课程评论、添加课程评论")
+@Api(tags = "课程管理", description = "课程相关的所有内容都需要 Token 验证。目前包括：列出所有课程、查找课程、更新课程、删除课程、创建课程、加入课程、查看课程评论、添加课程评论、更新课程评论、删除课程评论")
 public class CourseController {
 	@Autowired
 	private CourseService courseService;
@@ -180,7 +182,9 @@ public class CourseController {
 			return map;
 		} else {
 			map.put("status", Const.SUCCESS);
-			map.put("comments", course.getCommentList());
+			List<Comment> comments = course.getCommentList();
+			comments.parallelStream().forEach(comment -> comment.getUser().setAvatar("https://api.fc.xd.style/avatar"));
+			map.put("comments", comments);
 			return map;
 		}
 	}
@@ -203,5 +207,40 @@ public class CourseController {
 			commentService.save(newComment);
 			return new JsonResponse(Const.SUCCESS, "成功添加评论！");
 		}
+	}
+
+	@RequestMapping(value = "/{courseID}/comment/{commentId}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ApiOperation(value = "更新评论", httpMethod = "POST")
+	@ApiImplicitParams(
+			@ApiImplicitParam(name = "comment", dataTypeClass = Comment.class, required = true, value = "\n示例：\n{\"content\":\"新的评论\"}")
+	)
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
+	public JsonResponse updateComment(@PathVariable Long courseID, @PathVariable Long commentId, @RequestBody @NotNull Comment comment) {
+		Comment originComment = commentService.findCommentById(commentId);
+		if (originComment != null) {
+			originComment.setContent(comment.getContent());
+			originComment.setDate(Const.currentTime());
+			commentService.save(originComment);
+			return new JsonResponse(Const.SUCCESS, "成功更新评论！");
+		}
+		return new JsonResponse(Const.FAILED, "更新失败！请确保要更新的评论 id 合法！");
+	}
+
+	@RequestMapping(value = "/{courseID}/comment/{commentId}/delete", method = RequestMethod.GET)
+	@ApiOperation(value = "删除评论", httpMethod = "GET")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
+	)
+	public JsonResponse deleteComment(@PathVariable Long courseID, @PathVariable Long commentId) {
+		Course course = courseService.findCourseById(courseID);
+		Comment comment = commentService.findCommentById(commentId);
+		if (comment != null) {
+			LogUtils.getInstance().info("删除了课程 " + course.getName() + " 的评论 " + comment.getContent());
+			commentService.deleteById(commentId);
+			return new JsonResponse(Const.SUCCESS, "成功删除评论！");
+		}
+		return new JsonResponse(Const.FAILED, "删除失败！请确保评论 id 合法！");
 	}
 }
