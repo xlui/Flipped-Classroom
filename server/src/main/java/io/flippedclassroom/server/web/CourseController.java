@@ -104,10 +104,12 @@ public class CourseController {
 			}
 
 			if (role.equals("student")) {        // 学生删除课程逻辑
+				LogUtils.getInstance().info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
 				user.getCourseList().remove(course);
 				userService.save(user);
 				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
 			} else {
+				LogUtils.getInstance().info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
 				courseService.delete(course);
 				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
 			}
