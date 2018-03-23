@@ -162,32 +162,78 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		Course courseDataStructure = courseService.findCourseByCourseName("数据结构");
 		Course courseDatabase = courseService.findCourseByCourseName("数据库");
 		List<Comment> comments = commentService.findCommentsByCourse(courseMath);
-		Comment commentFirst = null, commentSecond = null;
+		Comment comment1 = null, comment2 = null, comment3 = null, comment4 = null, comment5 = null;
 
 		if (comments.size() > 0) {
-			commentFirst = comments.get(0);
-			commentSecond = comments.get(1);
+			try {
+				comment1 = comments.get(0);
+				comment2 = comments.get(1);
+				comment3 = comments.get(2);
+				comment4 = comments.get(3);
+				comment5 = comments.get(4);
+			} catch (Exception ignored) {}
 		}
-		if (commentFirst != null) {
-			commentService.delete(commentFirst);
+		if (comment1 != null) {
+			commentService.delete(comment1);
 		}
-		if (commentSecond != null) {
-			commentService.delete(commentSecond);
+		if (comment2 != null) {
+			commentService.delete(comment2);
+		}
+		if (comment3 != null) {
+			commentService.delete(comment3);
+		}
+		if (comment4 != null) {
+			commentService.delete(comment4);
+		}
+		if (comment5 != null) {
+			commentService.delete(comment5);
 		}
 
-		commentFirst = new Comment("Hello World!");
-		commentService.save(commentFirst);
-		commentSecond = new Comment("这是第二条评论");
-		commentService.save(commentSecond);
+		comment1 = new Comment("Hello World!");
+		commentService.save(comment1);
+		comment2 = new Comment("这条评论来自老师，回复第一条评论");
+		commentService.save(comment2);
+		comment3 = new Comment("课上的十分好！（回复上面老师的评论）");
+		new Thread(() -> {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}).start();
+		commentService.save(comment3);
+		comment4 = new Comment("这里是第四条评论，这条评论是顶层评论");
+		new Thread(() -> {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}).start();
+		commentService.save(comment4);
+		comment5 = new Comment("第五：回复第四条评论");
+		commentService.save(comment5);
 
-		commentFirst.setUser(userStudent1);
-		commentFirst.setCourse(courseMath);
-		commentSecond.setUser(userTeacher);
-		commentSecond.setCourse(courseMath);
+		comment1.setUser(userStudent1);
+		comment1.setCourse(courseMath);
+		comment2.setUser(userTeacher);
+		comment2.setCourse(courseMath);
+		comment3.setUser(userStudent1);
+		comment3.setCourse(courseMath);
+		comment4.setUser(userStudent2);
+		comment4.setCourse(courseMath);
+		comment5.setUser(userStudent1);
+		comment5.setCourse(courseMath);
 
-		commentService.save(commentFirst);
-		commentSecond.setReply(commentFirst.getId());
-		commentService.save(commentSecond);
+		commentService.save(comment1);
+		comment2.setReply(comment1.getId());
+		commentService.save(comment2);
+		comment3.setReply(comment2.getId());
+		commentService.save(comment3);
+
+		commentService.save(comment4);
+		comment5.setReply(comment4.getId());
+		commentService.save(comment5);
 	}
 
 	/**

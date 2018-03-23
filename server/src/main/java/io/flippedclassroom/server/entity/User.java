@@ -14,8 +14,10 @@ import java.util.List;
 public class User implements Serializable {
 	@Id
 	@GeneratedValue
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 	@Column(nullable = false)
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String username;    // 用户名
 	@Column(nullable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -24,21 +26,27 @@ public class User implements Serializable {
 	private String salt;        // 每个用户唯一的盐
 
 	// 以下均可选
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String nick_name;   // 昵称
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String avatar;      // 头像文件地址
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String gender;      // 性别
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String signature;   // 个性签名
 
 	// 用户与认证情况的一对一关系
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)    // 用户是关系的维护端
 	@JoinColumn(name = "auth_id")                                // 指定外键名称
 	@Fetch(FetchMode.JOIN)                                        // 会使用 left join 查询，只产生一条 sql 语句
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private Authentication authentication;
 
 	// 用户与角色的多对一关系，单向关系
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@Fetch(FetchMode.JOIN)
+	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private Role role;
 
 	// 用户与课程的多对多关系，通过表 `t_user_course` 维持
