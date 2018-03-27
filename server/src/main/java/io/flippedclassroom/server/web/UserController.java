@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.web.api;
+package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
@@ -18,10 +18,7 @@ import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
@@ -30,7 +27,7 @@ import java.util.Map;
 
 @Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、用户登出、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
-@RequestMapping("/api")
+@CrossOrigin
 public class UserController {
 	@Autowired
 	private UserService userService;
@@ -142,8 +139,16 @@ public class UserController {
 	)
 	public Map getProfile(@ApiIgnore @CurrentUser User user) {
 		Map<String, String> map = new LinkedHashMap<>();
-		map.put("nick_name", user.getNick_name());
-		map.put("gender", user.getGender());
+		if (user.getNick_name() == null) {
+			map.put("nick_name", user.getUsername());
+		} else {
+			map.put("nick_name", user.getNick_name());
+		}
+		if (user.getGender() == null) {
+			map.put("gender", "男");
+		} else {
+			map.put("gender", user.getGender());
+		}
 		map.put("signature", user.getSignature());
 		return map;
 	}

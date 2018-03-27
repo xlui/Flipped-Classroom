@@ -9,6 +9,7 @@ import io.flippedclassroom.server.util.TokenUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -22,6 +23,17 @@ import java.io.IOException;
  * 其中值为 “jwt” 并不是强制，是自己定义的。详细参考 `ShiroFilterFactoryBean`
  */
 public class TokenFilter extends BasicHttpAuthenticationFilter {
+	@Override
+	protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		httpResponse.setHeader("Access-control-Allow-Origin", "*");
+		httpResponse.setHeader("Access-Control-Allow-Methods", httpRequest.getMethod());
+		httpResponse.setHeader("Access-Control-Allow-Headers", httpRequest.getHeader("Access-Control-Request-Headers"));
+		httpResponse.setStatus(HttpStatus.OK.value());
+		return super.preHandle(request, response);
+	}
+
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
 		Logger logger = LogUtils.getInstance();

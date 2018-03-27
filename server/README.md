@@ -148,8 +148,8 @@ mkdir -p /var/www/uploads/course/picture
 ```bash
 useradd -M -s /usr/bin/nologin www  # 添加 nologin 用户 www
 chown -R www:www /var/www           # 更改 /var/www 及其子目录的所属用户与组
-chmod -R 775 /var/www                   # 更改 /var/www 及其子目录的权限，允许 www 组用户写入
-usermod -a -G www CURRENTUSER   # 将 CURRENTUSER 加入 www 组，这样 CURRENTUSER 就可以在 /var/www 中写入/删除新文件
+chmod -R 775 /var/www               # 更改 /var/www 及其子目录的权限，允许 www 组用户写入
+usermod -a -G www CURRENTUSER       # 将 CURRENTUSER 加入 www 组，这样 CURRENTUSER 就可以在 /var/www 中写入/删除新文件
 ```
 
 ## 7. 部署并配置 supervisor 接管 Tomcat

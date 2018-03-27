@@ -18,4 +18,6 @@ public interface CommentService {
 	List<Comment> save(Iterable<Comment> iterable);
 
 	void delete(Comment comment);
+
+	void deleteById(Long commentId);
 }

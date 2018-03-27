@@ -2,13 +2,13 @@ package io.flippedclassroom.server.config;
 
 import io.flippedclassroom.server.annotation.resolver.CurrentRoleMethodArgumentResolver;
 import io.flippedclassroom.server.annotation.resolver.CurrentUserMethodArgumentResolver;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.MultipartConfigElement;
 import java.util.List;
 
 @Configuration
@@ -27,10 +27,11 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 
 	// 文件上传相关
 	@Bean
-	public MultipartResolver multipartResolver() {
-		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-		multipartResolver.setMaxUploadSize(Const.size1M * 2);
-		return multipartResolver;
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		factory.setMaxFileSize(Const.size1M * 100);
+		factory.setMaxRequestSize(Const.size1M * 100);
+		return factory.createMultipartConfig();
 	}
 
 	@Override
