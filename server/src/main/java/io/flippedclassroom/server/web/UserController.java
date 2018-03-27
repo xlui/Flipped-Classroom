@@ -139,8 +139,16 @@ public class UserController {
 	)
 	public Map getProfile(@ApiIgnore @CurrentUser User user) {
 		Map<String, String> map = new LinkedHashMap<>();
-		map.put("nick_name", user.getNick_name());
-		map.put("gender", user.getGender());
+		if (user.getNick_name() == null) {
+			map.put("nick_name", user.getUsername());
+		} else {
+			map.put("nick_name", user.getNick_name());
+		}
+		if (user.getGender() == null) {
+			map.put("gender", "男");
+		} else {
+			map.put("gender", user.getGender());
+		}
 		map.put("signature", user.getSignature());
 		return map;
 	}

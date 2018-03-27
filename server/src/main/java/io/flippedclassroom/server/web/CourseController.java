@@ -167,7 +167,7 @@ public class CourseController {
 					"      \"id\" : 1,\n" +
 					"      \"username\" : \"1\",\n" +
 					"      \"nick_name\" : null,\n" +
-					"      \"avatar\" : \"/home/liuqi/uploads/avatar/user-1.png\",\n" +
+					"      \"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
 					"      \"gender\" : null,\n" +
 					"      \"signature\" : null,\n" +
 					"      \"authentication\" : null\n" +

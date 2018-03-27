@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.4.10";
+	public static final String swaggerVersion = "v0.4.11";
 	public static final String version = "v0.0.1";
 
 	// Password Encrypt
