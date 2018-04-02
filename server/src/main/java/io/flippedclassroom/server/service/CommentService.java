@@ -6,18 +6,12 @@ import io.flippedclassroom.server.entity.User;
 
 import java.util.List;
 
-public interface CommentService {
-	Comment findCommentById(Long id);
-
+public interface CommentService extends BaseService<Comment> {
 	List<Comment> findCommentsByUser(User user);
 
 	List<Comment> findCommentsByCourse(Course course);
 
-	Comment save(Comment comment);
-
-	List<Comment> save(Iterable<Comment> iterable);
-
-	void delete(Comment comment);
+	List<Comment> findReplyTo(Long commentId);
 
 	void deleteById(Long commentId);
 }

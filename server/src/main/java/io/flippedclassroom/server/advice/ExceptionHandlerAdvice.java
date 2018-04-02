@@ -1,7 +1,7 @@
 package io.flippedclassroom.server.advice;
 
 import io.flippedclassroom.server.config.Const;
-import io.flippedclassroom.server.entity.JsonResponse;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.exception.InputException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;

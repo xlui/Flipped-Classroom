@@ -15,7 +15,7 @@ public class EDataServiceImpl implements EDataService {
 	private EDataRepository eDataRepository;
 
 	@Override
-	public EData findEDataById(Long id) {
+	public EData findById(Long id) {
 		return eDataRepository.findById(id);
 	}
 
@@ -37,5 +37,10 @@ public class EDataServiceImpl implements EDataService {
 	@Override
 	public void delete(EData eData) {
 		eDataRepository.delete(eData);
+	}
+
+	@Override
+	public void deleteAll() {
+		eDataRepository.deleteAll();
 	}
 }

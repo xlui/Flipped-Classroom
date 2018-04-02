@@ -15,7 +15,7 @@ public class PreviewServiceImpl implements PreviewService {
 	private PreviewRepository previewRepository;
 
 	@Override
-	public Preview findPreviewById(Long id) {
+	public Preview findById(Long id) {
 		return previewRepository.findById(id);
 	}
 
@@ -37,5 +37,10 @@ public class PreviewServiceImpl implements PreviewService {
 	@Override
 	public void delete(Preview preview) {
 		previewRepository.delete(preview);
+	}
+
+	@Override
+	public void deleteAll() {
+		previewRepository.deleteAll();
 	}
 }

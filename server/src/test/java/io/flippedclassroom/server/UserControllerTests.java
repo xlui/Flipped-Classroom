@@ -3,7 +3,7 @@ package io.flippedclassroom.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.flippedclassroom.server.advice.ExceptionHandlerAdvice;
 import io.flippedclassroom.server.config.Const;
-import io.flippedclassroom.server.entity.JsonResponse;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.web.UserController;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.ThreadContext;

@@ -5,14 +5,6 @@ import io.flippedclassroom.server.entity.Preview;
 
 import java.util.List;
 
-public interface PreviewService {
-	Preview findPreviewById(Long id);
-
+public interface PreviewService extends BaseService<Preview> {
 	List<Preview> findPreviewsByCourse(Course course);
-
-	Preview save(Preview preview);
-
-	List<Preview> save(Iterable<Preview> iterable);
-
-	void delete(Preview preview);
 }

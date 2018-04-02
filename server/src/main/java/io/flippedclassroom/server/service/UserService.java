@@ -4,14 +4,6 @@ import io.flippedclassroom.server.entity.User;
 
 import java.util.List;
 
-public interface UserService {
-	User findUserById(Long id);
-
+public interface UserService extends BaseService<User> {
 	User findUserByUsername(String username);
-
-	User save(User user);
-
-	List<User> save(Iterable<User> iterable);
-
-	void delete(User user);
 }

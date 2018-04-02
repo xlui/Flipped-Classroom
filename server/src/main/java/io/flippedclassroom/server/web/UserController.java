@@ -3,9 +3,9 @@ package io.flippedclassroom.server.web;
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.config.token.PasswordToken;
-import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.entity.Role;
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.exception.InputException;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.RoleService;
@@ -16,6 +16,7 @@ import io.flippedclassroom.server.util.LogUtils;
 import io.flippedclassroom.server.util.TokenUtils;
 import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class UserController {
 	private RoleService roleService;
 	@Autowired
 	private RedisService redisService;
+	private Logger logger = LogUtils.getInstance();
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "用户注册", httpMethod = "POST")
@@ -98,8 +100,8 @@ public class UserController {
 
 		User loginUser = userService.findUserByUsername(user.getUsername());
 		String token = TokenUtils.sign(loginUser.getUsername(), loginUser.getPassword());
-		LogUtils.getInstance().info("生成 Token！\n" + token);
-		LogUtils.getInstance().info("保存 用户名-Token 对到 Redis");
+		logger.info("生成 Token！\n" + token);
+		logger.info("保存 用户名-Token 对到 Redis");
 		redisService.save(loginUser.getUsername(), token);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
@@ -132,35 +134,33 @@ public class UserController {
 	@ApiOperation(value = "用户个人资料", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "用户资料：\n{\n" +
-					"  \"nick_name\" : \"昵称\",\n" +
+					"  \"nickname\" : \"昵称\",\n" +
 					"  \"gender\" : \"性别\",\n" +
 					"  \"signature\" : \"个性签名\"\n" +
 					"}")
 	)
 	public Map getProfile(@ApiIgnore @CurrentUser User user) {
 		Map<String, String> map = new LinkedHashMap<>();
-		if (user.getNick_name() == null) {
-			map.put("nick_name", user.getUsername());
-		} else {
-			map.put("nick_name", user.getNick_name());
-		}
-		if (user.getGender() == null) {
-			map.put("gender", "男");
-		} else {
-			map.put("gender", user.getGender());
-		}
+		map.put("nickname", user.getNickname());
+		map.put("gender", user.getGender());
 		map.put("signature", user.getSignature());
 		return map;
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiOperation(value = "修改资料", httpMethod = "POST", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
-	@ApiImplicitParam(name = "user", value = "{\n\"nick_name\":\"大龙猫\",\n\"gender\":\"不明\",\n\"signature\":\"我是一只大龙猫\"\n}", required = true, dataType = "string", paramType = "body")
+	@ApiImplicitParams(
+			@ApiImplicitParam(name = "user", value = "{\n" +
+					"\"nickname\":\"大龙猫\",\n" +
+					"\"gender\":\"不明\",\n" +
+					"\"signature\":\"我是一只大龙猫\"\n" +
+					"}", required = true, dataType = "string", paramType = "body")
+	)
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
 	public JsonResponse postProfile(@RequestBody User user, @ApiIgnore @CurrentUser User currentUser) {
-		currentUser.setNick_name(user.getNick_name());
+		currentUser.setNickname(user.getNickname());
 		currentUser.setGender(user.getGender());
 		currentUser.setSignature(user.getSignature());
 		userService.save(currentUser);

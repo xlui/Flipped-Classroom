@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.config;
+package io.flippedclassroom.server.config.token;
 
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.service.RedisService;

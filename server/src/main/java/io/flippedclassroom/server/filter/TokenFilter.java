@@ -2,7 +2,7 @@ package io.flippedclassroom.server.filter;
 
 import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.config.token.TokenToken;
-import io.flippedclassroom.server.entity.JsonResponse;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.util.JsonUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import io.flippedclassroom.server.util.TokenUtils;

@@ -2,6 +2,7 @@ package io.flippedclassroom.server.config;
 
 import io.flippedclassroom.server.config.realm.PasswordShiroRealm;
 import io.flippedclassroom.server.config.realm.TokenShiroRealm;
+import io.flippedclassroom.server.config.token.TokenCredentialsMatcher;
 import io.flippedclassroom.server.filter.TokenFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
@@ -27,6 +28,39 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfiguration {
+	/**
+	 * URL 认证授权规则
+	 */
+	@Bean
+	public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
+		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+		shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+		Map<String, Filter> filterMap = new HashMap<>();
+		filterMap.put("jwt", new TokenFilter());
+		shiroFilterFactoryBean.setFilters(filterMap);
+
+		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
+		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
+
+		filterChainDefinitionMap.put("/logout", "jwt");
+		filterChainDefinitionMap.put("/check", "jwt");  // 检查 Token 的有效性
+		filterChainDefinitionMap.put("/profile", "jwt");
+		filterChainDefinitionMap.put("/avatar", "jwt");
+		// 课程端点
+		filterChainDefinitionMap.put("/course/**", "jwt");
+		// 即时通讯端点
+		filterChainDefinitionMap.put("/im/**", "jwt");
+//		filterChainDefinitionMap.put("/broadcast", "jwt");
+//		filterChainDefinitionMap.put("/group/**", "jwt");
+		filterChainDefinitionMap.put("/**", "anon");
+
+		shiroFilterFactoryBean.setLoginUrl("/login");
+
+		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+		return shiroFilterFactoryBean;
+	}
+
 	/**
 	 * 为基于用户名密码的验证注入加密方式
 	 */
@@ -106,33 +140,5 @@ public class ShiroConfiguration {
 		securityManager.setSubjectDAO(defaultSubjectDAO);
 
 		return securityManager;
-	}
-
-	/**
-	 * URL 认证授权规则
-	 */
-	@Bean
-	public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
-		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-		shiroFilterFactoryBean.setSecurityManager(securityManager);
-
-		Map<String, Filter> filterMap = new HashMap<>();
-		filterMap.put("jwt", new TokenFilter());
-		shiroFilterFactoryBean.setFilters(filterMap);
-
-		Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-		filterChainDefinitionMap.put("/hello", "jwt");  // 测试 jwt filter
-
-		filterChainDefinitionMap.put("/logout", "jwt");
-		filterChainDefinitionMap.put("/check", "jwt");  // 检查 Token 的有效性
-		filterChainDefinitionMap.put("/profile", "jwt");
-		filterChainDefinitionMap.put("/avatar", "jwt");
-		filterChainDefinitionMap.put("/course/**", "jwt");
-		filterChainDefinitionMap.put("/**", "anon");
-
-		shiroFilterFactoryBean.setLoginUrl("/login");
-
-		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
-		return shiroFilterFactoryBean;
 	}
 }

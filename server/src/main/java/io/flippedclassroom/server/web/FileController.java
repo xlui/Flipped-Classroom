@@ -2,7 +2,11 @@ package io.flippedclassroom.server.web;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
-import io.flippedclassroom.server.entity.*;
+import io.flippedclassroom.server.entity.Course;
+import io.flippedclassroom.server.entity.EData;
+import io.flippedclassroom.server.entity.Preview;
+import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.exception.PositionInvalidException;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.EDataService;
@@ -11,9 +15,13 @@ import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.ImageUtils;
 import io.flippedclassroom.server.util.LogUtils;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +54,8 @@ public class FileController {
 	private PreviewService previewService;
 	@Autowired
 	private EDataService eDataService;
+	private Logger logger = LogUtils.getInstance();
+
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
 	@ApiOperation(value = "获取头像", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
@@ -88,12 +98,12 @@ public class FileController {
 				String fileName = multipartFile.getOriginalFilename();
 				String suffix = fileName.substring(fileName.lastIndexOf("."));
 				String avatarPosition = Const.avatarPosition + "user-" + user.getId();
-				LogUtils.getInstance().info("上传文件后缀名：" + suffix);
+				logger.info("上传文件后缀名：" + suffix);
 
 				FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
 
 				if (!suffix.equals(".png")) {
-					LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
+					logger.info("将源文件后缀改为 png，并删除源文件");
 					ImageUtils.convertFormat(avatarPosition + suffix, avatarPosition + ".png", "PNG");
 					FileUtils.deleteQuietly(new File(avatarPosition + suffix));
 				}
@@ -130,16 +140,16 @@ public class FileController {
 	)
 	public Map getPreviews(@PathVariable Long courseID) {
 		Map<String, Object> map = new HashMap<>();
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			map.put("status", Const.FAILED);
-			map.put("preview", "course id is invalid!");
+			map.put("data", "course id is invalid!");
 			return map;
 		}
 		List<Preview> previews = course.getPreviewList();
 		previews.parallelStream().forEach(preview -> preview.setPosition(preview.getPosition().substring(preview.getPosition().lastIndexOf("/") + 1)));
 		map.put("status", Const.SUCCESS);
-		map.put("preview", previews);
+		map.put("data", previews);
 		return map;
 	}
 
@@ -149,7 +159,7 @@ public class FileController {
 			@ApiResponse(code = 200, message = "返回文件流，和图片加载的方式类似")
 	)
 	public JsonResponse getPreview(@PathVariable Long courseID, @PathVariable Long previewID, HttpServletResponse response) {
-		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<List<Preview>> list = course.map(Course::getPreviewList);
 		Optional<Preview> preview = list.flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
 		return preview.map(p -> this.writeFileStream(response, p.getPosition()))
@@ -166,7 +176,7 @@ public class FileController {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -180,7 +190,7 @@ public class FileController {
 			previewService.save(preview);
 			return new JsonResponse(Const.SUCCESS, "Successfully save preview data!");
 		} catch (IOException e) {
-			LogUtils.getInstance().info("上传文件时发生 IOException: " + e.getMessage());
+			logger.info("上传文件时发生 IOException: " + e.getMessage());
 			return new JsonResponse(Const.FAILED, "IOException occurs during saving preview file!");
 		}
 	}
@@ -191,11 +201,11 @@ public class FileController {
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
 	public JsonResponse deletePreview(@PathVariable Long courseID, @PathVariable Long previewID) {
-		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<Preview> preview = course.map(Course::getPreviewList).flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
 		if (preview.isPresent()) {
 			FileUtils.deleteQuietly(new File(preview.get().getPosition()));
-			LogUtils.getInstance().info("删除预习资料：" + preview.get().getPosition());
+			logger.info("删除预习资料：" + preview.get().getPosition());
 			previewService.delete(preview.get());
 			return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
 		} else {
@@ -225,16 +235,16 @@ public class FileController {
 	)
 	public Map getEDataAll(@PathVariable Long courseID) {
 		Map<String, Object> map = new HashMap<>();
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			map.put("status", Const.FAILED);
-			map.put("edata", "Course id is invalid!");
+			map.put("data", "Course id is invalid!");
 			return map;
 		}
 		List<EData> eDataList = course.geteDataList();
 		eDataList.parallelStream().forEach(eData -> eData.setPosition(eData.getPosition().substring(eData.getPosition().lastIndexOf("/") + 1)));
 		map.put("status", Const.SUCCESS);
-		map.put("edata", eDataList);
+		map.put("data", eDataList);
 		return map;
 	}
 
@@ -244,7 +254,7 @@ public class FileController {
 			@ApiResponse(code = 200, message = "返回文件流，和图片加载的方式类似")
 	)
 	public JsonResponse getEData(@PathVariable Long courseID, @PathVariable Long eDataID, HttpServletResponse response) {
-		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<List<EData>> list = course.map(Course::geteDataList);
 		Optional<EData> eData = list.flatMap(eDatas -> eDatas.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
 		return eData.map(eData1 -> writeFileStream(response, eData1.getPosition()))
@@ -260,7 +270,7 @@ public class FileController {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
 		}
@@ -287,11 +297,11 @@ public class FileController {
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
 	public JsonResponse deleteEData(@PathVariable Long courseID, @PathVariable Long eDataID) {
-		Optional<Course> course = Optional.of(courseService.findCourseById(courseID));
+		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<EData> eData = course.map(Course::geteDataList).flatMap(eDataList -> eDataList.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
 		if (eData.isPresent()) {
 			FileUtils.deleteQuietly(new File(eData.get().getPosition()));
-			LogUtils.getInstance().info("删除电子资料：" + eData.get().getPosition());
+			logger.info("删除电子资料：" + eData.get().getPosition());
 			eDataService.delete(eData.get());
 			return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
 		} else {
@@ -305,7 +315,7 @@ public class FileController {
 			@ApiResponse(code = 200, message = "课程图片流")
 	)
 	public JsonResponse getCoursePicture(@PathVariable Long courseID, HttpServletResponse response) {
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course != null) {
 			String pictureLocation = course.getPicture();
 			try {
@@ -340,14 +350,14 @@ public class FileController {
 		if (multipartFile == null) {
 			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
 		}
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
 		}
 		String coursePicturePosition = Const.coursePicture + "course-" + courseID;
 		String fileName = multipartFile.getOriginalFilename();
 		String suffix = fileName.substring(fileName.lastIndexOf("."));
-		LogUtils.getInstance().info("课程图像后缀名：" + suffix);
+		logger.info("课程图像后缀名：" + suffix);
 		try {
 			FileUtils.writeByteArrayToFile(new File(coursePicturePosition + suffix), multipartFile.getBytes());
 		} catch (IOException e) {
@@ -355,7 +365,7 @@ public class FileController {
 		}
 		if (!suffix.equals(".png")) {
 			new Thread(() -> {
-				LogUtils.getInstance().info("将源文件后缀改为 png，并删除源文件");
+				logger.info("将源文件后缀改为 png，并删除源文件");
 				try {
 					ImageUtils.convertFormat(coursePicturePosition + suffix, coursePicturePosition + ".png", "PNG");
 				} catch (IOException e) {
@@ -382,7 +392,7 @@ public class FileController {
 		} catch (PositionInvalidException e) {
 			return new JsonResponse(Const.FAILED, "No such file!");
 		} catch (IOException e) {
-			LogUtils.getInstance().info("IOException during download the file: " + e.getMessage());
+			logger.info("IOException during download the file: " + e.getMessage());
 			return new JsonResponse(Const.FAILED, "IOException!!!");
 		}
 	}

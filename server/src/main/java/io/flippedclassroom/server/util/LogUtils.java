@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
  * 全局日志
  */
 public class LogUtils {
+    private LogUtils() {}
+
 	public static Logger getInstance() {
 		return Inner.logger;
 	}

@@ -4,14 +4,6 @@ import io.flippedclassroom.server.entity.Permission;
 
 import java.util.List;
 
-public interface PermissionService {
-	Permission findPermissionById(Long id);
-
+public interface PermissionService extends BaseService<Permission> {
 	Permission findPermissionByPermissionName(String permissionName);
-
-	Permission save(Permission permission);
-
-	List<Permission> save(Iterable<Permission> iterable);
-
-	void delete(Permission permission);
 }

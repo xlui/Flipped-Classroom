@@ -1,4 +1,4 @@
-package io.flippedclassroom.server.entity;
+package io.flippedclassroom.server.entity.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

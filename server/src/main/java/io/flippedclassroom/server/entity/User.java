@@ -17,7 +17,7 @@ public class User implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Long id;
 	@Column(nullable = false)
-	@JsonProperty(access = JsonProperty.Access.AUTO)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String username;    // 用户名
 	@Column(nullable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -27,19 +27,19 @@ public class User implements Serializable {
 
 	// 以下均可选
 	@JsonProperty(access = JsonProperty.Access.AUTO)
-	private String nick_name;   // 昵称
+	private String nickname;   // 昵称
 	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String avatar;      // 头像文件地址
-	@JsonProperty(access = JsonProperty.Access.AUTO)
-	private String gender;      // 性别
-	@JsonProperty(access = JsonProperty.Access.AUTO)
-	private String signature;   // 个性签名
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String gender = "男";      // 性别
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String signature = "";   // 个性签名
 
 	// 用户与认证情况的一对一关系
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)    // 用户是关系的维护端
 	@JoinColumn(name = "auth_id")                                // 指定外键名称
 	@Fetch(FetchMode.JOIN)                                        // 会使用 left join 查询，只产生一条 sql 语句
-	@JsonProperty(access = JsonProperty.Access.AUTO)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Authentication authentication;
 
 	// 用户与角色的多对一关系，单向关系
@@ -64,8 +64,8 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public User(String nick_name, String gender, String signature) {
-		this.nick_name = nick_name;
+	public User(String nickname, String gender, String signature) {
+		this.nickname = nickname;
 		this.gender = gender;
 		this.signature = signature;
 	}
@@ -102,16 +102,24 @@ public class User implements Serializable {
 		this.salt = salt;
 	}
 
-	public String getNick_name() {
-		return nick_name;
+	public String getNickname() {
+		if (nickname == null) {
+			return username;
+		} else {
+			return nickname;
+		}
 	}
 
-	public void setNick_name(String nick_name) {
-		this.nick_name = nick_name;
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public String getAvatar() {
-		return avatar;
+		if (avatar == null) {
+			return "https://api.fc.xd.style/avatar";
+		} else {
+			return avatar;
+		}
 	}
 
 	public void setAvatar(String avatar) {

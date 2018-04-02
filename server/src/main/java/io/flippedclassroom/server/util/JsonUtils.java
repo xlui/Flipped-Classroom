@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 原因是 controller 外不能使用注解 @ResponseBody
  */
 public class JsonUtils {
+	private JsonUtils() {}
+
 	public static ObjectMapper getInstance() {
 		return Inner.instance;
 	}

@@ -3,23 +3,21 @@ package io.flippedclassroom.server.web;
 import io.flippedclassroom.server.annotation.CurrentRole;
 import io.flippedclassroom.server.annotation.CurrentUser;
 import io.flippedclassroom.server.config.Const;
-import io.flippedclassroom.server.entity.Comment;
 import io.flippedclassroom.server.entity.Course;
-import io.flippedclassroom.server.entity.JsonResponse;
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.service.CommentService;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.UserService;
 import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +32,8 @@ public class CourseController {
 	private UserService userService;
 	@Autowired
 	private CommentService commentService;
+	private Logger logger = LogUtils.getInstance();
+
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ApiOperation(value = "课程列表", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
@@ -70,7 +70,7 @@ public class CourseController {
 					"}")
 	)
 	public Course getCourse(@PathVariable Long courseID) {
-		return courseService.findCourseById(courseID);
+		return courseService.findById(courseID);
 	}
 
 	@RequestMapping(value = "/{courseID}/update", method = RequestMethod.POST)
@@ -80,7 +80,7 @@ public class CourseController {
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
 	public JsonResponse updateCourse(@PathVariable Long courseID, @RequestBody Course course) {
-		Course newCourse = courseService.findCourseById(courseID);
+		Course newCourse = courseService.findById(courseID);
 		if (newCourse == null) {
 			return new JsonResponse(Const.FAILED, "course id 非法！");
 		}
@@ -96,7 +96,7 @@ public class CourseController {
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
 	public JsonResponse deleteCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user, @ApiIgnore @CurrentRole String role) {
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 
 		try {
 			if (course == null) {
@@ -104,12 +104,12 @@ public class CourseController {
 			}
 
 			if (role.equals("student")) {        // 学生删除课程逻辑
-				LogUtils.getInstance().info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
+				logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
 				user.getCourseList().remove(course);
 				userService.save(user);
 				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
 			} else {
-				LogUtils.getInstance().info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
+				logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
 				courseService.delete(course);
 				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
 			}
@@ -138,7 +138,7 @@ public class CourseController {
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
 	public JsonResponse joinCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
-		Course course = courseService.findCourseById(courseID);
+		Course course = courseService.findById(courseID);
 		if (course == null) {
 			return new JsonResponse(Const.FAILED, "Course ID 非法！");
 		} else {
@@ -151,98 +151,5 @@ public class CourseController {
 				return new JsonResponse(Const.SUCCESS, "成功加入课程！");
 			}
 		}
-	}
-
-	@RequestMapping(value = "/{courseID}/comment", method = RequestMethod.GET)
-	@ApiOperation(value = "查看课程评论", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
-	@ApiResponses(
-			@ApiResponse(code = 200, message = "自定义的返回格式：{\n" +
-					"  \"status\" : \"SUCCESS\",\n" +
-					"  \"comments\" : [ {\n" +
-					"    \"id\" : 1,\n" +
-					"    \"content\" : \"Hello World!\",\n" +
-					"    \"date\" : 1517389108000,\n" +
-					"    \"reply\" : -1,\n" +
-					"    \"user\" : {\n" +
-					"      \"id\" : 1,\n" +
-					"      \"username\" : \"1\",\n" +
-					"      \"nick_name\" : null,\n" +
-					"      \"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
-					"      \"gender\" : null,\n" +
-					"      \"signature\" : null,\n" +
-					"      \"authentication\" : null\n" +
-					"    }\n" +
-					"  } ]\n" +
-					"}")
-	)
-	public Map courseComments(@PathVariable Long courseID) {
-		Course course = courseService.findCourseById(courseID);
-		Map<String, Object> map = new LinkedHashMap<>();
-		if (course == null) {
-			map.put("status", Const.FAILED);
-			map.put("comments", null);
-			return map;
-		} else {
-			map.put("status", Const.SUCCESS);
-			List<Comment> comments = course.getCommentList();
-			comments.parallelStream().forEach(comment -> comment.getUser().setAvatar("https://api.fc.xd.style/avatar"));
-			map.put("comments", comments);
-			return map;
-		}
-	}
-
-	@RequestMapping(value = "/{courseID}/comment", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ApiOperation(value = "评论课程", httpMethod = "POST")
-	@ApiImplicitParam(name = "comment", value = "留下一个评论：\n{\n\"content\":\"评论内容\",\n \"reply\":\"回复评论，不设置默认 -1\"\n}")
-	@ApiResponses(
-			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
-	)
-	public JsonResponse commentCourse(@PathVariable Long courseID, @RequestBody Comment comment, @ApiIgnore @CurrentUser User user) {
-		Course course = courseService.findCourseById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "Course id 非法！");
-		} else {
-			Comment newComment = new Comment(comment.getContent());
-			newComment.setUser(user);
-			newComment.setCourse(course);
-			newComment.setReply(comment.getReply());
-			commentService.save(newComment);
-			return new JsonResponse(Const.SUCCESS, "成功添加评论！");
-		}
-	}
-
-	@RequestMapping(value = "/{courseID}/comment/{commentId}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ApiOperation(value = "更新评论", httpMethod = "POST")
-	@ApiImplicitParams(
-			@ApiImplicitParam(name = "comment", dataTypeClass = Comment.class, required = true, value = "\n示例：\n{\"content\":\"新的评论\"}")
-	)
-	@ApiResponses(
-			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
-	)
-	public JsonResponse updateComment(@PathVariable Long courseID, @PathVariable Long commentId, @RequestBody @NotNull Comment comment) {
-		Comment originComment = commentService.findCommentById(commentId);
-		if (originComment != null) {
-			originComment.setContent(comment.getContent());
-			originComment.setDate(Const.currentTime());
-			commentService.save(originComment);
-			return new JsonResponse(Const.SUCCESS, "成功更新评论！");
-		}
-		return new JsonResponse(Const.FAILED, "更新失败！请确保要更新的评论 id 合法！");
-	}
-
-	@RequestMapping(value = "/{courseID}/comment/{commentId}/delete", method = RequestMethod.GET)
-	@ApiOperation(value = "删除评论", httpMethod = "GET")
-	@ApiResponses(
-			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
-	)
-	public JsonResponse deleteComment(@PathVariable Long courseID, @PathVariable Long commentId) {
-		Course course = courseService.findCourseById(courseID);
-		Comment comment = commentService.findCommentById(commentId);
-		if (comment != null) {
-			LogUtils.getInstance().info("删除了课程 " + course.getName() + " 的评论 " + comment.getContent());
-			commentService.deleteById(commentId);
-			return new JsonResponse(Const.SUCCESS, "成功删除评论！");
-		}
-		return new JsonResponse(Const.FAILED, "删除失败！请确保评论 id 合法！");
 	}
 }

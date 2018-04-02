@@ -14,7 +14,7 @@ public class RoleServiceImpl implements RoleService {
 	private RoleRepository roleRepository;
 
 	@Override
-	public Role findRoleById(Long id) {
+	public Role findById(Long id) {
 		return roleRepository.findById(id);
 	}
 
@@ -36,5 +36,10 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public void delete(Role role) {
 		roleRepository.delete(role);
+	}
+
+	@Override
+	public void deleteAll() {
+		roleRepository.deleteAll();
 	}
 }

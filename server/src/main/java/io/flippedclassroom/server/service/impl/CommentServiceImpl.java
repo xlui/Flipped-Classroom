@@ -16,18 +16,23 @@ public class CommentServiceImpl implements CommentService {
 	private CommentRepository commentRepository;
 
 	@Override
-	public Comment findCommentById(Long id) {
+	public Comment findById(Long id) {
 		return commentRepository.findById(id);
 	}
 
 	@Override
 	public List<Comment> findCommentsByUser(User user) {
-		return commentRepository.findByUser(user);
+		return commentRepository.findAllByUser(user);
 	}
 
 	@Override
 	public List<Comment> findCommentsByCourse(Course course) {
-		return commentRepository.findByCourse(course);
+		return commentRepository.findAllByCourse(course);
+	}
+
+	@Override
+	public List<Comment> findReplyTo(Long commentId) {
+		return commentRepository.findAllByReply(commentId);
 	}
 
 	@Override
@@ -43,6 +48,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void delete(Comment comment) {
 		commentRepository.delete(comment);
+	}
+
+	@Override
+	public void deleteAll() {
+		commentRepository.deleteAll();
 	}
 
 	@Override
