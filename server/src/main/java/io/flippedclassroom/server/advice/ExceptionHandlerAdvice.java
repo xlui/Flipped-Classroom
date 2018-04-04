@@ -2,7 +2,7 @@ package io.flippedclassroom.server.advice;
 
 import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.response.JsonResponse;
-import io.flippedclassroom.server.exception.InputException;
+import io.flippedclassroom.server.exception.Http400BadRequestException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.http.HttpStatus;
@@ -27,9 +27,14 @@ public class ExceptionHandlerAdvice {
 		return new JsonResponse(Const.FAILED, "Oops! 权限鉴定失败！");
 	}
 
-	@ExceptionHandler(value = InputException.class)
+	@ExceptionHandler(value = Http400BadRequestException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public JsonResponse handleInputException(Exception ex) {
+	public JsonResponse handleBadRequestException(Exception ex) {
+		return new JsonResponse(Const.FAILED, ex.getMessage());
+	}
+
+	@ExceptionHandler(value = Exception.class)
+	public JsonResponse handleException(Exception ex) {
 		return new JsonResponse(Const.FAILED, ex.getMessage());
 	}
 }

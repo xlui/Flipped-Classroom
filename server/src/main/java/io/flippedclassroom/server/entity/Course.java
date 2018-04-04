@@ -3,6 +3,7 @@ package io.flippedclassroom.server.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.flippedclassroom.server.config.Const;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,30 +28,36 @@ public class Course implements Serializable {
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
 	@JoinTable(name = "t_user_course", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "user_id")})
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<User> userList;
 
 	// 课程与随堂测试一对多
 	@OneToMany(mappedBy = "course")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<Quiz> quizList;
 
 	// 课程与课后测试一对多
 	@OneToMany(mappedBy = "course")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<Homework> homeworkList;
 
 	// 课程与电子资料一对多
 	@OneToMany(mappedBy = "course")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<EData> eDataList;
 
 	// 课程与课前预习资料一对多
 	@OneToMany(mappedBy = "course")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<Preview> previewList;
 
 	@OneToMany(mappedBy = "course")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ApiModelProperty(hidden = true)
 	private List<Comment> commentList;
 
 	public Course() {

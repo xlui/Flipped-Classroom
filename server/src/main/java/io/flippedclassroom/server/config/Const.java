@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.5.0";
+	public static final String swaggerVersion = "v0.5.1";
 	public static final String version = "v0.0.1";
 
 	// 返回数据的 Status
@@ -20,7 +20,7 @@ public class Const {
 	// 即时通讯的订阅点
 	public static final String webSocketEndpoint = "/im";
 	public static final String broadcast = "/b";
-	public static final String group = "/group";
+	public static final String group = "/g";
 	public static final String user = "/user";
 
 	// token 有效期，当前设置为十天

@@ -50,9 +50,6 @@ public class ShiroConfiguration {
 		// 课程端点
 		filterChainDefinitionMap.put("/course/**", "jwt");
 		// 即时通讯端点
-		filterChainDefinitionMap.put("/im/**", "jwt");
-//		filterChainDefinitionMap.put("/broadcast", "jwt");
-//		filterChainDefinitionMap.put("/group/**", "jwt");
 		filterChainDefinitionMap.put("/**", "anon");
 
 		shiroFilterFactoryBean.setLoginUrl("/login");

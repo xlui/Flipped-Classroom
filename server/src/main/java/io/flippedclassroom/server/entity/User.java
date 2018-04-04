@@ -12,6 +12,7 @@ import java.util.List;
 @ApiModel(value = "用户实体类")
 @Entity
 public class User implements Serializable {
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

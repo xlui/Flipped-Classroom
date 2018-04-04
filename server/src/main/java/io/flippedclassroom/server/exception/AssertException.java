@@ -8,4 +8,8 @@ public class AssertException extends Exception {
 	public AssertException(String s) {
 		super(s);
 	}
+
+	public AssertException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

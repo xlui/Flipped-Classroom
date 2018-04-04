@@ -18,6 +18,8 @@ public class Message {
 	private String date;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private MessageType messageType;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long groupId = -1L;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -72,5 +74,13 @@ public class Message {
 
 	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
+	}
+
+	public Long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 }

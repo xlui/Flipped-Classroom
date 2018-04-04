@@ -18,7 +18,7 @@ public class VersionController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ApiOperation(value = "版本信息", httpMethod = "GET")
 	@ApiResponses({
-			@ApiResponse(code = 200, message = "当前版本")
+			@ApiResponse(code = 200, message = "当前版本", response = String.class)
 	})
 	public String version() {
 		return Const.version;

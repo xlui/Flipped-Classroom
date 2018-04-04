@@ -9,9 +9,17 @@ import java.io.Serializable;
 public class JsonResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(value = "操作结果，为成功或者失败", example = "SUCCESS/FAILED，请根据Status来判断操作结果")
+	@ApiModelProperty(
+			value = "操作结果，为成功或者失败",
+			required = true,
+			example = "SUCCESS/FAILED，请根据Status来判断操作结果"
+	)
 	private String status;
-	@ApiModelProperty(value = "操作结果附带的说明信息，供调试使用", example = "操作成功/失败! 附带信息，方便调试")
+	@ApiModelProperty(
+			value = "操作结果附带的说明信息，供调试使用",
+			required = true,
+			example = "操作成功/失败! 附带信息，方便调试"
+	)
 	private String message;
 
 	public JsonResponse() {

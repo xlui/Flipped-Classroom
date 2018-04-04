@@ -7,7 +7,8 @@ import io.flippedclassroom.server.entity.EData;
 import io.flippedclassroom.server.entity.Preview;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.entity.response.JsonResponse;
-import io.flippedclassroom.server.exception.PositionInvalidException;
+import io.flippedclassroom.server.exception.AssertException;
+import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.EDataService;
 import io.flippedclassroom.server.service.PreviewService;
@@ -72,7 +73,7 @@ public class FileController {
 				response.setContentType(MediaType.IMAGE_PNG_VALUE);
 				IOUtils.copy(in, response.getOutputStream());
 				return new JsonResponse(Const.SUCCESS, "成功获得用户 " + user.getId() + "的头像！");
-			} catch (PositionInvalidException e) {
+			} catch (AssertException e) {
 				String md5 = DigestUtils.md5DigestAsHex(user.getId().toString().getBytes());
 				URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -90,31 +91,28 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postAvatar(@RequestPart(name = "file") MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) {
-		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "上传的文件为空！");
-		} else {
-			try {
-				String fileName = multipartFile.getOriginalFilename();
-				String suffix = fileName.substring(fileName.lastIndexOf("."));
-				String avatarPosition = Const.avatarPosition + "user-" + user.getId();
-				logger.info("上传文件后缀名：" + suffix);
+	public JsonResponse postAvatar(@RequestPart(name = "file") MultipartFile multipartFile, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
+		AssertUtils.assertNotNUllElseThrow(multipartFile, () -> new Http400BadRequestException("上传的头像文件不能为空！"));
+		try {
+			String fileName = multipartFile.getOriginalFilename();
+			String suffix = fileName.substring(fileName.lastIndexOf("."));
+			String avatarPosition = Const.avatarPosition + "user-" + user.getId();
+			logger.info("上传文件后缀名：" + suffix);
 
-				FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
+			FileUtils.writeByteArrayToFile(new File(avatarPosition + suffix), multipartFile.getBytes());
 
-				if (!suffix.equals(".png")) {
-					logger.info("将源文件后缀改为 png，并删除源文件");
-					ImageUtils.convertFormat(avatarPosition + suffix, avatarPosition + ".png", "PNG");
-					FileUtils.deleteQuietly(new File(avatarPosition + suffix));
-				}
-
-				user.setAvatar(avatarPosition + ".png");
-				userService.save(user);
-				return new JsonResponse(Const.SUCCESS, "成功设置头像！");
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new JsonResponse(Const.FAILED, "IOException!");
+			if (!suffix.equals(".png")) {
+				logger.info("将源文件后缀改为 png，并删除源文件");
+				ImageUtils.convertFormat(avatarPosition + suffix, avatarPosition + ".png", "PNG");
+				FileUtils.deleteQuietly(new File(avatarPosition + suffix));
 			}
+
+			user.setAvatar(avatarPosition + ".png");
+			userService.save(user);
+			return new JsonResponse(Const.SUCCESS, "成功设置头像！");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new JsonResponse(Const.FAILED, "IOException!");
 		}
 	}
 
@@ -172,14 +170,10 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postPreview(@RequestParam(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
-		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
-		}
+	public JsonResponse postPreview(@RequestParam(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
+		AssertUtils.assertNotNUllElseThrow(multipartFile, () -> new Http400BadRequestException("上传的预习文件不能为空！"));
 		Course course = courseService.findById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
-		}
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 		String coursePreviewPosition = Const.coursePreviewPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
 		Preview preview = new Preview(coursePreviewPosition);
 		try {
@@ -200,17 +194,14 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
-	public JsonResponse deletePreview(@PathVariable Long courseID, @PathVariable Long previewID) {
+	public JsonResponse deletePreview(@PathVariable Long courseID, @PathVariable Long previewID) throws Http400BadRequestException {
 		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<Preview> preview = course.map(Course::getPreviewList).flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
-		if (preview.isPresent()) {
-			FileUtils.deleteQuietly(new File(preview.get().getPosition()));
-			logger.info("删除预习资料：" + preview.get().getPosition());
-			previewService.delete(preview.get());
-			return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
-		} else {
-			return new JsonResponse(Const.FAILED, "Course id or Preview id is invalid!");
-		}
+		AssertUtils.assertTrueElseThrow(preview.isPresent(), () -> new Http400BadRequestException("Course id 或 Preview id 非法！"));
+		FileUtils.deleteQuietly(new File(preview.get().getPosition()));
+		logger.info("删除预习资料：" + preview.get().getPosition());
+		previewService.delete(preview.get());
+		return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
 	}
 
 	@RequestMapping(value = "/course/{courseID}/data/edata", method = RequestMethod.GET)
@@ -266,14 +257,10 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
-		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
-		}
+	public JsonResponse postEData(@RequestPart(name = "file") MultipartFile multipartFile, @PathVariable Long courseID, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
+		AssertUtils.assertNotNUllElseThrow(multipartFile, () -> new Http400BadRequestException("上传的电子资料不能为空！"));
 		Course course = courseService.findById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "upload file is null OR course id is invalid!");
-		}
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 		String courseEDataPosition = Const.courseEDataPosition + "course-" + courseID + "/" + multipartFile.getOriginalFilename();
 		EData eData = new EData(courseEDataPosition);
 		try {
@@ -296,17 +283,14 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
-	public JsonResponse deleteEData(@PathVariable Long courseID, @PathVariable Long eDataID) {
+	public JsonResponse deleteEData(@PathVariable Long courseID, @PathVariable Long eDataID) throws Http400BadRequestException {
 		Optional<Course> course = Optional.of(courseService.findById(courseID));
 		Optional<EData> eData = course.map(Course::geteDataList).flatMap(eDataList -> eDataList.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
-		if (eData.isPresent()) {
-			FileUtils.deleteQuietly(new File(eData.get().getPosition()));
-			logger.info("删除电子资料：" + eData.get().getPosition());
-			eDataService.delete(eData.get());
-			return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
-		} else {
-			return new JsonResponse(Const.FAILED, "Course id or EData id is invalid!");
-		}
+		AssertUtils.assertTrueElseThrow(eData.isPresent(), () -> new Http400BadRequestException("Course id 或 EData id 非法！"));
+		FileUtils.deleteQuietly(new File(eData.get().getPosition()));
+		logger.info("删除电子资料：" + eData.get().getPosition());
+		eDataService.delete(eData.get());
+		return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
 	}
 
 	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.GET)
@@ -314,30 +298,27 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "课程图片流")
 	)
-	public JsonResponse getCoursePicture(@PathVariable Long courseID, HttpServletResponse response) {
+	public JsonResponse getCoursePicture(@PathVariable Long courseID, HttpServletResponse response) throws Http400BadRequestException {
 		Course course = courseService.findById(courseID);
-		if (course != null) {
-			String pictureLocation = course.getPicture();
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
+		String pictureLocation = course.getPicture();
+		try {
 			try {
-				try {
-					AssertUtils.assertPositionValid(pictureLocation);
-					InputStream in = new FileInputStream(pictureLocation);
-					response.setContentType(MediaType.IMAGE_PNG_VALUE);
-					IOUtils.copy(in, response.getOutputStream());
-					return new JsonResponse(Const.SUCCESS, "成功获取课程 " + course.getId() + " 的图片！");
-				} catch (PositionInvalidException e) {
-					String md5 = DigestUtils.md5DigestAsHex(course.getId().toString().getBytes());
-					URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
-					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					response.setContentType(MediaType.IMAGE_PNG_VALUE);
-					IOUtils.copy(connection.getInputStream(), response.getOutputStream());
-					return new JsonResponse(Const.SUCCESS, "成功为课程 " + course.getId() + "从 gravatar 生成图片！");
-				}
-			} catch (IOException e) {
-				return new JsonResponse(Const.FAILED, "IOException!");
+				AssertUtils.assertPositionValid(pictureLocation);
+				InputStream in = new FileInputStream(pictureLocation);
+				response.setContentType(MediaType.IMAGE_PNG_VALUE);
+				IOUtils.copy(in, response.getOutputStream());
+				return new JsonResponse(Const.SUCCESS, "成功获取课程 " + course.getId() + " 的图片！");
+			} catch (AssertException e) {
+				String md5 = DigestUtils.md5DigestAsHex(course.getId().toString().getBytes());
+				URL url = new URL(Const.defaultAvatarLink.replace("MD5", md5));
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				response.setContentType(MediaType.IMAGE_PNG_VALUE);
+				IOUtils.copy(connection.getInputStream(), response.getOutputStream());
+				return new JsonResponse(Const.SUCCESS, "成功为课程 " + course.getId() + "从 gravatar 生成图片！");
 			}
-		} else {
-			return new JsonResponse(Const.FAILED, "Course Id 非法！");
+		} catch (IOException e) {
+			return new JsonResponse(Const.FAILED, "IOException!");
 		}
 	}
 
@@ -346,14 +327,10 @@ public class FileController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postCoursePicture(@PathVariable Long courseID, @RequestPart(name = "file") MultipartFile multipartFile) {
-		if (multipartFile == null) {
-			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
-		}
+	public JsonResponse postCoursePicture(@PathVariable Long courseID, @RequestPart(name = "file") MultipartFile multipartFile) throws Http400BadRequestException {
+		AssertUtils.assertNotNUllElseThrow(multipartFile, () -> new Http400BadRequestException("上传的课程图片不能为空！"));
 		Course course = courseService.findById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "上传文件为空或者 course id 非法！");
-		}
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 		String coursePicturePosition = Const.coursePicture + "course-" + courseID;
 		String fileName = multipartFile.getOriginalFilename();
 		String suffix = fileName.substring(fileName.lastIndexOf("."));
@@ -384,16 +361,16 @@ public class FileController {
 	//*******************
 	private JsonResponse writeFileStream(HttpServletResponse response, String position) {
 		try {
-			AssertUtils.assertPositionValid(position);
+			AssertUtils.assertPositionValidElseThrow(position, () -> new Http400BadRequestException("没有这个文件！"));
 			InputStream in = new FileInputStream(position);
 			response.setContentType("application/x-msdownload");
 			IOUtils.copy(in, response.getOutputStream());
 			return new JsonResponse(Const.SUCCESS, "成功下载 " + position.substring(position.lastIndexOf("/") + 1));
-		} catch (PositionInvalidException e) {
-			return new JsonResponse(Const.FAILED, "No such file!");
 		} catch (IOException e) {
 			logger.info("IOException during download the file: " + e.getMessage());
 			return new JsonResponse(Const.FAILED, "IOException!!!");
+		} catch (Http400BadRequestException e) {
+			return new JsonResponse(Const.FAILED, e.getMessage());
 		}
 	}
 }

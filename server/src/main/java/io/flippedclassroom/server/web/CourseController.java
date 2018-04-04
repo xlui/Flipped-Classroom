@@ -6,9 +6,10 @@ import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.Course;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.entity.response.JsonResponse;
-import io.flippedclassroom.server.service.CommentService;
+import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.UserService;
+import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -30,8 +32,6 @@ public class CourseController {
 	private CourseService courseService;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private CommentService commentService;
 	private Logger logger = LogUtils.getInstance();
 
 
@@ -69,8 +69,9 @@ public class CourseController {
 					"  \"code\" : \"xust1\"\n" +
 					"}")
 	)
-	public Course getCourse(@PathVariable Long courseID) {
-		return courseService.findById(courseID);
+	public Course getCourse(@PathVariable Long courseID) throws Http400BadRequestException {
+		Optional<Course> course = Optional.of(courseService.findById(courseID));
+		return course.orElseThrow(() -> new Http400BadRequestException("课程 id 非法！"));
 	}
 
 	@RequestMapping(value = "/{courseID}/update", method = RequestMethod.POST)
@@ -79,11 +80,9 @@ public class CourseController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse updateCourse(@PathVariable Long courseID, @RequestBody Course course) {
+	public JsonResponse updateCourse(@PathVariable Long courseID, @RequestBody Course course) throws Http400BadRequestException {
 		Course newCourse = courseService.findById(courseID);
-		if (newCourse == null) {
-			return new JsonResponse(Const.FAILED, "course id 非法！");
-		}
+		AssertUtils.assertNotNUllElseThrow(newCourse, () -> new Http400BadRequestException("课程 id 非法！"));
 		newCourse.setName(course.getName());
 		newCourse.setMajor(course.getMajor());
 		courseService.save(newCourse);
@@ -99,9 +98,7 @@ public class CourseController {
 		Course course = courseService.findById(courseID);
 
 		try {
-			if (course == null) {
-				return new JsonResponse(Const.FAILED, "course id 非法！");
-			}
+			AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 
 			if (role.equals("student")) {        // 学生删除课程逻辑
 				logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
@@ -137,19 +134,13 @@ public class CourseController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse joinCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse joinCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
 		Course course = courseService.findById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "Course ID 非法！");
-		} else {
-			List<Course> courses = user.getCourseList();
-			if (courses.contains(course)) {
-				return new JsonResponse(Const.FAILED, "不应该加入一个已有课程！");
-			} else {
-				courses.add(course);
-				userService.save(user);
-				return new JsonResponse(Const.SUCCESS, "成功加入课程！");
-			}
-		}
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
+		List<Course> courses = user.getCourseList();
+		AssertUtils.assertFalseElseThrow(courses.contains(course), () -> new Http400BadRequestException("不应该加入一个已有课程！"));
+		courses.add(course);
+		userService.save(user);
+		return new JsonResponse(Const.SUCCESS, "成功加入课程！");
 	}
 }

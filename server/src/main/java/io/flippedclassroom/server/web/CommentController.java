@@ -7,8 +7,10 @@ import io.flippedclassroom.server.entity.Comment;
 import io.flippedclassroom.server.entity.Course;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.entity.response.JsonResponse;
+import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.CommentService;
 import io.flippedclassroom.server.service.CourseService;
+import io.flippedclassroom.server.util.AssertUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -59,6 +62,7 @@ public class CommentController {
 			map.put("status", Const.SUCCESS);
 			List<Comment> comments = course.getCommentList();
 			comments.parallelStream().forEach(comment -> comment.getUser().setAvatar("https://api.fc.xd.style/avatar"));
+			comments = comments.parallelStream().filter(comment -> comment.getReply().equals(-1L)).collect(Collectors.toList());
 			map.put("comments", comments);
 			return map;
 		}
@@ -73,18 +77,15 @@ public class CommentController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse postComment(@PathVariable Long courseID, @RequestBody Comment comment, @ApiIgnore @CurrentUser User user) {
+	public JsonResponse postComment(@PathVariable Long courseID, @RequestBody Comment comment, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
 		Course course = courseService.findById(courseID);
-		if (course == null) {
-			return new JsonResponse(Const.FAILED, "Course id 非法！");
-		} else {
-			Comment newComment = new Comment(comment.getContent());
-			newComment.setUser(user);
-			newComment.setCourse(course);
-			newComment.setReply(comment.getReply());
-			commentService.save(newComment);
-			return new JsonResponse(Const.SUCCESS, "成功添加评论！");
-		}
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("Course id 非法！"));
+		Comment newComment = new Comment(comment.getContent());
+		newComment.setUser(user);
+		newComment.setCourse(course);
+		newComment.setReply(comment.getReply());
+		commentService.save(newComment);
+		return new JsonResponse(Const.SUCCESS, "成功添加评论！");
 	}
 
 	@RequestMapping(value = "/{commentId}", method = RequestMethod.GET)
@@ -182,15 +183,13 @@ public class CommentController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse updateComment(@PathVariable Long courseID, @PathVariable Long commentId, @RequestBody @NotNull Comment comment) {
+	public JsonResponse updateComment(@PathVariable Long courseID, @PathVariable Long commentId, @RequestBody @NotNull Comment comment) throws Http400BadRequestException {
 		Comment originComment = commentService.findById(commentId);
-		if (originComment != null) {
-			originComment.setContent(comment.getContent());
-			originComment.setDate(Const.currentTime());
-			commentService.save(originComment);
-			return new JsonResponse(Const.SUCCESS, "成功更新评论！");
-		}
-		return new JsonResponse(Const.FAILED, "更新失败！请确保要更新的评论 id 合法！");
+		AssertUtils.assertNotNUllElseThrow(originComment, () -> new Http400BadRequestException("更新失败！请确保要更新的评论 id 合法！"));
+		originComment.setContent(comment.getContent());
+		originComment.setDate(Const.currentTime());
+		commentService.save(originComment);
+		return new JsonResponse(Const.SUCCESS, "成功更新评论！");
 	}
 
 	@RequestMapping(value = "/{commentId}", method = RequestMethod.DELETE)
@@ -198,15 +197,12 @@ public class CommentController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse deleteComment(@PathVariable Long courseID, @PathVariable Long commentId) {
+	public JsonResponse deleteComment(@PathVariable Long courseID, @PathVariable Long commentId) throws Http400BadRequestException {
 		Course course = courseService.findById(courseID);
 		Comment comment = commentService.findById(commentId);
-		if (comment != null) {
-			logger.info("删除了课程 " + course.getName() + " 的评论 " + comment.getContent());
-			commentService.deleteById(commentId);
-			return new JsonResponse(Const.SUCCESS, "成功删除评论！");
-		}
-		return new JsonResponse(Const.FAILED, "删除失败！请确保评论 id 合法！");
+		AssertUtils.assertNotNUllElseThrow(comment, () -> new Http400BadRequestException("删除失败！请确保评论 id 合法！"));
+		logger.info("删除了课程 " + course.getName() + " 的评论 " + comment.getContent());
+		commentService.deleteById(commentId);
+		return new JsonResponse(Const.SUCCESS, "成功删除评论！");
 	}
-
 }

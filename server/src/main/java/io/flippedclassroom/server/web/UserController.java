@@ -6,7 +6,8 @@ import io.flippedclassroom.server.config.token.PasswordToken;
 import io.flippedclassroom.server.entity.Role;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.entity.response.JsonResponse;
-import io.flippedclassroom.server.exception.InputException;
+import io.flippedclassroom.server.exception.AssertException;
+import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.RoleService;
 import io.flippedclassroom.server.service.UserService;
@@ -22,9 +23,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Api(tags = "用户管理", description = "目前包括：用户注册、用户登录、用户登出、检查Token有效性、查看用户资料、更新用户资料")
 @RestController
@@ -47,26 +50,21 @@ public class UserController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse register(@RequestBody User user) throws InputException {
-		AssertUtils.assertUsernamePasswordNotNull(user);
-		User newUser = new User(user.getUsername(), user.getPassword());
-		if (userService.findUserByUsername(newUser.getUsername()) != null) {
-			return new JsonResponse(Const.FAILED, "账号已存在");
-		} else {
-			EncryptUtils.encrypt(newUser);
+	public JsonResponse register(@RequestBody @NotNull User user) throws Throwable {
+		// 确保输入非空
+		AssertUtils.assertNotNull(new Http400BadRequestException("用户基本信息不能为空！"), user.getUsername(), user.getPassword(), user.getRole());
+		String username = user.getUsername(), password = user.getPassword();
+		AssertUtils.assertNotNUllElseThrow(user.getRole().getRole(), () -> new Http400BadRequestException("用户角色不能为空！"));
+		// 确保用户名不存在
+		AssertUtils.assertNullElseThrow(userService.findUserByUsername(username), () -> new Http400BadRequestException("账号已存在！"));
 
-			try {
-				Role role = roleService.findRoleByRoleName(user.getRole().getRole());
-				if (role == null) {
-					return new JsonResponse(Const.FAILED, "非法角色类型");
-				}
-				newUser.setRole(role);
-				userService.save(newUser);
-				return new JsonResponse(Const.SUCCESS, "成功注册");
-			} catch (NullPointerException e) {
-				return new JsonResponse(Const.FAILED, "非法角色类型");
-			}
-		}
+		User newUser = new User(username, password);
+		EncryptUtils.encrypt(newUser);
+		Role role = roleService.findRoleByRoleName(user.getRole().getRole());
+		AssertUtils.assertNotNUllElseThrow(role, () -> new Http400BadRequestException("非法角色类型！"));
+		newUser.setRole(role);
+		userService.save(newUser);
+		return new JsonResponse(Const.SUCCESS, "成功注册！");
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -84,10 +82,11 @@ public class UserController {
 			@ApiResponse(code = 401, message = "权限认证失败！"),
 			@ApiResponse(code = 403, message = "身份认证失败！"),
 	})
-	public Map postLogin(@RequestBody User user) {
+	public Map postLogin(@RequestBody @NotNull User user) {
 		try {
-			AssertUtils.assertUsernamePasswordNotNull(user);
-		} catch (InputException e) {
+			AssertUtils.assertNotNull(user.getUsername());
+			AssertUtils.assertNotNull(user.getPassword());
+		} catch (AssertException e) {
 			Map<String, String> map = new HashMap<>();
 			map.put("status", Const.FAILED);
 			map.put("message", "用户名或密码不合法！");
@@ -102,7 +101,7 @@ public class UserController {
 		String token = TokenUtils.sign(loginUser.getUsername(), loginUser.getPassword());
 		logger.info("生成 Token！\n" + token);
 		logger.info("保存 用户名-Token 对到 Redis");
-		redisService.save(loginUser.getUsername(), token);
+		redisService.saveWithExpire(loginUser.getUsername(), token, Const.expire(), TimeUnit.MILLISECONDS);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		map.put("status", Const.SUCCESS);
