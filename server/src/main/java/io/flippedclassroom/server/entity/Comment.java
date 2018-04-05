@@ -1,7 +1,7 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.flippedclassroom.server.config.Const;
+import io.flippedclassroom.server.util.DateUtils;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -38,12 +38,12 @@ public class Comment implements Serializable {
 
 	public Comment() {
 		super();
-		this.date = Const.currentTime();
+		this.date = DateUtils.currentTime();
 	}
 
 	public Comment(String content) {
 		this.content = content;
-		this.date = Const.currentTime();
+		this.date = DateUtils.currentTime();
 	}
 
 	public Long getId() {

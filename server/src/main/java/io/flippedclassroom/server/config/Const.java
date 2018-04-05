@@ -1,12 +1,8 @@
 package io.flippedclassroom.server.config;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.5.1";
+	public static final String swaggerVersion = "v0.5.2";
 	public static final String version = "v0.0.1";
 
 	// 返回数据的 Status
@@ -22,16 +18,6 @@ public class Const {
 	public static final String broadcast = "/b";
 	public static final String group = "/g";
 	public static final String user = "/user";
-
-	// token 有效期，当前设置为十天
-	public static long expire() {
-		return System.currentTimeMillis() + Duration.ofDays(10).toMillis();
-	}
-
-	// 格式化的当前时间
-	public static String currentTime() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	}
 
 	// 上传文件大小
 	public static final int size1M = 1024 * 1024;    // 1M

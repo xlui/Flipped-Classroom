@@ -11,6 +11,7 @@ import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.CommentService;
 import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.util.AssertUtils;
+import io.flippedclassroom.server.util.DateUtils;
 import io.flippedclassroom.server.util.LogUtils;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -187,7 +188,7 @@ public class CommentController {
 		Comment originComment = commentService.findById(commentId);
 		AssertUtils.assertNotNUllElseThrow(originComment, () -> new Http400BadRequestException("更新失败！请确保要更新的评论 id 合法！"));
 		originComment.setContent(comment.getContent());
-		originComment.setDate(Const.currentTime());
+		originComment.setDate(DateUtils.currentTime());
 		commentService.save(originComment);
 		return new JsonResponse(Const.SUCCESS, "成功更新评论！");
 	}

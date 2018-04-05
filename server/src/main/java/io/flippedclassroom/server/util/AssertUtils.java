@@ -18,7 +18,7 @@ public class AssertUtils {
 			throw new AssertException(msg);
 	}
 
-	public static <X extends Throwable> void assertNullElseThrow(Object object, Supplier<? extends X> exceptionSupplier) {
+	public static <X extends Throwable> void assertNullElseThrow(Object object, Supplier<? extends X> exceptionSupplier) throws X {
 		if (object != null)
 			throw exceptionSupplier.get();
 	}
@@ -44,7 +44,7 @@ public class AssertUtils {
 			throw new AssertException(msg);
 	}
 
-	public static <X extends Throwable> void assertNotNUllElseThrow(Object object, Supplier<? extends X> exceptionSupplier) {
+	public static <X extends Throwable> void assertNotNUllElseThrow(Object object, Supplier<? extends X> exceptionSupplier) throws X {
 		if (object == null)
 			throw exceptionSupplier.get();
 	}
@@ -74,7 +74,7 @@ public class AssertUtils {
 			throw new AssertException(msg);
 	}
 
-	public static <X extends Throwable> void assertTrueElseThrow(boolean exp, Supplier<? extends X> exceptionSupplier) {
+	public static <X extends Throwable> void assertTrueElseThrow(boolean exp, Supplier<? extends X> exceptionSupplier) throws X {
 		if (!exp)
 			throw exceptionSupplier.get();
 	}
@@ -88,7 +88,7 @@ public class AssertUtils {
 			throw new AssertException(msg);
 	}
 
-	public static <X extends Throwable> void assertFalseElseThrow(boolean exp, Supplier<? extends X> exceptionSupplier) {
+	public static <X extends Throwable> void assertFalseElseThrow(boolean exp, Supplier<? extends X> exceptionSupplier) throws X {
 		if (exp)
 			throw exceptionSupplier.get();
 	}
@@ -103,7 +103,7 @@ public class AssertUtils {
 		}
 	}
 
-	public static <X extends Throwable> void assertPositionValidElseThrow(String position, Supplier<? extends X> exceptionSupplier) {
+	public static <X extends Throwable> void assertPositionValidElseThrow(String position, Supplier<? extends X> exceptionSupplier) throws X {
 		if (position == null || position.length() == 0) {
 			throw exceptionSupplier.get();
 		}

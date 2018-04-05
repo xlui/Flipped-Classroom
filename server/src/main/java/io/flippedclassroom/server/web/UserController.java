@@ -11,10 +11,7 @@ import io.flippedclassroom.server.exception.Http400BadRequestException;
 import io.flippedclassroom.server.service.RedisService;
 import io.flippedclassroom.server.service.RoleService;
 import io.flippedclassroom.server.service.UserService;
-import io.flippedclassroom.server.util.AssertUtils;
-import io.flippedclassroom.server.util.EncryptUtils;
-import io.flippedclassroom.server.util.LogUtils;
-import io.flippedclassroom.server.util.TokenUtils;
+import io.flippedclassroom.server.util.*;
 import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -101,7 +98,7 @@ public class UserController {
 		String token = TokenUtils.sign(loginUser.getUsername(), loginUser.getPassword());
 		logger.info("生成 Token！\n" + token);
 		logger.info("保存 用户名-Token 对到 Redis");
-		redisService.saveWithExpire(loginUser.getUsername(), token, Const.expire(), TimeUnit.MILLISECONDS);
+		redisService.saveWithExpire(loginUser.getUsername(), token, DateUtils.expire(), TimeUnit.MILLISECONDS);
 
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		map.put("status", Const.SUCCESS);

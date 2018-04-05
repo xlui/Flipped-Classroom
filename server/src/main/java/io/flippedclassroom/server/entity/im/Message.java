@@ -1,8 +1,8 @@
 package io.flippedclassroom.server.entity.im;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.util.DateUtils;
 
 import javax.persistence.*;
 
@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Message {
 	@Id
 	@GeneratedValue
-	@JsonProperty(access = JsonProperty.Access.AUTO)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
 	@JsonProperty(access = JsonProperty.Access.AUTO)
 	private String content;
@@ -19,7 +19,7 @@ public class Message {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private MessageType messageType;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private Long groupId = -1L;
+	private Long courseId = -1L;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -33,7 +33,7 @@ public class Message {
 	public Message(String content, MessageType messageType) {
 		this.content = content;
 		this.messageType = messageType;
-		this.date = Const.currentTime();
+		this.date = DateUtils.currentTime();
 	}
 
 	public Long getId() {
@@ -76,11 +76,11 @@ public class Message {
 		this.messageType = messageType;
 	}
 
-	public Long getGroupId() {
-		return groupId;
+	public Long getCourseId() {
+		return courseId;
 	}
 
-	public void setGroupId(Long groupId) {
-		this.groupId = groupId;
+	public void setCourseId(Long courseId) {
+		this.courseId = courseId;
 	}
 }

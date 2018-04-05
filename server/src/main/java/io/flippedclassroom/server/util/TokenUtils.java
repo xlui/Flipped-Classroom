@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import io.flippedclassroom.server.config.Const;
 
 import java.util.Date;
 
@@ -62,7 +61,7 @@ public class TokenUtils {
 			return JWT.create()
 					.withClaim("username", username)
 					.withClaim("date", new Date())
-					.withExpiresAt(new Date(Const.expire()))
+					.withExpiresAt(new Date(DateUtils.expire()))
 					.sign(algorithm);
 		} catch (Exception e) {
 			return null;
