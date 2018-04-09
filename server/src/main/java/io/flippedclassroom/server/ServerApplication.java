@@ -56,6 +56,8 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 				"    <ul>\n" +
 				"        <li><p>访问网站：<a href=\"https://web.fc.xd.style/\" target=\"_blank\">https://web.fc.xd.style</a></p></li>\n" +
 				"        <li><p>API 地址：<a href=\"https://api.fc.xd.style/\" target=\"_blank\">https://api.fc.xd.style</a></p></li>\n" +
+				"        <li><p>项目地址：<a href=\"https://github.com/xlui/FlippedClassroom/\" target=\"_blank\">https://github.com/xlui/FlippedClassroom</a></p></li>\n" +
+				"		 <br/>" +
 				"        <li><p>API 说明：<a href=\"https://api.fc.xd.style/swagger-ui.html\" target=\"_blank\">https://api.fc.xd.style/swagger-ui.html</a>\n" +
 				"        <li><p>IM API 说明：<a href=\"https://github.com/xlui/FlippedClassroom/blob/server/server/IM_README.md\" target=\"_blank\">https://github.com/xlui/FlippedClassroom/blob/server/server/IM_README.md</a>\n" +
 				"        </p></li>\n" +

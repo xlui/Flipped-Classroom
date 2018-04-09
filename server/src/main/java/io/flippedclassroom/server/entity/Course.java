@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 课程信息
@@ -94,7 +95,7 @@ public class Course implements Serializable {
 	}
 
 	public Long getCount() {
-		return (long) userList.size();
+		return (long) userList.parallelStream().filter(user -> user.getRole().getRole().equals("student")).collect(Collectors.toList()).size();
 	}
 
 	public void setCount(Long count) {
