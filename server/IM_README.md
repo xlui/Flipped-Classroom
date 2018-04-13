@@ -2,10 +2,6 @@
 
 由于 Swagger 限制，不能够为 Im 相关 API 自动生成 Api 说明，所以将 API 说明移动到 GitHub。
 
-## 目录
-
-- [动态群组 /group/{courseId}](#动态群组)
-
 ## 动态群组
 
 API：`/group/{courseId}`
@@ -58,19 +54,33 @@ stompClient.send(new StompMessage(
 
 ### 接收到的消息：
 
+如果 Token 非法，则返回：
+
 ```json
 {
-    "id" : 19,
-    "content" : "This is a group message",
-    "date" : "2018-04-05 16:18:07",
-    "messageType" : "GROUP",
-    "groupId" : 1,
-    "user" : {
-        "nickname" : "1",
-        "avatar" : "https://api.fc.xd.style/avatar",
-        "role" : {
-            "role" : "student"
+    "message" : "Token 内容非法！",
+    "status" : "FAILED"
+}
+```
+
+如果 Token 合法，则返回：
+
+```json
+{
+    "message" : {
+        "id" : 32,
+        "content" : "dasdsa",
+        "date" : "2018-04-13 16:14:47",
+        "messageType" : "GROUP",
+        "courseId" : 21,
+        "user" : {
+            "nickname" : "1",
+            "avatar" : "https://api.fc.xd.style/avatar",
+            "role" : {
+                "role" : "student"
+            }
         }
-    }
+    },
+    "status" : "SUCCESS"
 }
 ```

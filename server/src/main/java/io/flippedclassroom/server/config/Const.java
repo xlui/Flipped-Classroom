@@ -2,7 +2,7 @@ package io.flippedclassroom.server.config;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.5.3";
+	public static final String swaggerVersion = "v0.5.4";
 	public static final String version = "v0.0.1";
 
 	// 返回数据的 Status
@@ -23,6 +23,7 @@ public class Const {
 	public static final int size1M = 1024 * 1024;    // 1M
 
 	public static final String defaultAvatarLink = "https://www.gravatar.com/avatar/MD5?d=identicon";
+	public static final String showAvatar = "https://api.fc.xd.style/avatar";
 	public static final String coursePictureLink = "https://fc.xd.style/course/COURSEID/picture";
 
 	// 上传文件位置

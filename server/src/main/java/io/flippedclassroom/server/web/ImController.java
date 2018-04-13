@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.web;
 
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.entity.im.Message;
 import io.flippedclassroom.server.entity.im.MessageType;
@@ -20,6 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -35,26 +37,27 @@ public class ImController {
 	private SimpMessagingTemplate simpMessagingTemplate;
 	private Logger logger = LogUtils.getInstance();
 
-//	@MessageMapping(value = "/broadcast")
-//	@SendTo(value = "/b")
-//	public Message broadcast(Message msg, @Header(value = "Authorization") String token) throws Http400BadRequestException {
-//		User user = this.redisAuthorization(token);
-//		logger.info("收到来自用户 [" + user.getUsername() + "] 的广播消息：" + msg.getContent());
-//		Message message = new Message(msg.getContent(), MessageType.BROADCAST);
-//		message.setUser(user);
-//		message.setMessageType(MessageType.BROADCAST);
-//		messageService.save(message);
-//		return message;
-//	}
-
 	@MessageMapping(value = "/group/{courseId}")
 	public void dynamicGroup(@DestinationVariable Long courseId, @Header(value = "Authorization") String token, Message msg) throws Http400BadRequestException {
-		User user = this.redisAuthorization(token);
+		User user;
+		try {
+			user = this.redisAuthorization(token);
+			user.setAvatar(Const.showAvatar);
+		} catch (Exception e) {
+			simpMessagingTemplate.convertAndSend("/g/" + courseId, new HashMap<String, Object>(){{
+				put("status", Const.FAILED);
+				put("message", e.getMessage());
+			}});
+			return;
+		}
 		Message message = new Message(msg.getContent(), MessageType.GROUP);
 		message.setUser(user);
 		message.setCourseId(courseId);
 		messageService.save(message);
-		simpMessagingTemplate.convertAndSend("/g/" + courseId, message);
+		simpMessagingTemplate.convertAndSend("/g/" + courseId, new HashMap<String, Object>(){{
+			put("status", Const.SUCCESS);
+			put("message", message);
+		}});
 	}
 
 	private User redisAuthorization(String token) throws Http400BadRequestException {
@@ -71,6 +74,7 @@ public class ImController {
 		Logger logger = LogUtils.getInstance();
 		logger.info("进入自定义 Token 校验！");
 		String username = TokenUtils.getUsername(token);
+		AssertUtils.assertNotNUllElseThrow(username, () -> new Http400BadRequestException("Token 内容非法！"));
 		String redisCheck = redisService.get(username);
 		User user = userService.findUserByUsername(username);
 
