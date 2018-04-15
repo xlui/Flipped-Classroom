@@ -22,7 +22,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -38,18 +37,69 @@ public class CommentController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ApiOperation(value = "查看课程评论", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "自定义的返回格式：\n{\n" +
-					"  \"status\" : \"SUCCESS\",\n" +
-					"  \"comments\" : [ {\n" +
-					"    \"id\" : 6,\n" +
-					"    \"content\" : \"Hello World!\",\n" +
-					"    \"date\" : \"2018-04-02 17:49:28\",\n" +
-					"    \"reply\" : -1,\n" +
-					"    \"user\" : {\n" +
-					"      \"nickname\" : \"1\",\n" +
-					"      \"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
-					"      \"role\" : {\"role\" : \"student\"}\n" +
-					"  }, ]\n" +
+			@ApiResponse(code = 200, message = "自定义的返回格式：{\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;\"status\" : \"SUCCESS\",\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;\"comments\" : [ {\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\" : 6,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\" : \"Hello World!\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"date\" : \"2018-04-02 17:49:28\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"reply\" : -1,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\" : {\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\" : \"1\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : {\n" +
+					"        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : \"student\"\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;}, {\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\" : 7,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\" : \"这条评论来自老师，回复第一条评论\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"date\" : \"2018-04-02 17:49:29\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"reply\" : 6,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\" : {\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\" : \"2\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : {\n" +
+					"        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : \"teacher\"\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;}, {\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\" : 8,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\" : \"课上的十分好！（回复上面老师的评论）\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"date\" : \"2018-04-02 17:49:29\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"reply\" : 7,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\" : {\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\" : \"1\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : {\n" +
+					"        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : \"student\"\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;}, {\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\" : 9,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\" : \"这里是第四条评论，这条评论是顶层评论\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"date\" : \"2018-04-02 17:49:29\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"reply\" : -1,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\" : {\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\" : \"3\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : {\n" +
+					"        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : \"student\"\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;}, {\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\" : 10,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\" : \"第五：回复第四条评论\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"date\" : \"2018-04-02 17:49:29\",\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"reply\" : 9,\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\" : {\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\" : \"1\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\" : \"https://api.fc.xd.style/avatar\",\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : {\n" +
+					"        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\" : \"student\"\n" +
+					"      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+					"  &nbsp;&nbsp;&nbsp;&nbsp;} ]\n" +
 					"}")
 	)
 	public Map getComments(@PathVariable Long courseID) {
@@ -63,7 +113,7 @@ public class CommentController {
 			map.put("status", Const.SUCCESS);
 			List<Comment> comments = course.getCommentList();
 			comments.parallelStream().forEach(comment -> comment.getUser().setAvatar("https://api.fc.xd.style/avatar"));
-			comments = comments.parallelStream().filter(comment -> comment.getReply().equals(-1L)).collect(Collectors.toList());
+//			comments = comments.parallelStream().filter(comment -> comment.getReply().equals(-1L)).collect(Collectors.toList());
 			map.put("comments", comments);
 			return map;
 		}
