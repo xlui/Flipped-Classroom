@@ -37,7 +37,7 @@ public class User implements Serializable {
 	private String signature = "";   // 个性签名
 
 	// 用户与认证情况的一对一关系
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)    // 用户是关系的维护端
+	@OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REMOVE})    // 用户是关系的维护端
 	@JoinColumn(name = "auth_id")                                // 指定外键名称
 	@Fetch(FetchMode.JOIN)                                        // 会使用 left join 查询，只产生一条 sql 语句
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

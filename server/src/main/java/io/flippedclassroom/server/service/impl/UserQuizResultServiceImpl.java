@@ -21,6 +21,16 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
 	}
 
 	@Override
+	public List<UserQuizResult> findByUser(User user) {
+		return userQuizResultRepository.findByUser(user);
+	}
+
+	@Override
+	public List<UserQuizResult> findByQuiz(Quiz quiz) {
+		return userQuizResultRepository.findByQuiz(quiz);
+	}
+
+	@Override
 	public UserQuizResult findById(Long id) {
 		return userQuizResultRepository.findById(id);
 	}
@@ -38,6 +48,11 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
 	@Override
 	public void delete(UserQuizResult userQuizResult) {
 		userQuizResultRepository.delete(userQuizResult);
+	}
+
+	@Override
+	public void delete(Iterable<UserQuizResult> iterable) {
+		userQuizResultRepository.delete(iterable);
 	}
 
 	@Override

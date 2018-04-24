@@ -2,12 +2,16 @@ package io.flippedclassroom.server.config;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.5.6";
+	public static final String swaggerVersion = "v0.5.7";
 	public static final String version = "v0.0.1";
 
 	// 返回数据的 Status
 	public static final String SUCCESS = "SUCCESS";
 	public static final String FAILED = "FAILED";
+
+	// 身份类型
+	public static final String Student = "student";
+	public static final String Teacher = "teacher";
 
 	// Password Encrypt
 	public static final String algorithm = "MD5";

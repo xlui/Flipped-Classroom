@@ -45,6 +45,11 @@ public class QuizServiceImpl implements QuizService {
 	}
 
 	@Override
+	public void delete(Iterable<Quiz> iterable) {
+		quizRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		quizRepository.deleteAll();
 	}

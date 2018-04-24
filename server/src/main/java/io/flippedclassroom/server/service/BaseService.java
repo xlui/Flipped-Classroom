@@ -11,5 +11,7 @@ public interface BaseService<E> {
 
 	void delete(E e);
 
+	void delete(Iterable<E> iterable);
+
 	void deleteAll();
 }

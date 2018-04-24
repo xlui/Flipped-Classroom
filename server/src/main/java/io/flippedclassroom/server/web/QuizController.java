@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Api(tags = "随堂测试", description = "目前包括：开启测试入口、关闭测试入口、获取测试题、提交单个测试题")
 @RestController
@@ -124,6 +127,9 @@ public class QuizController {
 					"}\n提交失败（重复提交）：\n{\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;\"status\": \"FAILED\",\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;\"message\": \"不能重复提交答案！\"\n" +
+					"}\n提交失败（教师不能参与提交答案）\n{\n" +
+					"&nbsp;&nbsp;&nbsp;&nbsp;\"status\": \"FAILED\",\n" +
+					"&nbsp;&nbsp;&nbsp;&nbsp;\"message\": \"教师不能参与随堂测试！\"\n" +
 					"}")
 	)
 	public JsonResponse postQuizAnswer(@PathVariable Long courseId, @PathVariable Long quizId, @ApiIgnore @CurrentUser User user, @RequestBody UserQuizResult postResult) throws Http400BadRequestException {
@@ -131,6 +137,11 @@ public class QuizController {
 		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 		Quiz quiz = quizService.findById(quizId);
 		AssertUtils.assertNotNUllElseThrow(quiz, () -> new Http400BadRequestException("测试题 id 非法！"));
+
+		System.out.println("提交用户的 Role：" + user.getRole().getRole());
+		if (user.getRole().getRole().equals(Const.Teacher)) {
+			throw new Http400BadRequestException("教师不能参与随堂测试！");
+		}
 
 		if (course.isQuizEnable()) {
 			UserQuizResult result = userQuizResultService.findByUserAndQuiz(user, quiz);
@@ -145,5 +156,51 @@ public class QuizController {
 		} else {
 			throw new Http400BadRequestException("随堂测试题提交入口已关闭！");
 		}
+	}
+
+	@RequestMapping(value = "/course/{courseId}/quiz/{quizId}/analysis", method = RequestMethod.GET)
+	@ApiOperation(value = "查看测试题目结果统计", httpMethod = "GET")
+	@ApiResponses(
+			@ApiResponse(code = 200, message = "")
+	)
+	public Map quizAnalysis(@PathVariable Long courseId, @PathVariable Long quizId, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
+		Course course = courseService.findById(courseId);
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
+		Quiz quiz = quizService.findById(quizId);
+		AssertUtils.assertNotNUllElseThrow(quiz, () -> new Http400BadRequestException("测试题 id 非法！"));
+
+		if (course.isQuizEnable()) {
+			throw new Http400BadRequestException("随堂测试尚未结束，不能查看统计信息！");
+		}
+
+		Map<String, Object> response = new HashMap<>();
+		List<User> users = course.getUserList()
+				.parallelStream()
+				.filter(u -> u.getRole().getRole().equals("student"))
+				.collect(Collectors.toList());
+		List<User> rightUsers = new LinkedList<>();
+		List<UserQuizResult> wrongUsers = new LinkedList<>();
+		List<UserQuizResult> results = userQuizResultService.findByQuiz(quiz);
+
+		for (UserQuizResult result : results) {
+			if (result.getAnswer().equals(quiz.getAnswer())) {
+				rightUsers.add(result.getUser());
+			} else {
+				wrongUsers.add(result);
+			}
+			users.remove(result.getUser());
+		}
+		response.put("status", Const.SUCCESS);
+		response.put("totalSubmit", results.size());
+		response.put("rightCount", rightUsers.size());
+		if (results.size() == 0) {
+			response.put("rightPercent", 0);
+		} else {
+			response.put("rightPercent", rightUsers.size() / results.size());
+		}
+		response.put("rightUsers", rightUsers);
+		response.put("wrongUserAndResults", wrongUsers);
+		response.put("noSubmitUsers", users);
+		return response;
 	}
 }

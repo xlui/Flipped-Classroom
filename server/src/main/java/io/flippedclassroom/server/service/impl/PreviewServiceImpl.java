@@ -40,6 +40,11 @@ public class PreviewServiceImpl implements PreviewService {
 	}
 
 	@Override
+	public void delete(Iterable<Preview> iterable) {
+		previewRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		previewRepository.deleteAll();
 	}

@@ -40,6 +40,11 @@ public class EDataServiceImpl implements EDataService {
 	}
 
 	@Override
+	public void delete(Iterable<EData> iterable) {
+		eDataRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		eDataRepository.deleteAll();
 	}

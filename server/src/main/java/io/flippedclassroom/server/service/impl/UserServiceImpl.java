@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void delete(Iterable<User> iterable) {
+		userRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		userRepository.deleteAll();
 	}

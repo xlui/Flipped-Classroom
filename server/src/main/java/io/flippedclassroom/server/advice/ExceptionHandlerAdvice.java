@@ -3,6 +3,7 @@ package io.flippedclassroom.server.advice;
 import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.response.JsonResponse;
 import io.flippedclassroom.server.exception.Http400BadRequestException;
+import io.flippedclassroom.server.util.LogUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,8 @@ public class ExceptionHandlerAdvice {
 	@ExceptionHandler(value = Exception.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public JsonResponse handleException(Exception ex) {
+		LogUtils.getInstance().error("Exception!");
+		ex.printStackTrace();
 		return new JsonResponse(Const.FAILED, ex.getMessage());
 	}
 }

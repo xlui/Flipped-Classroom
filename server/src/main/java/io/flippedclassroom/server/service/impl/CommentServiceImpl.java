@@ -51,6 +51,11 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	public void delete(Iterable<Comment> iterable) {
+		commentRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		commentRepository.deleteAll();
 	}

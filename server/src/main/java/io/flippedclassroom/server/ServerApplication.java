@@ -37,6 +37,10 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	private CommentService commentService;
 	@Autowired
 	private QuizService quizService;
+	@Autowired
+	private MessageService messageService;
+	@Autowired
+	private UserQuizResultService userQuizResultService;
 
 	@RequestMapping("/")
 	public String index() {
@@ -78,32 +82,45 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		return "Hello World!";
 	}
 
+	private void deleteReplyToUser(User user) {
+		if (user != null) {
+			commentService.delete(commentService.findCommentsByUser(user));
+			messageService.delete(messageService.findMessagesByUser(user));
+			userQuizResultService.delete(userQuizResultService.findByUser(user));
+			userService.delete(user);
+		}
+	}
+
 	private void userInit() {
 		User userStudent1 = userService.findUserByUsername("1");
-		User userStudent2 = userService.findUserByUsername("3");
-		User userTeacher = userService.findUserByUsername("2");
+		User userStudent2 = userService.findUserByUsername("2");
+		User userStudent3 = userService.findUserByUsername("3");
+		User userTeacher = userService.findUserByUsername("0");
 
-		if (userStudent1 == null) {
-			userStudent1 = new User("1", "dev");
-			EncryptUtils.encrypt(userStudent1);
-			userService.save(userStudent1);
-		}
-		if (userStudent2 == null) {
-			userStudent2 = new User("3", "dev");
-			EncryptUtils.encrypt(userStudent2);
-			userService.save(userStudent2);
-		}
-		if (userTeacher == null) {
-			userTeacher = new User("2", "std");
-			EncryptUtils.encrypt(userTeacher);
-			userService.save(userTeacher);
-		}
+		deleteReplyToUser(userStudent1);
+		deleteReplyToUser(userStudent2);
+		deleteReplyToUser(userStudent3);
+		deleteReplyToUser(userTeacher);
+
+		userStudent1 = new User("1", "dev");
+		EncryptUtils.encrypt(userStudent1);
+		userService.save(userStudent1);
+		userStudent2 = new User("2", "dev");
+		EncryptUtils.encrypt(userStudent2);
+		userService.save(userStudent2);
+		userStudent3 = new User("3", "dev");
+		EncryptUtils.encrypt(userStudent3);
+		userService.save(userStudent3);
+		userTeacher = new User("0", "std");
+		EncryptUtils.encrypt(userTeacher);
+		userService.save(userTeacher);
 	}
 
 	private void roleInit() {
 		User userStudent1 = userService.findUserByUsername("1");
-		User userStudent2 = userService.findUserByUsername("3");
-		User userTeacher = userService.findUserByUsername("2");
+		User userStudent2 = userService.findUserByUsername("2");
+		User userStudent3 = userService.findUserByUsername("3");
+		User userTeacher = userService.findUserByUsername("0");
 		Role roleStudent = roleService.findRoleByRoleName("student");
 		Role roleTeacher = roleService.findRoleByRoleName("teacher");
 		Role roleAdmin = roleService.findRoleByRoleName("admin");
@@ -115,23 +132,26 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		if (roleStudent == null) {
 			roleStudent = new Role("student");
 			roleService.save(roleStudent);
-			userStudent1.setRole(roleStudent);
-			userService.save(userStudent1);
-			userStudent2.setRole(roleStudent);
-			userService.save(userStudent2);
 		}
 		if (roleTeacher == null) {
 			roleTeacher = new Role("teacher");
 			roleService.save(roleTeacher);
-			userTeacher.setRole(roleTeacher);
-			userService.save(userTeacher);
 		}
+		userStudent1.setRole(roleStudent);
+		userService.save(userStudent1);
+		userStudent2.setRole(roleStudent);
+		userService.save(userStudent2);
+		userStudent3.setRole(roleStudent);
+		userService.save(userStudent3);
+		userTeacher.setRole(roleTeacher);
+		userService.save(userTeacher);
 	}
 
 	private void courseInit() {
 		User userStudent1 = userService.findUserByUsername("1");
-		User userStudent2 = userService.findUserByUsername("3");
-		User userTeacher = userService.findUserByUsername("2");
+		User userStudent2 = userService.findUserByUsername("2");
+		User userStudent3 = userService.findUserByUsername("3");
+		User userTeacher = userService.findUserByUsername("0");
 		Course courseMath = courseService.findCourseByCourseName("数学");
 		Course courseDataStructure = courseService.findCourseByCourseName("数据结构");
 		Course courseDatabase = courseService.findCourseByCourseName("数据库");
@@ -150,16 +170,18 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		}
 		userStudent1.setCourseList(new ArrayList<>(Arrays.asList(courseMath, courseDatabase, courseDataStructure)));
 		userService.save(userStudent1);
-		userStudent2.setCourseList(new ArrayList<>(Arrays.asList(courseDataStructure, courseDatabase)));
+		userStudent2.setCourseList(new ArrayList<>(Arrays.asList(courseMath, courseDatabase)));
 		userService.save(userStudent2);
+		userStudent3.setCourseList(new ArrayList<>(Arrays.asList(courseMath, courseDataStructure)));
 		userTeacher.setCourseList(new ArrayList<>(Arrays.asList(courseMath, courseDatabase, courseDataStructure)));
 		userService.save(userTeacher);
 	}
 
 	private void commentInit() {
 		User userStudent1 = userService.findUserByUsername("1");
-		User userStudent2 = userService.findUserByUsername("3");
-		User userTeacher = userService.findUserByUsername("2");
+		User userStudent2 = userService.findUserByUsername("2");
+		User userStudent3 = userService.findUserByUsername("3");
+		User userTeacher = userService.findUserByUsername("0");
 		Course courseMath = courseService.findCourseByCourseName("数学");
 		Course courseDataStructure = courseService.findCourseByCourseName("数据结构");
 		Course courseDatabase = courseService.findCourseByCourseName("数据库");
@@ -173,7 +195,8 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 				comment3 = comments.get(2);
 				comment4 = comments.get(3);
 				comment5 = comments.get(4);
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 		if (comment1 != null) {
 			commentService.delete(comment1);

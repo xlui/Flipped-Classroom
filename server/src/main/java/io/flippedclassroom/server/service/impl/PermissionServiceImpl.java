@@ -39,6 +39,11 @@ public class PermissionServiceImpl implements PermissionService {
 	}
 
 	@Override
+	public void delete(Iterable<Permission> iterable) {
+		permissionRepository.delete(iterable);
+	}
+
+	@Override
 	public void deleteAll() {
 		permissionRepository.deleteAll();
 	}
