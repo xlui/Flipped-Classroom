@@ -24,6 +24,7 @@ public class Course implements Serializable {
 	private String picture;        // 课程图片
 	private Long count = 0L;    // 参与课程人数
 	private String code;        // 课程唯一代码
+	private boolean quizEnable = false;
 
 	// 课程与用户的多对多关系
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -167,5 +168,13 @@ public class Course implements Serializable {
 
 	public void setPicture(String picture) {
 		this.picture = picture;
+	}
+
+	public boolean isQuizEnable() {
+		return quizEnable;
+	}
+
+	public void setQuizEnable(boolean quizEnable) {
+		this.quizEnable = quizEnable;
 	}
 }

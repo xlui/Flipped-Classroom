@@ -1,10 +1,7 @@
 package io.flippedclassroom.server;
 
 import io.flippedclassroom.server.annotation.CurrentUser;
-import io.flippedclassroom.server.entity.Comment;
-import io.flippedclassroom.server.entity.Course;
-import io.flippedclassroom.server.entity.Role;
-import io.flippedclassroom.server.entity.User;
+import io.flippedclassroom.server.entity.*;
 import io.flippedclassroom.server.service.*;
 import io.flippedclassroom.server.util.EncryptUtils;
 import io.flippedclassroom.server.util.LogUtils;
@@ -38,6 +35,8 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	private PermissionService permissionService;
 	@Autowired
 	private CommentService commentService;
+	@Autowired
+	private QuizService quizService;
 
 	@RequestMapping("/")
 	public String index() {
@@ -239,6 +238,31 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		commentService.save(comment5);
 	}
 
+	private void quizInit() {
+		String content1 = "题目：请从一二三四中随机选择一个数字\t选项：A. 一B. 二C. 三D. 四";
+		String answer1 = "C";
+		String content2 = "题目：Java 中类的访问权限有几种\t选项：A. 4种B. 3种C. 2种D. 1种";
+		String answer2 = "A";
+
+		Course courseMath = courseService.findCourseByCourseName("数学");
+		Quiz quiz1 = quizService.findQuizByContentAndAnswer(content1, answer1);
+		Quiz quiz2 = quizService.findQuizByContentAndAnswer(content2, answer2);
+
+		if (quiz1 == null) {
+			quiz1 = new Quiz(content1, answer1);
+			quizService.save(quiz1);
+		}
+		if (quiz2 == null) {
+			quiz2 = new Quiz(content2, answer2);
+			quizService.save(quiz2);
+		}
+
+		quiz1.setCourse(courseMath);
+		quizService.save(quiz1);
+		quiz2.setCourse(courseMath);
+		quizService.save(quiz2);
+	}
+
 	/**
 	 * 负责数据库的初始化
 	 */
@@ -254,6 +278,8 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		this.courseInit();
 		logger.info("初始化评论....");
 		this.commentInit();
+		logger.info("初始化随堂测试题....");
+		this.quizInit();
 		return "init success";
 	}
 

@@ -2,7 +2,7 @@ package io.flippedclassroom.server.config;
 
 public class Const {
 	// version
-	public static final String swaggerVersion = "v0.5.5";
+	public static final String swaggerVersion = "v0.5.6";
 	public static final String version = "v0.0.1";
 
 	// 返回数据的 Status

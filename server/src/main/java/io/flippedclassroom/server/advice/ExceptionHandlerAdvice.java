@@ -6,6 +6,7 @@ import io.flippedclassroom.server.exception.Http400BadRequestException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,7 +34,14 @@ public class ExceptionHandlerAdvice {
 		return new JsonResponse(Const.FAILED, ex.getMessage());
 	}
 
+	@ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+	public JsonResponse handleMethodNotSupportedException(Exception ex) {
+		return new JsonResponse(Const.FAILED, ex.getMessage());
+	}
+
 	@ExceptionHandler(value = Exception.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public JsonResponse handleException(Exception ex) {
 		return new JsonResponse(Const.FAILED, ex.getMessage());
 	}

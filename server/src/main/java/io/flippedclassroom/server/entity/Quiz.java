@@ -28,6 +28,11 @@ public class Quiz implements Serializable {
 		super();
 	}
 
+	public Quiz(String content, String answer) {
+		this.content = content;
+		this.answer = answer;
+	}
+
 	public Long getId() {
 		return id;
 	}
