@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,25 +95,20 @@ public class CourseController {
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "标准的 JsonResponse，参见下方 Example Value")
 	)
-	public JsonResponse deleteCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user, @ApiIgnore @CurrentRole String role) {
+	public JsonResponse deleteCourse(@PathVariable Long courseID, @ApiIgnore @CurrentUser User user, @ApiIgnore @CurrentRole @NotNull String role) throws Http400BadRequestException {
 		Course course = courseService.findById(courseID);
 
-		try {
-			AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
+		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
 
-			if (role.equals("student")) {        // 学生删除课程逻辑
-				logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
-				user.getCourseList().remove(course);
-				userService.save(user);
-				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
-			} else {
-				logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
-				courseService.delete(course);
-				return new JsonResponse(Const.SUCCESS, "成功删除课程！");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new JsonResponse(Const.FAILED, "未知错误发生！");
+		if (role.equals(Const.Student)) {        // 学生删除课程逻辑
+			logger.info("用户 " + user.getUsername() + " [角色：" + role + "] 删除了课程 " + course.getName());
+			user.getCourseList().remove(course);
+			userService.save(user);
+			return new JsonResponse(Const.SUCCESS, "成功删除课程！");
+		} else {
+			logger.info("用户 " + user.getUsername() + "[角色：" + role + "] 删除了课程 " + course.getName());
+			courseService.delete(course);
+			return new JsonResponse(Const.SUCCESS, "成功删除课程！");
 		}
 	}
 

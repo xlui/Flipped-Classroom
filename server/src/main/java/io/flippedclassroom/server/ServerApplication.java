@@ -219,22 +219,8 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 		comment2 = new Comment("这条评论来自老师，回复第一条评论");
 		commentService.save(comment2);
 		comment3 = new Comment("课上的十分好！（回复上面老师的评论）");
-		new Thread(() -> {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}).start();
 		commentService.save(comment3);
 		comment4 = new Comment("这里是第四条评论，这条评论是顶层评论");
-		new Thread(() -> {
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}).start();
 		commentService.save(comment4);
 		comment5 = new Comment("第五：回复第四条评论");
 		commentService.save(comment5);
@@ -262,9 +248,9 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	}
 
 	private void quizInit() {
-		String content1 = "题目：请从一二三四中随机选择一个数字\t选项：A. 一B. 二C. 三D. 四";
+		String content1 = "请从一二三四中随机选择一个数字？A. 一B. 二C. 三D. 四";
 		String answer1 = "C";
-		String content2 = "题目：Java 中类的访问权限有几种\t选项：A. 4种B. 3种C. 2种D. 1种";
+		String content2 = "Java 中类的访问权限有几种？A. 4种B. 3种C. 2种D. 1种";
 		String answer2 = "A";
 
 		Course courseMath = courseService.findCourseByCourseName("数学");

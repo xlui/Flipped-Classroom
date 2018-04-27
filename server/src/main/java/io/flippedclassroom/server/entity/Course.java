@@ -34,30 +34,30 @@ public class Course implements Serializable {
 	private List<User> userList;
 
 	// 课程与随堂测试一对多
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ApiModelProperty(hidden = true)
 	private List<Quiz> quizList;
 
 	// 课程与课后测试一对多
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ApiModelProperty(hidden = true)
 	private List<Homework> homeworkList;
 
 	// 课程与电子资料一对多
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ApiModelProperty(hidden = true)
 	private List<EData> eDataList;
 
 	// 课程与课前预习资料一对多
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ApiModelProperty(hidden = true)
 	private List<Preview> previewList;
 
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ApiModelProperty(hidden = true)
 	private List<Comment> commentList;

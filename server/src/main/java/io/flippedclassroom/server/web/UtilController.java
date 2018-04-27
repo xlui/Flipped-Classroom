@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.web;
 
+import io.flippedclassroom.server.config.Const;
 import io.flippedclassroom.server.entity.Course;
 import io.flippedclassroom.server.entity.User;
 import io.flippedclassroom.server.exception.Http400BadRequestException;
@@ -33,7 +34,10 @@ public class UtilController {
 	public User roll(@PathVariable Long courseId) throws Http400BadRequestException {
 		Course course = courseService.findById(courseId);
 		AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
-		List<User> users = course.getUserList().parallelStream().filter(user -> user.getRole().getRole().equals("student")).collect(Collectors.toList());
+		List<User> users = course.getUserList().parallelStream().filter(user -> user.getRole().getRole().equals(Const.Student)).collect(Collectors.toList());
+		if (users.size() <= 0) {
+			throw new Http400BadRequestException("当前课程人数过少(0)，不能进行随机点名！！");
+		}
 		return users.get(new Random().nextInt(users.size()));
 	}
 }
