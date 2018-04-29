@@ -248,9 +248,9 @@ public class ServerApplication extends SpringBootServletInitializer implements C
 	}
 
 	private void quizInit() {
-		String content1 = "请从一二三四中随机选择一个数字？A. 一B. 二C. 三D. 四";
+		String content1 = "请从一二三四中随机选择一个数字？A. 一：B. 二：C. 三：D. 四";
 		String answer1 = "C";
-		String content2 = "Java 中类的访问权限有几种？A. 4种B. 3种C. 2种D. 1种";
+		String content2 = "Java中类的访问权限有几种？A. 4种：B. 3种：C. 2种：D. 1种";
 		String answer2 = "A";
 
 		Course courseMath = courseService.findCourseByCourseName("数学");
