@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+/*首页css*/
+.pageContentArea {
+    margin: 0 auto;
+    background-color: #EEEEEE;
+    position: relative;
+}
+
+header {
+    height: 9%;
+    background-color: #DDDDDD;
+    display: flex;
+    align-items: center;
+    border-bottom: 5px double snow;
+}
+
+header h1 {
+    position: absolute;
+    left: 1%;;
+    text-shadow: 5px 5px 5px snow;
+    transform: rotate(-20deg);
+    -ms-transform: rotate(-20deg);		/* IE 9 */
+    -webkit-transform: rotate(-20deg);	/* Safari and Chrome */
+    -o-transform: rotate(-20deg);		/* Opera */
+    -moz-transform: rotate(-20deg);
+}
+header h1 a{
+    color: #21EF21;
+}
+
+.pageContentArea ul {
+    position: absolute;
+    right: 0;
+    clear: both;
+    width: 15%;
+    height: 5%;
+}
+
+.logAndReg {
+    float: left;
+    list-style-type: none;
+    background-color: #55A7DD;
+    width: 40%;
+    height: 100%;
+    margin-right: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15%;
+
+}
+.logAndReg a{
+    color: white;
+}
+section {
+    height: 80%;
+}
+
+.courseList {
+    height: 85%;
+}
+
+.courseList ul {
+    clear: both;
+    width: 100%;
+    height: 100%;
+    /*ul居然有默认的absolute定位，导致盒子和父元素盒子大小有出入*/
+    position: relative;
+
+}
+
+.courseList ul li {
+    list-style-type: none;
+    float: left;
+    width: 25%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/*css3动画与js实现课程盒子背景的缓慢变色*/
+@keyframes courseBgAddColor
+ {
+     from {background: #EEEEBB;width: 70%;height: 60%}
+     to {background: pink;width: 77%;height: 72%}
+ }
+@keyframes courseBgRemoveColor
+{
+    from {background: pink;width: 77%;height: 72%}
+    to {background: #EEEEBB;width: 70%;height: 60%}
+}
+.courseList ul li a {
+    width: 70%;
+    height: 60%;
+    background-color: #EEEEBB;
+    padding: 5%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 10px 10px 5px #888888;
+}
+
+.courseList ul li a:hover {
+    color: white;
+}
+
+.pageTurning {
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageTurning ul {
+    position: relative;
+    width: 40%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.pageTurning ul li {
+    width: 12%;
+    height: 70%;
+    float: left;
+    list-style-type: none;
+    text-align: center;
+    background-color: snow;
+}
+
+.pageTurning ul li:hover {
+    background-color: #55A7DD;
+}
+
+.pageTurning ul li span {
+    color: #333333;
+}
+
+footer {
+    height: 11%;
+    background-color: #DDDDDD;
+    border-top: 5px double snow;
+}
+
+/*基本信息css*/
+aside {
+    width: 12%;
+    height: 80%;
+    background-color:  	 	#F8F8FF;
+    position: absolute;
+    left: 0;
+}
+
+.menuNav {
+    height: 30%;
+}
+
+.menuNav ul {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.menuNav ul li {
+    height: 25%;
+    list-style-type: none;
+    border: 1px double snow;
+    box-sizing: border-box;
+    border-right: 2px  double snow;
+
+}
+.menuNav ul li a{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.menuNav ul li a:hover{
+    background-color: #919191;
+    color: white;
+}
+#baseInfoSection{
+    width: 88%;
+    height: 80%;
+    background-color: #F7F7F7;
+    position: absolute;
+    right: 0;
+}
+.navName{
+    width: 20%;
+    margin-top: 2%;
+    margin-left: 4%;
+    text-align: left;
+}
+.courseInfo{
+    width: 50%;
+    height: 50%;
+}
+.courseInfo form{
+    height: 100%;
+}
+.courseInfo div{
+    height: 25%;
+    display: flex;
+    align-items: center;
+
+}
+.courseInfo div label{
+    width: 30%;
+    text-align: center;
+}
+.courseInfo div input{
+    width: 70%;
+    height: 40%;
+}
+
+#operateCourse input{
+    width: 10%;
+    height: 40%;
+    margin-left: 55%;
+    border-radius: 5px;
+}
+#operateCourse button{
+    height: 40%;
+    margin-left: 15%;
+    border-radius: 5px;
+}
+
+
+/*预习资料css*/
+.courseInfo div.preview input{
+    width: 30%;
+    text-align: center;
+}
+.courseInfo div.preview input.checkButton{
+    height: 30%;
+    text-align: center;
+}
+.courseInfo div.preview .courseContent{
+    width: 70%;
+    height: 40%;
+    text-align: left;
+}
+
+#deleteData input{
+    width: 20%;
+    height: 40%;
+    margin-left: 80%;
+    border-radius: 5px;
+}
+.upLoadFile{
+    height: 12.5%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    margin-left: 4%;
+}
+
+/*课程留言css*/
+.courseMessage{
+    width: 80%;
+    height: 80%;
+    background-color: #F8F8FF;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}
+
+.courseMessage h4{
+    height: 4%;
+    margin: 1% 0;
+    text-align: center;
+}
+.courseMessage .messageUser{
+    color: honeydew;
+    margin: 1% 10%;
+    width: 80%;
+    height:15%;
+    background-color: grey;
+    padding: 1% 2%;
+    border-radius: 10px;
+}
+.courseMessage .messageUser p{
+    text-indent: 2em;
+    word-break: break-all;
+    width: 100%;
+    height: 80%;
+    overflow: hidden;
+}
+.courseMessage .messageUser time{
+    display: block;
+    height: 20%;
+    font-size: 15px;
+    text-align: right;
+}
+
+.courseMessage .pageTurning{
+    height: 18%;
+}
+.courseMessage .pageTurning ul{
+    width: 55%;
+}
+
+
+
+/*登录注册css*/
+ .logReg {
+     width:18%;
+     height:32%;
+     position: absolute;
+     top: 20%;
+     left: 43%;
+     background-color: #DDDDDD;
+     border: 8px double white;
+     border-radius: 20px;
+ }
+.logReg div.operateInfo{
+    width: 100%;
+    height: 15%;
+    border-bottom: 1px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logReg div.operateInfo h4{
+    color: #d2a24b;
+}
+.operateForm{
+    height: 60%;
+}
+.operateForm form{
+    height: 100%;
+}
+.operateForm div{
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.operateForm div label{
+    display: inline-block;
+    width: 25%;
+    height: 40%;
+}
+.operateForm div input{
+    width: 65%;
+    height: 40%;
+}
+.operateForm div#submit{
+    height: 40%;
+    border-top: 1px solid white;
+    display: flex;
+    justify-content: flex-end;
+}
+.operateForm div#submit input{
+    width: 25%;
+    margin-right: 10%;
+}
