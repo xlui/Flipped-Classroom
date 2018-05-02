@@ -33,10 +33,11 @@
     var log = new RegExp("log");
     var reg = new RegExp("reg");
     if (log.test(operate)) {
-
+        $("#submit").prepend("<a href='logAndReg.html?operate=reg'><span style='font-size: 10px;margin-right: 50px;color: blue'>没有账号，点击注册?</span></a>");
     } else if (reg.test(operate)) {
         $("h4").text("注册");
         $("input:button").val("注册");
+        $("#submit").prepend("<a href='logAndReg.html?operate=log'><span style='font-size: 10px;margin-right: 50px;color: blue'>已有账号，点击登录?</span></a>");
     }
 
     $("input:button").click(function () {

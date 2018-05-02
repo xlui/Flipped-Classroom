@@ -33,17 +33,20 @@
             <div class="courseInfo">
                 <form action="">
 
-                    <div id="deleteData">
-                        <input type="submit" value="删除选中的项">
-                    </div>
                 </form>
             </div>
             <div class="navName">
                 <h3>上传预习资料</h3>
             </div>
             <div class="upLoadFile">
-                <form action="">
-                    <input type="file" value="上传预习资料">
+                <form id="fileForm" action="javascript: submit();">
+                    <input type="file" name="file" id="file" required/>
+                    <div style="background:#848484;width:100px;display: inline-block">
+                        <div id="progressNumber" style="background:#428bca;width:0;height:10px">
+                        </div>
+                    </div>
+                    <span id="percent">0%</span>
+                    <input type="submit" value="提交"/>
                 </form>
             </div>
         </section>
@@ -60,6 +63,65 @@
     landscapingInterface();
     RenderDomInfo();
     addMenuNavUrl();
+
+    function submit() {
+        var fd = new FormData();
+        var file = $("#file")[0].files[0];
+        fd.append("file", file);
+        var baseUrl = "https://api.fc.xd.style";
+        $.ajax({
+            type: 'POST',
+            url: baseUrl + "/course/" + currentID + "/data/preview",
+            data: fd,
+            cache: false,
+            processData: false,
+            contentType: false,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("authorization", getCookie("userToken"))
+            },
+            xhr: function () {
+                var xhr = $.ajaxSettings.xhr();
+                if (xhr.upload) {
+                    xhr.upload.addEventListener("progress", handleProgress, false);
+                    return xhr;
+                }
+            }
+        }).done(function (res) {
+            alert("Done: " + res);
+        }).fail(function (res) {
+            alert("Fail: " + res);
+        });
+    }
+
+    function handleProgress(e) {
+        var percentComplete = Math.round((e.loaded) * 100 / e.total);
+        $("#percent").html(percentComplete + '%');
+        $("#progressNumber").css("width", "" + percentComplete + "px");
+    }
+
+        function deletePreData(ele) {
+        var previewId = $(ele).attr("data-message-id");
+            alert(typeof previewId);
+        var baseUrl = "https://api.fc.xd.style/course/1/data/preview/"+previewId;
+        alert(baseUrl);
+        $.ajax({
+            type: "DELETE",
+            url: baseUrl,
+            headers: {
+                Authorization: getCookie("userToken")
+            },
+            success: function (result) {
+                console.log(1);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            },
+
+        });
+
+    }
 </script>
 </body>
 </html>

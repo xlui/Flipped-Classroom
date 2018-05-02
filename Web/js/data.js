@@ -80,14 +80,14 @@ function RenderDomInfo() {
                 $("#courseId").val(response.id);
             }
             else if (pagePreviewData.test(location.pathname)) {
+                console.log(response);
                 for (i = 0; i < response.data.length; i++) {
-                    ($(".courseInfo").find("form")).prepend($("<div class='preview'><input type='checkbox' class='checkButton'>" +
-                        "<input type='text' class='courseContent' readonly='readonly' value='" + response.data[i].position + "'></div>"));
+                    ($(".courseInfo").find("form")).prepend($("<div class='preview'>" + "<input type='text' class='courseContent' readonly='readonly' value='" + response.data[i].position + "'><button onclick='deletePreData(this)' data-message-id="+response.data[i].id+">删除</button></div>"));
                 }
             }
             else if (pageElectronicData.test(location.pathname)) {
                 for (i = 0; i < response.data.length; i++) {
-                    ($(".courseInfo").find("form")).prepend($("<div class='preview'><input type='checkbox' class='checkButton'>" +
+                    ($(".courseInfo").find("form")).prepend($("<div class='preview'>" +
                         "<input type='text' class='courseContent' readonly='readonly' value='" + response.data[i].position + "'></div>"));
                 }
             }

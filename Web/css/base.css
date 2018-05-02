@@ -243,14 +243,16 @@ aside {
     width: 30%;
     text-align: center;
 }
-.courseInfo div.preview input.checkButton{
-    height: 30%;
-    text-align: center;
-}
 .courseInfo div.preview .courseContent{
     width: 70%;
     height: 40%;
+    margin-left: 8%;
     text-align: left;
+}
+.courseInfo div.preview button{
+    height: 40%;
+    width: 10%;
+    margin-left: 20%;
 }
 
 #deleteData input{
@@ -266,7 +268,10 @@ aside {
     align-items: center;
     margin-left: 4%;
 }
-
+.upLoadFile form{
+    width: 100%;
+    display: block;
+}
 /*课程留言css*/
 .courseMessage{
     width: 80%;

@@ -33,11 +33,26 @@
 <script src="js/data.js"></script>
 <script src="js/myLib.js"></script>
 <script>
+
     setSizeLayout();
     landscapingInterface();
     RenderDomInfo();
     //    clickLogAndReg();
-    111
+    (function () {
+        $.ajax({
+            type: "get",
+            url: "https://api.fc.xd.style/check",
+            headers:{
+                Authorization: getCookie("userToken")
+            },
+            success:function (result) {
+                if (result.status!=="SUCCESS"){
+                        location.href="./logAndReg.html";
+                }
+            }
+        })
+    })();
+
 </script>
 
 
