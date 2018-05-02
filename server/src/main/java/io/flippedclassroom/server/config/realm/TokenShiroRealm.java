@@ -53,13 +53,11 @@ public class TokenShiroRealm extends AuthorizingRealm {
 	}
 
 	/**
-	 * 认证
+	 * Token 认证
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-		LogUtils.getInstance().info("开始 token 认证");
 		TokenToken tokenToken = (TokenToken) authenticationToken;
-		LogUtils.getInstance().info("从输入得到的用户名：" + tokenToken.getPrincipal());
 
 		return new SimpleAuthenticationInfo(
 				tokenToken,
