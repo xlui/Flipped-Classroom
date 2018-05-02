@@ -7,4 +7,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 	Permission findById(Long id);
 
 	Permission findByPermission(String permission);
+
+	void deleteById(Long permissionId);
 }

@@ -1,6 +1,7 @@
 package io.flippedclassroom.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
@@ -14,8 +15,11 @@ import java.io.Serializable;
 public class Quiz implements Serializable {
 	@Id
 	@GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long id;
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	private String content;     // 题目内容
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	private String answer;      // 题目答案
 
 	// 随堂测试与课程的多对一关系

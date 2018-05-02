@@ -10,4 +10,6 @@ public interface PreviewRepository extends JpaRepository<Preview, Long> {
 	Preview findById(Long id);
 
 	List<Preview> findByCourse(Course course);
+
+	void deleteById(Long previewId);
 }

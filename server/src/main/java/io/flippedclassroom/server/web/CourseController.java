@@ -27,7 +27,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("/course")
-@Api(tags = "课程管理", description = "课程相关的所有内容都需要 Token 验证。目前包括：列出所有课程、查找课程、更新课程、删除课程、创建课程、加入课程、查看课程评论、添加课程评论、更新课程评论、删除课程评论")
+@Api(tags = "课程", description = "课程相关的所有内容都需要 Token 验证。目前包括：列出所有课程、查找课程、更新课程、删除课程、创建课程、加入课程")
 public class CourseController {
 	@Autowired
 	private CourseService courseService;

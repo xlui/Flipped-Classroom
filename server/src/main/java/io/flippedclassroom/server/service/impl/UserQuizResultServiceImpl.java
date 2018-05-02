@@ -50,7 +50,12 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
 		userQuizResultRepository.delete(userQuizResult);
 	}
 
-	@Override
+    @Override
+    public void deleteById(Long id) {
+        userQuizResultRepository.deleteById(id);
+    }
+
+    @Override
 	public void delete(Iterable<UserQuizResult> iterable) {
 		userQuizResultRepository.delete(iterable);
 	}

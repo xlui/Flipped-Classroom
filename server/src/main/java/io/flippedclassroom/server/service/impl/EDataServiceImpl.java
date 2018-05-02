@@ -6,6 +6,7 @@ import io.flippedclassroom.server.repository.EDataRepository;
 import io.flippedclassroom.server.service.EDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,7 +40,13 @@ public class EDataServiceImpl implements EDataService {
 		eDataRepository.delete(eData);
 	}
 
-	@Override
+	@Transactional
+    @Override
+    public void deleteById(Long id) {
+        eDataRepository.deleteById(id);
+    }
+
+    @Override
 	public void delete(Iterable<EData> iterable) {
 		eDataRepository.delete(iterable);
 	}

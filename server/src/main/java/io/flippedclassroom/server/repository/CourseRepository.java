@@ -7,4 +7,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 	Course findById(Long id);
 
 	Course findByName(String course);
+
+	void deleteById(Long courseId);
 }

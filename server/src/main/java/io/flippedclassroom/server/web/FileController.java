@@ -45,9 +45,11 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@Api(tags = "文件管理", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料、拉取所有电子资料、下载特定 id 的电子资料、上传电子资料、拉取课程图片、上传课程图片、删除特定ID的预习资料、删除特定ID的电子资料")
+@Api(tags = "文件相关", description = "目前包括：拉取头像、头像上传、拉取所有预习资料、下载特定 id 的预习资料、上传课程预习资料、拉取所有电子资料、下载特定 id 的电子资料、上传电子资料、拉取课程图片、上传课程图片、删除特定ID的预习资料、删除特定ID的电子资料")
 public class FileController {
-	@Autowired
+    private Logger logger = LogUtils.getInstance();
+
+    @Autowired
 	private UserService userService;
 	@Autowired
 	private CourseService courseService;
@@ -55,8 +57,6 @@ public class FileController {
 	private PreviewService previewService;
 	@Autowired
 	private EDataService eDataService;
-	private Logger logger = LogUtils.getInstance();
-
 
 	@RequestMapping(value = "/avatar", method = RequestMethod.GET)
 	@ApiOperation(value = "获取头像", httpMethod = "GET", notes = "不要要任何额外参数，在 HTTP 头加上 Token 请求即可")
@@ -189,18 +189,17 @@ public class FileController {
 		}
 	}
 
-	@RequestMapping(value = "/course/{courseID}/preview/{previewID}/delete", method = RequestMethod.GET)
-	@ApiOperation(value = "删除 PreviewID 的预习资料")
+	@RequestMapping(value = "/course/{courseID}/data/preview/{previewID}", method = RequestMethod.DELETE)
+	@ApiOperation(value = "删除 PreviewID 的预习资料", httpMethod = "DELETE")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
 	public JsonResponse deletePreview(@PathVariable Long courseID, @PathVariable Long previewID) throws Http400BadRequestException {
-		Optional<Course> course = Optional.of(courseService.findById(courseID));
-		Optional<Preview> preview = course.map(Course::getPreviewList).flatMap(previews -> previews.parallelStream().filter(p -> p.getId().equals(previewID)).findFirst());
-		AssertUtils.assertTrueElseThrow(preview.isPresent(), () -> new Http400BadRequestException("Course id 或 Preview id 非法！"));
-		FileUtils.deleteQuietly(new File(preview.get().getPosition()));
-		logger.info("删除预习资料：" + preview.get().getPosition());
-		previewService.delete(preview.get());
+	    Preview preview = previewService.findById(previewID);
+		AssertUtils.assertNotNUllElseThrow(preview, () -> new Http400BadRequestException("Course id 或 Preview id 非法！"));
+		FileUtils.deleteQuietly(new File(preview.getPosition()));
+		logger.info("删除预习资料：" + preview.getPosition());
+		previewService.delete(preview);
 		return new JsonResponse(Const.SUCCESS, "Successfully Delete Preview " + previewID);
 	}
 
@@ -278,19 +277,18 @@ public class FileController {
 		}
 	}
 
-	@RequestMapping(value = "/course/{courseID}/edata/{eDataID}/delete", method = RequestMethod.GET)
-	@ApiOperation(value = "删除 eDataID 的电子资料")
+	@RequestMapping(value = "/course/{courseID}/data/edata/{eDataID}", method = RequestMethod.DELETE)
+	@ApiOperation(value = "删除 eDataID 的电子资料", httpMethod = "DELETE")
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "删除特定ID的预习资料，返回 JsonResponse")
 	)
 	public JsonResponse deleteEData(@PathVariable Long courseID, @PathVariable Long eDataID) throws Http400BadRequestException {
-		Optional<Course> course = Optional.of(courseService.findById(courseID));
-		Optional<EData> eData = course.map(Course::geteDataList).flatMap(eDataList -> eDataList.parallelStream().filter(e -> e.getId().equals(eDataID)).findFirst());
-		AssertUtils.assertTrueElseThrow(eData.isPresent(), () -> new Http400BadRequestException("Course id 或 EData id 非法！"));
-		FileUtils.deleteQuietly(new File(eData.get().getPosition()));
-		logger.info("删除电子资料：" + eData.get().getPosition());
-		eDataService.delete(eData.get());
-		return new JsonResponse(Const.SUCCESS, "Successfully Delete EData " + eDataID);
+	    EData eData = eDataService.findById(eDataID);
+		AssertUtils.assertNotNUllElseThrow(eData, () -> new Http400BadRequestException("Course id 或 EData id 非法！"));
+		FileUtils.deleteQuietly(new File(eData.getPosition()));
+		logger.info("删除电子资料：" + eData.getPosition());
+        eDataService.deleteById(eDataID);
+		return new JsonResponse(Const.SUCCESS, "成功删除 EData：" + eDataID);
 	}
 
 	@RequestMapping(value = "/course/{courseID}/picture", method = RequestMethod.GET)

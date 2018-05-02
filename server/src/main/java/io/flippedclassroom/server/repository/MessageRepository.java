@@ -12,4 +12,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	List<Message> findByDate(String date);
 
 	List<Message> findByUser(User user);
+
+	void deleteById(Long messageId);
 }

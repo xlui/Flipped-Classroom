@@ -26,7 +26,7 @@ import java.util.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/course/{courseID}/comment")
-@Api(tags = "评论相关", description = "目前包括：查看课程评论、添加课程评论、更新课程评论、删除课程评论")
+@Api(tags = "评论", description = "目前包括：查看课程评论、添加课程评论、更新课程评论、删除课程评论")
 public class CommentController {
 	@Autowired
 	private CourseService courseService;

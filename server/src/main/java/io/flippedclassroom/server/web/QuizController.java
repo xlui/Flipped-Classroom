@@ -12,21 +12,19 @@ import io.flippedclassroom.server.service.CourseService;
 import io.flippedclassroom.server.service.QuizService;
 import io.flippedclassroom.server.service.UserQuizResultService;
 import io.flippedclassroom.server.util.AssertUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Api(tags = "随堂测试", description = "目前包括：开启测试入口、关闭测试入口、获取测试题、提交单个测试题")
+@Api(tags = "随堂测试", description = "目前包括：开启测试入口、关闭测试入口、获取全部测试题、新增测试题、提交单个测试题的答案、查看统计结果")
 @RestController
 public class QuizController {
 	@Autowired
@@ -81,12 +79,12 @@ public class QuizController {
 					"&nbsp;&nbsp;&nbsp;&nbsp;\"quizList\":[\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 3,\n" +
-					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\": \"题目：请从一二三四中随机选择一个数字\\t选项：A. 一B. 二C. 三D. 四\",\n" +
+					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\": \"请从一二三四中随机选择一个数字？A. 一：B. 二：C. 三：D. 四\",\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"answer\": \"C\"\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 4,\n" +
-					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\": \"题目：Java 中类的访问权限有几种\\t选项：A. 4种B. 3种C. 2种D. 1种\",\n" +
+					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"content\": \"Java中类的访问权限有几种？A. 4种：B. 3种：C. 2种：D. 1种\",\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"answer\": \"A\"\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;],\n" +
@@ -109,8 +107,35 @@ public class QuizController {
 		return map;
 	}
 
+	@RequestMapping(value = "/course/{courseId}/quiz", method = RequestMethod.POST)
+    @ApiOperation(value = "新增随堂测试题", httpMethod = "POST")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "quiz", value = "提交 JSON 示例：\n{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;  \"content\":\"Java类的关键字是？A. class：B.classroom：C. c：D. public\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;  \"answer\":\"A\"\n" +
+                    "}", required = true, dataTypeClass = Quiz.class, paramType = "body")
+    )
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "")
+    )
+	public JsonResponse postQuiz(@PathVariable Long courseId, @NotNull @RequestBody Quiz quiz) throws Http400BadRequestException {
+	    Course course = courseService.findById(courseId);
+	    AssertUtils.assertNotNUllElseThrow(course, () -> new Http400BadRequestException("课程 id 非法！"));
+	    Quiz newQuiz = new Quiz(quiz.getContent(), quiz.getAnswer());
+	    newQuiz.setCourse(course);
+	    quizService.save(newQuiz);
+	    return new JsonResponse(Const.SUCCESS, "成功设置随堂测试题！");
+    }
+
 	@RequestMapping(value = "/course/{courseId}/quiz/{quizId}", method = RequestMethod.POST)
 	@ApiOperation(value = "提交某一测试题的答案", httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "courseId", value = "课程 id", required = true, paramType = "path", dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "quizId", value = "测试题 id", required = true, paramType = "path", dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "postResult", value = "数据示例：\n{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;  \"answer\": \"string\"\n" +
+                    "}", required = true, paramType = "body", dataTypeClass = UserQuizResult.class)
+    })
 	@ApiResponses(
 			@ApiResponse(code = 200, message = "提交成功：\n{\n" +
 					"&nbsp;&nbsp;&nbsp;&nbsp;\"status\": \"SUCCESS\",\n" +
@@ -161,7 +186,36 @@ public class QuizController {
 	@RequestMapping(value = "/course/{courseId}/quiz/{quizId}/analysis", method = RequestMethod.GET)
 	@ApiOperation(value = "查看测试题目结果统计", httpMethod = "GET")
 	@ApiResponses(
-			@ApiResponse(code = 200, message = "")
+			@ApiResponse(code = 200, message = "统计示例：\n{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"rightUsers\":[{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\": \"2\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\": \"https://api.fc.xd.style/avatar\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\":{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\": \"student\"\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;}],\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"rightPercent\": 0,\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"totalSubmit\": 2,\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"wrongUserAndResults\":[{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": 2,\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"answer\": \"A\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"rightAnswer\": \"C\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"user\":{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\": \"1\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\": \"https://api.fc.xd.style/avatar\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\":{\"role\": \"student\"}\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;}],\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"rightCount\": 1,\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"status\": \"SUCCESS\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;\"noSubmitUsers\":[{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"nickname\": \"3\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"avatar\": \"https://api.fc.xd.style/avatar\",\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\":{\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"role\": \"student\"\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;}]\n" +
+                    "}")
 	)
 	public Map quizAnalysis(@PathVariable Long courseId, @PathVariable Long quizId, @ApiIgnore @CurrentUser User user) throws Http400BadRequestException {
 		Course course = courseService.findById(courseId);

@@ -6,6 +6,7 @@ import io.flippedclassroom.server.repository.PreviewRepository;
 import io.flippedclassroom.server.service.PreviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,7 +40,13 @@ public class PreviewServiceImpl implements PreviewService {
 		previewRepository.delete(preview);
 	}
 
-	@Override
+	@Transactional
+    @Override
+    public void deleteById(Long id) {
+        previewRepository.deleteById(id);
+    }
+
+    @Override
 	public void delete(Iterable<Preview> iterable) {
 		previewRepository.delete(iterable);
 	}

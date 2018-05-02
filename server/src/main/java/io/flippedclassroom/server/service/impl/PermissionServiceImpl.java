@@ -38,7 +38,12 @@ public class PermissionServiceImpl implements PermissionService {
 		permissionRepository.delete(permission);
 	}
 
-	@Override
+    @Override
+    public void deleteById(Long id) {
+        permissionRepository.deleteById(id);
+    }
+
+    @Override
 	public void delete(Iterable<Permission> iterable) {
 		permissionRepository.delete(iterable);
 	}

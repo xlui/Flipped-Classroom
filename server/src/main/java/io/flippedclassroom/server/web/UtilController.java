@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-@Api(tags = "工具Api", description = "现在包括：课堂随机点名")
+@Api(tags = "扩展功能", description = "现在包括：课堂随机点名")
 @RestController
 public class UtilController {
 	@Autowired

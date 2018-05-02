@@ -15,4 +15,6 @@ public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, 
 	List<UserQuizResult> findByQuiz(Quiz quiz);
 
 	UserQuizResult findByUserAndQuiz(User user, Quiz quiz);
+
+	void deleteById(Long userQuizResultId);
 }

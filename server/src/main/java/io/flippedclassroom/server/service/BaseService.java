@@ -11,6 +11,8 @@ public interface BaseService<E> {
 
 	void delete(E e);
 
+    void deleteById(Long id);
+
 	void delete(Iterable<E> iterable);
 
 	void deleteAll();

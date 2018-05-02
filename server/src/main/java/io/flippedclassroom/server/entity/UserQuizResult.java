@@ -1,5 +1,6 @@
 package io.flippedclassroom.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
@@ -25,7 +26,7 @@ public class UserQuizResult implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "quiz_id")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
 	private Quiz quiz;
 
 	public UserQuizResult() {
