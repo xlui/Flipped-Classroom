@@ -29,64 +29,7 @@
 </div>
 <script src="js/data.js"></script>
 <script>
-    var operate = location.search;
-    var log = new RegExp("log");
-    var reg = new RegExp("reg");
-    if (log.test(operate)) {
-        $("#submit").prepend("<a href='logAndReg.html?operate=reg'><span style='font-size: 10px;margin-right: 50px;color: blue'>没有账号，点击注册?</span></a>");
-    } else if (reg.test(operate)) {
-        $("h4").text("注册");
-        $("input:button").val("注册");
-        $("#submit").prepend("<a href='logAndReg.html?operate=log'><span style='font-size: 10px;margin-right: 50px;color: blue'>已有账号，点击登录?</span></a>");
-    }
-
-    $("input:button").click(function () {
-        var username = $("#username").val();
-        var password = $("#password").val();
-        var baseUrl = "https://api.fc.xd.style";
-        var data;
-
-        if (this.value === "登录") {
-            data = {
-                "username": username,
-                "password": password
-            };
-            $.ajax({
-                type: 'post',
-                url: baseUrl + "/login",
-                async: false,               // ajax异步不刷新页面，这里如果是异步，则登录操作不会更新
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                dataType: 'json',
-                success: function (response) {
-                    if (response.status === "SUCCESS") {
-                        setCookie("userToken", response.token, 1);
-                        window.location.href = "./index.html";
-                    }
-                }
-            });
-        } else if (this.value === "注册") {
-            data = {
-                "username": username,
-                "password": password,
-                "role": "teacher"
-            };
-            $.ajax({
-                type: 'post',
-                url: baseUrl + "/register",
-                async: false,
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                dataType: 'json',
-                success: function (response) {
-                    if (response.status==="SUCCESS"){
-                        alert("注册成功");
-                        location.href="logAndReg.html?operate=log";
-                    }
-                }
-            });
-        }
-    });
+    logAndReg();
 </script>
 </body>
 </html>

@@ -27,11 +27,11 @@ header h1 {
     position: absolute;
     left: 1%;;
     text-shadow: 5px 5px 5px snow;
-    transform: rotate(-20deg);
-    -ms-transform: rotate(-20deg);		/* IE 9 */
-    -webkit-transform: rotate(-20deg);	/* Safari and Chrome */
-    -o-transform: rotate(-20deg);		/* Opera */
-    -moz-transform: rotate(-20deg);
+    transform: rotate(-1deg);
+    -ms-transform: rotate(-1deg);		/* IE 9 */
+    -webkit-transform: rotate(-1deg);	/* Safari and Chrome */
+    -o-transform: rotate(-1deg);		/* Opera */
+    -moz-transform: rotate(-1deg);
 }
 header h1 a{
     color: #21EF21;
@@ -172,7 +172,7 @@ aside {
 }
 
 .menuNav ul li {
-    height: 25%;
+    height: 20%;
     list-style-type: none;
     border: 1px double snow;
     box-sizing: border-box;
@@ -371,4 +371,21 @@ aside {
 .operateForm div#submit input{
     width: 25%;
     margin-right: 10%;
+}
+
+/*习题管理css*/
+#exercieDiv div:nth-child(1) {
+    height: 40%;
+}
+
+#exercieDiv div:nth-child(1) textarea{
+    width: 70%;
+    height: 50%;
+
+}
+#exercieDiv div:nth-child(2) input{
+    width: 20%;
+}
+#exercieDiv div:nth-child(3) button{
+    margin-left: 90%;
 }

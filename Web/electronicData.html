@@ -23,6 +23,7 @@
                     <li style="background-color: #CFFCF3"><a href=""><span style="color: chocolate">电子资料</span></a>
                     </li>
                     <li><a href=""><span>课程留言</span></a></li>
+                    <li><a href=""><span>习题管理</span></a></li>
                 </ul>
             </nav>
         </aside>
@@ -33,9 +34,7 @@
             <div class="courseInfo">
                 <form action="">
 
-                    <div id="deleteData">
-                        <input type="submit" value="删除选中的项">
-                    </div>
+
                 </form>
             </div>
             <div class="navName">
@@ -59,50 +58,9 @@
     </footer>
 </div>
 <script src="js/data.js"></script>
-<script src="js/myLib.js">
-</script>
 <script>
-    setSizeLayout();
-    landscapingInterface();
-    RenderDomInfo();
+   baseJS();
     addMenuNavUrl();
-
-    function submit() {
-        var fd = new FormData();
-        var file = $("#file")[0].files[0];
-        fd.append("file", file);
-        var baseUrl = "https://api.fc.xd.style";
-        console.log(baseUrl + "/course/" + currentID + "/data/edata");
-        console.log(getCookie("userToken"));
-        $.ajax({
-            type: 'POST',
-            url: baseUrl + "/course/" + currentID + "/data/preview",
-            data: fd,
-            cache: false,
-            processData: false,
-            contentType: false,
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("authorization", getCookie("userToken"))
-            },
-            xhr: function () {
-                var xhr = $.ajaxSettings.xhr();
-                if (xhr.upload) {
-                    xhr.upload.addEventListener("progress", handleProgress, false);
-                    return xhr;
-                }
-            }
-        }).done(function (res) {
-            alert("Done: " + res);
-        }).fail(function (res) {
-            alert("Fail: " + res);
-        });
-    }
-    function handleProgress(e) {
-        console.log(e);
-        var percentComplete = Math.round((e.loaded) * 100 / e.total);
-        $("#percent").html(percentComplete + '%');
-        $("#progressNumber").css("width", "" + percentComplete + "px");
-    }
 </script>
 
 </body>

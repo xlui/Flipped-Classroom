@@ -31,13 +31,8 @@
 </div>
 
 <script src="js/data.js"></script>
-<script src="js/myLib.js"></script>
 <script>
-
-    setSizeLayout();
-    landscapingInterface();
-    RenderDomInfo();
-    //    clickLogAndReg();
+    baseJS();
     (function () {
         $.ajax({
             type: "get",
@@ -47,12 +42,11 @@
             },
             success:function (result) {
                 if (result.status!=="SUCCESS"){
-                        location.href="./logAndReg.html";
+                        location.href="./logAndReg.html?operate=log";
                 }
             }
         })
     })();
-
 </script>
 
 
