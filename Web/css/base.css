@@ -374,18 +374,48 @@ aside {
 }
 
 /*习题管理css*/
+#exercieDiv{
+    height: 80%;
+}
 #exercieDiv div:nth-child(1) {
-    height: 40%;
+    height: 15%;
 }
 
 #exercieDiv div:nth-child(1) textarea{
     width: 70%;
-    height: 50%;
+    height: 70%;
 
 }
-#exercieDiv div:nth-child(2) input{
-    width: 20%;
+#exercieDiv div:nth-child(3){
+    height: 12%;
 }
-#exercieDiv div:nth-child(3) button{
-    margin-left: 90%;
+#exercieDiv div:nth-child(4){
+    height: 10%;
 }
+#exercieDiv div:nth-child(4) button{
+    position: relative;
+    left: 93%;
+}
+#answerOption{
+    height: 60%;
+}
+#answerOption label{
+    width: 30%;
+    position: relative;
+    bottom: 38%;
+}
+#answerOption #exerciseOption{
+    height: 100%;
+    width: 70%;
+    display: block;
+}
+#answerOption #exerciseOption div{
+    height: 25%;
+}
+#answerOption #exerciseOption div span{
+    display: inline-block;
+    width: 10%;
+}
+
+
+

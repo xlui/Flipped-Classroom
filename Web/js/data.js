@@ -424,10 +424,15 @@ function addMenuNavUrl() {
 
 function submitExercise() {
     var url="https://api.fc.xd.style/course/"+currentID+"/quiz";
-    var exerciseContent=$("#exerciseContent").val();
+    var exerciseContent=$("#exerciseContent").val()+' ';
+    var optionA='A.'+$("#option1").val()+':';
+    var optionB='B.'+$("#option2").val()+':';
+    var optionC='C.'+$("#option3").val()+':';
+    var optionD='C.'+$("#option4").val();
+    var content = exerciseContent+optionA+optionB+optionC+optionD;
     var exerciseAnswer=$("#exerciseAnswer").val();
     var data = {
-        "content": exerciseContent,
+        "content": content,
         "answer": exerciseAnswer
     };
     $.ajax({
